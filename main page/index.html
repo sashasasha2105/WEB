@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>clip & go</title>
+  <!-- Подключаем шрифт Montserrat -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Подключаем стили -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Cookie Banner -->
+  <div id="cookie-banner" class="cookie-banner">
+    <span>Пользуясь сайтом, вы соглашаетесь с тем, что мы используем
+      <a href="../Policy/privacy-cookie-policy.html" class="cookie-link">cookies</a> 🍪
+    </span>
+    <button id="accept-cookies">Окей</button>
+  </div>
+
+  <!-- Шапка -->
+  <header class="fade-in-on-scroll">
+    <div class="logo">
+      <a href="#" onclick="scrollToTop()">clip & go</a>
+    </div>
+    <div class="header-right">
+      <nav>
+        <ul>
+          <li><a href="#product">О продукте</a></li>
+          <li><a href="#main">Главная</a></li>
+          <li><a href="#contact">Контакты</a></li>
+        </ul>
+      </nav>
+      <a href="../cart/cart.html" class="cart-link" title="Корзина">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-count">0</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- HERO-секция -->
+  <section class="hero-gif fade-in-on-scroll">
+    <img src="assets/IMG_4459 2.GIF" alt="Презентация продукта">
+    <div class="hero-overlay">
+      <h1>UNLOCK YOUR POTENTIAL<br>clip & go</h1>
+      <p>Уже в продаже • Уже в России</p>
+    </div>
+  </section>
+
+  <!-- Основной контейнер -->
+  <section id="main" class="main-container fade-in-on-scroll">
+    <div class="left-column">
+      <section class="slider-container">
+        <div class="slider-wrapper">
+          <img src="assets/IMG_4447.jpg" alt="Товар 1" class="slider-img active" />
+          <img src="assets/IMG_4448.jpg" alt="Товар 2" class="slider-img" />
+          <img src="assets/IMG_4449.jpg" alt="Товар 3" class="slider-img" />
+          <img src="assets/IMG_4461.jpg" alt="Фото 7" class="slider-img" />
+          <img src="assets/IMG_4465.jpg" alt="Фото 11" class="slider-img" />
+        </div>
+        <button class="slider-arrow slider-arrow-left" onclick="prevSlide()">&#10094;</button>
+        <button class="slider-arrow slider-arrow-right" onclick="nextSlide()">&#10095;</button>
+      </section>
+    </div>
+    <div class="right-column">
+      <section class="purchase-section fade-in-on-scroll">
+        <h2>Выбор модификации</h2>
+        <div class="purchase-options">
+          <div class="option-group">
+            <span class="option-label">Цвет камеры</span>
+            <div class="option-buttons" id="colorOptions">
+              <button class="option-btn selected" data-color="black" aria-label="Чёрный"></button>
+              <button class="option-btn" data-color="white" aria-label="Белый"></button>
+            </div>
+          </div>
+          <div class="option-group">
+            <span class="option-label">Размер карты памяти</span>
+            <div class="option-buttons" id="memoryOptions">
+              <button class="memory-btn selected" data-memory="none">Без накопителя</button>
+              <button class="memory-btn" data-memory="8gb">8 ГБ</button>
+            </div>
+          </div>
+        </div>
+        <div id="priceDisplay" class="price-display"></div>
+        <div class="purchase-buttons">
+          <button id="addToCartBtn" onclick="addToCart()">Добавить в корзину</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- Описание продукта -->
+  <section class="camera-description fade-in-on-scroll">
+    <div class="description-container">
+      <h2>clip & go – компактная экшн-камера для любых задач</h2>
+      <p>
+        clip & go сочетает в себе портативность и высокое качество съёмки. Благодаря удобному креплению, вы сможете снимать на ходу,
+        в путешествиях или при занятиях спортом. Камера быстро реагирует на нажатие кнопки и позволяет мгновенно начать запись.
+        Небольшие габариты и малый вес делают её незаметной в повседневном использовании. Широкоугольный объектив захватывает максимум деталей,
+        а поддержка 4K гарантирует чёткую картинку.
+      </p>
+    </div>
+  </section>
+
+  <!-- Вкладки -->
+  <section id="tabsBlock" class="tabs-block fade-in-on-scroll">
+    <div class="tab-item">
+      <div class="tab-header" onclick="toggleCharacteristics()">
+        <span>Характеристики</span><span class="arrow">▼</span>
+      </div>
+      <div id="charTableContainer" class="tab-content">
+        <table class="char-table">
+          <tbody>
+            <tr><th>Модель</th><td>clip & go 1st edition</td></tr>
+            <tr><th>Размер</th><td>65×28×21 мм</td></tr>
+            <tr><th>Тип</th><td>4K Wi-Fi камера большого пальца</td></tr>
+            <tr><th>Объектив/угол</th><td>120° широкоугольный</td></tr>
+            <tr><th>Wi-Fi</th><td>Поддержка Wi-Fi</td></tr>
+            <tr><th>Хранение</th><td>MicroSD до 256 GB (не входит)</td></tr>
+            <tr><th>Батарея</th><td>800 мА·ч, Li-Po</td></tr>
+            <tr><th>Видео</th><td>3840×2160 (4K)</td></tr>
+            <tr><th>Сертификация</th><td>CE, RoHS</td></tr>
+            <tr><th>Зарядка</th><td>5 В/2 А (120 мин)</td></tr>
+            <tr><th>Водонепр.</th><td>30 м в кейсе</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="tab-item">
+      <div class="tab-header" onclick="toggleFAQ()">
+        <span>Частые вопросы</span><span class="arrow">▼</span>
+      </div>
+      <div id="faqContainer" class="tab-content">
+        <div class="faq-item">
+          <strong>Может ли clip & go делать фотографии?</strong>
+          <p>Да, камера поддерживает фотосъёмку для мгновенных снимков важных моментов.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Как долго работает аккумулятор?</strong>
+          <p>800 мА·ч — до 90 мин видео в 4K.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Поставляется ли она с аксессуарами?</strong>
+          <p>В комплект входят все необходимые крепления и кабели.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Разрешение</strong>
+          <p>До 4K (3840×2160) для максимальной чёткости.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Записывает ли камера звук?</strong>
+          <p>Да, встроенный микрофон хорошего качества.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Как выгрузить видео?</strong>
+          <p>Через приложение на смартфоне по Wi-Fi или извлеките MicroSD и скопируйте файлы на компьютер.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-item">
+      <div class="tab-header" onclick="toggleShipping()">
+        <span>Доставка и возврат</span><span class="arrow">▼</span>
+      </div>
+      <div id="shippingContainer" class="tab-content">
+        <div class="faq-item"><p>СДЭК до пункта выдачи.</p></div>
+        <div class="faq-item"><p>СДЭК экономическая доставка в дальние регионы.</p></div>
+        <div class="faq-item"><p>Если товар с браком, напишите в Telegram <strong>@clipandgo_help</strong> в течение 7 дней.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- О продукте -->
+  <section id="product" class="product-section fade-in-on-scroll">
+    <h2>О продукте</h2>
+    <div class="product-item">
+      <div class="product-img"><img src="assets/gif1.GIF" alt="Мгновенная съёмка"></div>
+      <div class="product-text">
+        <h3>Мгновенная съёмка</h3>
+        <p>Компактная экшн-камера размером с большой палец и весом 35 г, мгновенный отклик и широкий угол обзора.</p>
+      </div>
+    </div>
+    <div class="product-item reverse">
+      <div class="product-img"><img src="assets/gif2.GIF" alt="Экшн-камера GH88"></div>
+      <div class="product-text">
+        <h3>Экшн-камера GH88</h3>
+        <p>До 180 мин 4K-видео, компактная и лёгкая — идеальна для спорта и путешествий.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Контакты -->
+  <section id="contact" class="fade-in-on-scroll">
+    <h2>Контакты</h2>
+    <p>По всем вопросам: <strong>email@example.com</strong></p>
+    <p>Телефон: <strong>+1 (234) 567-89-00</strong></p>
+  </section>
+
+  <!-- Футер -->
+  <footer class="fade-in-on-scroll">
+    <p>&copy; 2025 clip & go. Все права защищены.</p>
+    <p><a href="../Policy/privacy-cookie-policy.html">Политика cookies и конфиденциальности</a></p>
+  </footer>
+
+  <!-- Скрипты -->
+  <script src="js/script.js"></script>
+</body>
+</html>

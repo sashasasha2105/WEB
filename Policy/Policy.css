@@ -1,0 +1,83 @@
+/* Сброс */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: #f4f7f6;
+  color: #333;
+  line-height: 1.6;
+  padding-top: 80px;
+}
+
+/* Шапка */
+header {
+  position: fixed;
+  top: 0; left: 0; width: 100%;
+  height: 60px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  z-index: 1000;
+}
+.logo a {
+  font-size: 1.8em;
+  font-weight: 600;
+  color: #007BFF;
+  text-decoration: none;
+}
+.header-nav a {
+  margin-left: 20px;
+  color: #007BFF;
+  text-decoration: none;
+  font-weight: 500;
+}
+.header-nav a:hover {
+  text-decoration: underline;
+}
+
+/* Анимация появления */
+.fade-in-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Основной блок */
+.policy-container {
+  max-width: 800px;
+  margin: 0 auto 60px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.policy-container h1 {
+  font-size: 2em;
+  color: #007BFF;
+  margin-bottom: 16px;
+}
+.policy-container ol,
+.policy-container ul {
+  margin-left: 20px;
+  margin-bottom: 16px;
+}
+.policy-container li {
+  margin-bottom: 8px;
+}
+.policy-container a {
+  color: #007BFF;
+  text-decoration: none;
+}
+.policy-container a:hover {
+  text-decoration: underline;
+}

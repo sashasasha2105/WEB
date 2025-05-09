@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>clip & go • Корзина</title>
+  <link rel="stylesheet" href="cart.css">
+</head>
+<body>
+
+  <!-- Шапка корзины -->
+  <header>
+    <div class="header-left">
+      <a href="../main page/index.html" class="logo">clip & go</a>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="../main page/index.html">Главная</a></li>
+        <li><a href="../main page/index.html#product">О продукте</a></li>
+        <li><a href="../main page/index.html#contact">Контакты</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h1>Ваша корзина</h1>
+
+    <!-- Камера (скрыта по умолчанию, JS покажет если нужно) -->
+    <div class="cart-item" data-id="camera" style="display:none;">
+      <img src="../main page/assets/IMG_4447.jpg" alt="clip & go">
+      <div class="item-info">
+        <h2>clip & go</h2>
+        <p>Цвет: <span id="cameraColor">—</span></p>
+        <p>Цена за шт.: <span id="cameraUnitPrice">8 900</span> ₽</p>
+      </div>
+      <div class="quantity-selector">
+        <button class="minus-btn" data-id="camera">–</button>
+        <span class="quantity-value" data-id="camera">0</span>
+        <button class="plus-btn" data-id="camera">+</button>
+      </div>
+      <button class="remove-item-btn" data-id="camera">Удалить</button>
+    </div>
+
+    <!-- Накопитель (скрыт по умолчанию) -->
+    <div class="cart-item" data-id="memory" style="display:none;">
+      <img src="cart/Фото карточки товара ССДшника.png" alt="Карта памяти 8 ГБ">
+      <div class="item-info">
+        <h2>Карта памяти 8 ГБ</h2>
+        <p>Цена за шт.: <span id="memoryUnitPrice">500</span> ₽</p>
+      </div>
+      <div class="quantity-selector">
+        <button class="minus-btn" data-id="memory">–</button>
+        <span class="quantity-value" data-id="memory">0</span>
+        <button class="plus-btn" data-id="memory">+</button>
+      </div>
+      <button class="remove-item-btn" data-id="memory">Удалить</button>
+    </div>
+
+    <!-- Промокод -->
+    <div class="promo-section">
+      <label for="promoInput">Промокод:</label>
+      <input type="text" id="promoInput" placeholder="Введите промокод...">
+      <button id="applyPromoBtn">Применить</button>
+      <button id="removePromoBtn" style="display:none;">Убрать промокод</button>
+    </div>
+
+    <!-- Итоговая сумма -->
+    <div class="cart-summary">
+      <h2>Итоговая сумма: <span id="cartTotalValue">0</span> ₽</h2>
+      <button id="checkoutBtn">Оформить заказ</button>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 clip & go. Все права защищены.</p>
+    <p><a href="privacy-cookie-policy.html">Политика cookies и конфиденциальности</a></p>
+  </footer>
+
+  <script src="cart.js"></script>
+</body>
+</html>
