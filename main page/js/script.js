@@ -1,72 +1,38 @@
-// main page/js/script.js
-
-// ==== Reveal on scroll ====
-document.addEventListener('DOMContentLoaded', () => {
-  const elems = document.querySelectorAll('.fade-in-on-scroll');
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        io.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.2 });
-  elems.forEach(el => io.observe(el));
-
-  updateCartBadge();
-  updatePriceDisplay();
-
-  document.querySelectorAll('#colorOptions .option-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#colorOptions .option-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    });
-  });
-
-  document.querySelectorAll('#memoryOptions .memory-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      wantMemory = btn.dataset.memory === '8gb';
-      document.querySelectorAll('#memoryOptions .memory-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      updatePriceDisplay();
-    });
-  });
-
-  document.getElementById('addToCartBtn').addEventListener('click', addToCart);
-
-  showSlide(0);
-});
+// js/script.js
 
 // ==== State & Prices ====
 let cameraCount = 0;
 let memoryCount = 0;
 let wantMemory = false;
-const basePrice = 8900;
+const basePrice   = 8900;
 const memoryPrice = 500;
 
 // ==== UI Helpers ====
-const cartBadge       = () => document.querySelector('.cart-count');
-const priceDisplay    = () => document.getElementById('priceDisplay');
-const purchaseButtons = () => document.querySelector('.purchase-buttons');
+const cartBadge        = () => document.querySelector('.cart-count');
+const priceDisplay     = () => document.getElementById('priceDisplay');
+const purchaseButtons  = () => document.querySelector('.purchase-buttons');
+const cookieBanner     = () => document.getElementById('cookie-banner');
+const acceptCookiesBtn = () => document.getElementById('accept-cookies');
 
-// ==== Persist to localStorage ====
+// ==== Persist Cart State ====
 function saveCartState() {
   const data = {
     cameraCount,
     memoryCount,
-    cartColor: document.querySelector('#colorOptions .option-btn.selected').dataset.color === 'black'
-      ? 'Чёрный'
-      : 'Белый'
+    cartColor: document
+      .querySelector('#colorOptions .option-btn.selected')
+      .dataset.color === 'black'
+        ? 'Чёрный'
+        : 'Белый'
   };
   localStorage.setItem('cartData', JSON.stringify(data));
 }
 
-// ==== Update Main UI ====
+// ==== Update Badge & Price ====
 function updateCartBadge() {
   const badge = cartBadge();
   if (badge) badge.textContent = cameraCount + memoryCount;
 }
-
 function updatePriceDisplay() {
   const dp = priceDisplay();
   if (!dp) return;
@@ -100,31 +66,56 @@ function addToCart() {
     pb.append(goBtn);
   }
 
+  // Flying animation
   const img = document.querySelector('.slider-img.active');
   if (!img) return;
   const fly = document.createElement('img');
   fly.src = img.src;
   fly.style.position = 'fixed';
-  fly.style.width = '100px';
-  fly.style.zIndex = '10000';
+  fly.style.width    = '100px';
+  fly.style.zIndex   = '10000';
   const rect = img.getBoundingClientRect();
-  const startX = rect.left + rect.width/2 - 50;
-  const startY = rect.top + rect.height/2 - 50;
+  const startX = rect.left + rect.width / 2 - 50;
+  const startY = rect.top  + rect.height/ 2 - 50;
   fly.style.left = `${startX}px`;
-  fly.style.top = `${startY}px`;
+  fly.style.top  = `${startY}px`;
   document.body.append(fly);
-  const cartIcon = document.querySelector('.cart-icon');
-  const cr = cartIcon.getBoundingClientRect();
-  const targetX = cr.left + cr.width/2 - 50;
-  const targetY = cr.top + cr.height/2 - 50;
+  const ci = document.querySelector('.cart-icon').getBoundingClientRect();
+  const dx = ci.left + ci.width/2 - 50 - startX;
+  const dy = ci.top  + ci.height/2 - 50 - startY;
   fly.animate([
     { transform: 'translate(0,0) scale(1)', opacity: 1 },
-    { transform: `translate(${targetX - startX}px,${targetY - startY}px) scale(0) rotate(720deg)`, opacity: 0 }
+    { transform: `translate(${dx}px,${dy}px) scale(0) rotate(720deg)`, opacity: 0 }
   ], {
     duration: 1000,
     easing: 'ease-in-out',
     fill: 'forwards'
   }).onfinish = () => fly.remove();
+}
+
+// ==== Cookie Banner Logic ====
+// Показываем баннер при скролле до .purchase-section
+function initCookieBanner() {
+  const banner = cookieBanner();
+  const btn    = acceptCookiesBtn();
+  if (!banner || !btn) return;
+  if (localStorage.getItem('cookiesAccepted')) return;
+
+  function onScroll() {
+    const sec = document.querySelector('.purchase-section');
+    if (!sec) return;
+    const rect = sec.getBoundingClientRect();
+    if (rect.top < window.innerHeight && rect.bottom > 0) {
+      banner.classList.add('show');
+      window.removeEventListener('scroll', onScroll);
+    }
+  }
+  window.addEventListener('scroll', onScroll);
+
+  btn.addEventListener('click', () => {
+    localStorage.setItem('cookiesAccepted','true');
+    banner.classList.remove('show');
+  });
 }
 
 // ==== Slider ====
@@ -143,29 +134,80 @@ function nextSlide() {
 }
 
 // ==== Header scroll effect ====
-window.addEventListener('scroll', () => {
-  const hdr = document.querySelector('header');
-  const heroH = document.querySelector('.hero-gif')?.offsetHeight || 0;
-  if (hdr) hdr.classList.toggle('scrolled', window.scrollY > heroH);
-});
+function initHeaderScroll() {
+  const header = document.querySelector('header');
+  const hero   = document.querySelector('.hero-gif');
+  window.addEventListener('scroll', () => {
+    if (!header) return;
+    const threshold = hero ? hero.offsetHeight : 0;
+    header.classList.toggle('scrolled', window.scrollY > threshold);
+  });
+}
 
 // ==== Tabs ====
-const tabIds = ['charTableContainer','faqContainer','shippingContainer'];
+const tabIds = ['charTableContainer', 'faqContainer', 'shippingContainer'];
 function toggleTab(id) {
   tabIds.forEach(other => {
     const cnt = document.getElementById(other);
     const hdr = cnt?.closest('.tab-item')?.querySelector('.tab-header');
     if (!cnt || !hdr) return;
-    if (other === id) {
-      const open = !cnt.classList.contains('open');
-      cnt.classList.toggle('open', open);
-      hdr.classList.toggle('opened', open);
-    } else {
-      cnt.classList.remove('open');
-      hdr.classList.remove('opened');
-    }
+    const open = (other === id) && !cnt.classList.contains('open');
+    cnt.classList.toggle('open', open);
+    hdr.classList.toggle('opened', open);
   });
 }
 function toggleCharacteristics() { toggleTab('charTableContainer'); }
-function toggleFAQ()            { toggleTab('faqContainer'); }
-function toggleShipping()       { toggleTab('shippingContainer'); }
+function toggleFAQ()             { toggleTab('faqContainer'); }
+function toggleShipping()        { toggleTab('shippingContainer'); }
+
+// ==== Initialization ====
+document.addEventListener('DOMContentLoaded', () => {
+  // Fade-in on scroll
+  document.querySelectorAll('.fade-in-on-scroll').forEach(el => {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    io.observe(el);
+  });
+
+  updateCartBadge();
+  updatePriceDisplay();
+
+  // Цвет камеры
+  document.querySelectorAll('#colorOptions .option-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#colorOptions .option-btn')
+        .forEach(x => x.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+
+  // Память
+  document.querySelectorAll('#memoryOptions .memory-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wantMemory = btn.dataset.memory === '8gb';
+      document.querySelectorAll('#memoryOptions .memory-btn')
+        .forEach(x => x.classList.remove('selected'));
+      btn.classList.add('selected');
+      updatePriceDisplay();
+    });
+  });
+
+  // Добавить в корзину
+  const addBtn = document.getElementById('addToCartBtn');
+  if (addBtn) addBtn.addEventListener('click', addToCart);
+
+  // Инициализация баннера cookies
+  initCookieBanner();
+
+  // Слайдер старт
+  showSlide(0);
+
+  // Шапка при скролле
+  initHeaderScroll();
+});
