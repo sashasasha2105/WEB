@@ -4,30 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>clip & go • Корзина</title>
-  <link rel="stylesheet" href="cart.css">
+
+  <!-- Шрифты -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Глобальные стили -->
+  <link rel="stylesheet" href="../css/style.css" />
+  <link
+    rel="stylesheet"
+    href="../css/responsive.css"
+    media="(max-width: 768px)"
+  />
+
+  <!-- Стили корзины -->
+  <link rel="stylesheet" href="cart.css" />
 </head>
 <body>
 
-  <!-- Шапка корзины -->
-  <header>
-    <div class="header-left">
-      <a href="../main page/index.html" class="logo">clip & go</a>
-    </div>
-    <nav>
-      <ul>
-        <li><a href="../main page/index.html">Главная</a></li>
-        <li><a href="../main page/index.html#product">О продукте</a></li>
-        <li><a href="../main page/index.html#contact">Контакты</a></li>
-      </ul>
-    </nav>
-  </header>
+  <!-- Общая шапка -->
+  <div id="header-container"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('../header.html')
+        .then(r => r.text())
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+          const header = document.getElementById('site-header');
+          // сразу делаем её белой
+          header.classList.add('scrolled');
+        })
+        .catch(err => console.error('Не удалось загрузить header:', err));
+    });
+  </script>
 
   <main>
     <h1>Ваша корзина</h1>
 
     <!-- Камера (скрыта по умолчанию, JS покажет если нужно) -->
     <div class="cart-item" data-id="camera" style="display:none;">
-      <img src="../main page/assets/IMG_4447.jpg" alt="clip & go">
+      <img src="../assets/IMG_4447.jpg" alt="clip & go">
       <div class="item-info">
         <h2>clip & go</h2>
         <p>Цвет: <span id="cameraColor">—</span></p>
@@ -43,7 +62,7 @@
 
     <!-- Накопитель (скрыт по умолчанию) -->
     <div class="cart-item" data-id="memory" style="display:none;">
-      <img src="cart/Фото карточки товара ССДшника.png" alt="Карта памяти 8 ГБ">
+      <img src="CardPhoto.png" alt="Карта памяти 8 ГБ">
       <div class="item-info">
         <h2>Карта памяти 8 ГБ</h2>
         <p>Цена за шт.: <span id="memoryUnitPrice">500</span> ₽</p>
@@ -73,9 +92,16 @@
 
   <footer>
     <p>&copy; 2025 clip & go. Все права защищены.</p>
-    <p><a href="privacy-cookie-policy.html">Политика cookies и конфиденциальности</a></p>
+    <p>
+      <a href="../Policy/privacy-cookie-policy.html">
+        Политика cookies и конфиденциальности
+      </a>
+    </p>
   </footer>
 
+  <!-- Скрипты -->
+  <script src="../js/script.js"></script>
+  <script src="../js/mobile.js"></script>
   <script src="cart.js"></script>
 </body>
 </html>

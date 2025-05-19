@@ -21,6 +21,11 @@ header {
   background: #fff;
   padding: 15px 30px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }
 .header-left .logo {
   text-decoration: none;
@@ -48,7 +53,7 @@ header nav li a:hover {
 main {
   max-width: 1200px;
   margin: 40px auto;
-  padding: 0 20px;
+  padding: 80px 20px 0; /* padding-top под фиксированный header */
 }
 main h1 {
   font-size: 2em;

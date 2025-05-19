@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>clip & go – Инструкция</title>
+
+  <!-- Шрифт Montserrat -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Глобальные стили сайта -->
+  <link rel="stylesheet" href="../css/style.css" />
+  <link
+    rel="stylesheet"
+    href="../css/responsive.css"
+    media="(max-width: 768px)"
+  />
+
+  <!-- Стили инструкции -->
+  <link rel="stylesheet" href="instruction.css" />
+</head>
+<body>
+  <!-- Общая шапка -->
+  <div id="header-container"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('../header.html')
+        .then(r => r.text())
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+          const header = document.getElementById('site-header');
+
+          // Сразу убираем scrolled, чтобы фон был прозрачным на старте
+          header.classList.remove('scrolled');
+
+          // Обработчик прокрутки: после 50px делаем фон белым и текст синим
+          const SCROLL_THRESHOLD = 50;
+          function onScroll() {
+            if (window.scrollY > SCROLL_THRESHOLD) {
+              header.classList.add('scrolled');
+            } else {
+              header.classList.remove('scrolled');
+            }
+          }
+
+          // Инициализируем и вешаем
+          onScroll();
+          window.addEventListener('scroll', onScroll);
+        })
+        .catch(console.error);
+    });
+  </script>
+
+  <!-- Контент инструкции -->
+  <main class="instruction-container fade-in-on-scroll">
+    <h1>Инструкция по эксплуатации clip &amp; go</h1>
+
+    <section class="step">
+      <h2>Шаг 1. Подготовка камеры</h2>
+      <p>
+        Зарядите камеру встроенным кабелем USB-C от адаптера 5 В/2 A до постоянного
+        зелёного индикатора (~120 мин). Во время зарядки индикатор горит красным.
+      </p>
+      <figure>
+        <img
+          src="инстр1.jpg"
+          alt="Индикатор заряда и порт USB-C"
+          class="instruction-image"
+        />
+        <figcaption>Индикатор заряда (красный/зелёный) и порт USB-C.</figcaption>
+      </figure>
+      <p>
+        Вставьте MicroSD-карту (FAT32, до 256 ГБ) в слот до щелчка — без неё съёмка невозможна.
+      </p>
+    </section>
+
+    <section class="step">
+      <h2>Шаг 2. Включение и режимы</h2>
+      <p>
+        Удерживайте кнопку питания (~3 с) до появления синего света.
+        Краткое нажатие кнопки <strong>Mode</strong> переключает режимы:
+      </p>
+      <ul>
+        <li><strong>Фото</strong> — один синий миг;</li>
+        <li><strong>Видео</strong> — два синих мига.</li>
+      </ul>
+    </section>
+
+    <section class="step">
+      <h2>Шаг 3. Съёмка</h2>
+      <p>
+        В режиме Фото нажмите кнопку «затвор» для кадра.
+        В режиме Видео — короткий клик для старта/остановки записи (красный индикатор).
+      </p>
+      <p>
+        Максимальное разрешение: 4K (3840×2160). Время записи: до 180 мин от полной зарядки.
+      </p>
+    </section>
+
+    <section class="step">
+      <h2>Шаг 4. Подключение по Wi-Fi</h2>
+      <p>
+        Нажмите кнопку Wi-Fi (быстрый голубой миг).
+        На смартфоне выберите сеть <code>clipandgo_XXXX</code>, пароль <code>12345678</code>.
+        Откройте приложение «Clip & Go» для просмотра и скачивания файлов.
+      </p>
+      <figure>
+        <img
+          src="инстр2.jpg"
+          alt="Экран подключения камеры по Wi-Fi"
+          class="instruction-image"
+        />
+        <figcaption>Сеть камеры и экран подключения в приложении.</figcaption>
+      </figure>
+    </section>
+
+    <section class="step">
+      <h2>Шаг 5. Выгрузка на ПК</h2>
+      <p>
+        Подключите камеру к ПК через USB-C — появится съёмный диск.
+        Скопируйте файлы из папки <code>DCIM</code> на жёсткий диск.
+      </p>
+      <p>
+        Для максимальной скорости передачи используйте порт USB-3.0 и кабель USB-C.
+      </p>
+    </section>
+
+    <section class="step">
+      <h2>Шаг 6. Выключение и хранение</h2>
+      <p>
+        Удерживайте кнопку питания (~3 с) до выключения.
+        Перед хранением дождитесь окончания записи и извлеките карту сухими руками.
+      </p>
+      <p>
+        Храните при температуре –10…+40 °C. Очищайте объектив мягкой салфеткой.
+      </p>
+    </section>
+  </main>
+
+  <!-- Скрипты -->
+  <script src="../js/script.js"></script>
+  <script src="../js/mobile.js"></script>
+  <script src="instruction.js"></script>
+</body>
+</html>

@@ -4,27 +4,42 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Политика cookies и конфиденциальности — clip & go</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com">
+
+  <!-- Шрифт -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
     rel="stylesheet"
   />
-  <!-- Подключаем CSS из той же папки -->
+
+  <!-- Глобальные стили сайта -->
+  <link rel="stylesheet" href="../css/style.css" />
+  <link
+    rel="stylesheet"
+    href="../css/responsive.css"
+    media="(max-width: 768px)"
+  />
+
+  <!-- Стили политики -->
   <link rel="stylesheet" href="Policy.css" />
 </head>
 <body>
 
-  <!-- Шапка -->
-  <header class="fade-in-on-scroll">
-    <div class="logo">
-      <a href="../main page/index.html" onclick="scrollToTop()">clip & go</a>
-    </div>
-    <nav class="header-nav">
-      <a href="../main page/index.html#product">О продукте</a>
-      <a href="../main page/index.html#main">Главная</a>
-      <a href="../main page/index.html#contact">Контакты</a>
-    </nav>
-  </header>
+  <!-- Общая шапка -->
+  <div id="header-container"></div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('../header.html')
+        .then(r => r.text())
+        .then(html => {
+          document.getElementById('header-container').innerHTML = html;
+          // на этой странице шапка должна быть всегда белой
+          const header = document.getElementById('site-header');
+          header.classList.add('scrolled');
+        })
+        .catch(err => console.error('Не удалось загрузить header:', err));
+    });
+  </script>
 
   <main class="policy-container fade-in-on-scroll">
     <h1>Политика использования файлов cookie</h1>
@@ -33,46 +48,40 @@
         <ol>
           <li>
             Настоящая Политика использования файлов cookie определяет, какие cookie-файлы и иные
-            подобные технологии (далее — «cookies») используются на сайте
-            <a href="../main page/index.html">http://localhost:8000/main page/index.html</a>
-            (далее — «Сайт») и как Пользователь может управлять их использованием.
+            подобные технологии используются на сайте
+            <a href="/index.html">clip & go</a> и как Пользователь может управлять их использованием.
           </li>
           <li>
-            Администрация Сайта: самозанятый гражданин [ваше ФИО или псевдоним]
-            (далее — «Администратор»).
+            Администрация сайта: самозанятый гражданин [ваше ФИО или псевдоним].
           </li>
         </ol>
       </li>
       <li><strong>Что такое cookies</strong><br>
         Cookies — это небольшие фрагменты данных, которые веб-сайт сохраняет на устройстве Пользователя
-        при посещении. Они помогают «запомнить» предпочтения, понять, как Пользователь взаимодействует
-        с Сайтом, и обеспечить корректную работу сервисов.
+        при посещении. Они помогают «запомнить» настройки и обеспечить корректную работу сервиса.
       </li>
       <li><strong>Какие cookies мы используем</strong>
         <ul>
-          <li><em>Строго необходимые cookies</em>: базовая функциональность (авторизация, оформление заказа).</li>
-          <li><em>Функциональные cookies</em>: запоминают настройки интерфейса.</li>
-          <li><em>Аналитические и рекламные cookies</em>: на данном Сайте не используются.</li>
+          <li><em>Строго необходимые:</em> авторизация, оформление заказа.</li>
+          <li><em>Функциональные:</em> запоминают настройки интерфейса.</li>
+          <li><em>Аналитические:</em> на данном сайте не используются.</li>
         </ul>
       </li>
       <li><strong>Сторонние cookies</strong><br>
-        Мы не передаём ваши cookie-данные третьим рекламным или аналитическим сервисам.
+        Мы не передаём cookie третьим рекламным или аналитическим сервисам.
       </li>
       <li><strong>Управление cookies</strong>
         <ol>
           <li>
-            При первом посещении Сайта вы увидите баннер с уведомлением и кнопкой «ОК» — согласие
-            на использование cookies считается данным после нажатия.
+            При первом заходе вы видите баннер с просьбой согласиться — по клику на «Окей» даёте согласие.
           </li>
           <li>
-            Отключить или удалить cookies можно в настройках браузера. При отключении некоторых типов
-            cookies Сайт может работать некорректно.
+            Отключить cookies можно в настройках браузера. При отключении некоторых файлов сайт может работать некорректно.
           </li>
         </ol>
       </li>
       <li><strong>Изменения в Политике</strong><br>
-        Администратор вправе вносить изменения в эту Политику. Актуальная версия всегда доступна
-        на странице: <a href="privacy-cookie-policy.html">privacy-cookie-policy.html</a>.
+        Актуальная версия всегда доступна на этой странице.
       </li>
     </ol>
 
@@ -81,18 +90,20 @@
       <li><strong>Общие положения</strong>
         <ol>
           <li>
-            Эта Политика конфиденциальности устанавливает правила сбора, хранения, использования и
-            распространения персональных данных Пользователей на Сайте
-            <a href="../main page/index.html">http://localhost:8000/main page/index.html</a>.
+            Эта Политика устанавливает правила сбора, хранения, использования и
+            распространения персональных данных Пользователей на сайте
+            <a href="/index.html">clip & go</a>.
           </li>
           <li>
-            Администратор Сайта: самозанятый гражданин [ваше ФИО или псевдоним].
+            Администратор: самозанятый гражданин [ваше ФИО или псевдоним].
           </li>
           <li>
-            Контактный e-mail: <a href="mailto:clip_and_go@outlook.com">clip_and_go@outlook.com</a>.
+            Контактный e-mail:
+            <a href="mailto:clip_and_go@outlook.com">clip_and_go@outlook.com</a>.
           </li>
           <li>
-            Telegram: <a href="https://t.me/clipandgomanager" target="_blank">@clipandgomanager</a>.
+            Telegram:
+            <a href="https://t.me/clipandgomanager" target="_blank">@clipandgomanager</a>.
           </li>
         </ol>
       </li>
@@ -106,23 +117,23 @@
               <li>Адрес пункта выдачи СДЭК.</li>
             </ul>
           </li>
-          <li>Более никакие персональные данные не сохраняются.</li>
+          <li>Другие персональные данные не сохраняются.</li>
         </ol>
       </li>
       <li><strong>Цели обработки</strong><br>
-        Передача данных осуществляется только для исполнения заказа через СДЭК.
+        Передача данных только для исполнения заказа через СДЭК.
       </li>
       <li><strong>Правовые основания</strong><br>
         На основании вашего согласия и необходимости исполнения договора.
       </li>
       <li><strong>Передача третьим лицам</strong>
         <ol>
-          <li>Единственный получатель — курьерская служба СДЭК.</li>
-          <li>Передаём только данные, необходимые для доставки.</li>
+          <li>Курьерская служба СДЭК.</li>
+          <li>Передаются только необходимые данные.</li>
         </ol>
       </li>
       <li><strong>Срок хранения</strong><br>
-        Данные не сохраняются после исполнения заказа.
+        Данные не сохраняются после выполнения заказа.
       </li>
       <li><strong>Безопасность</strong><br>
         Применяем организационные и технические меры, включая HTTPS.
@@ -130,19 +141,22 @@
       <li><strong>Права Пользователя</strong><br>
         Пользователь может:
         <ul>
-          <li>Запросить данные;</li>
-          <li>Потребовать удаления/исправления;</li>
+          <li>Запросить предоставленные данные;</li>
+          <li>Потребовать удаления или исправления;</li>
           <li>Отозвать согласие до передачи СДЭК.</li>
         </ul>
-        Для этого пишите на <a href="mailto:clip_and_go@outlook.com">clip_and_go@outlook.com</a>
-        или Telegram — <a href="https://t.me/clipandgomanager" target="_blank">@clipandgomanager</a>.
+        Для этого пишите на
+        <a href="mailto:clip_and_go@outlook.com">clip_and_go@outlook.com</a>
+        или в Telegram —
+        <a href="https://t.me/clipandgomanager" target="_blank">@clipandgomanager</a>.
       </li>
       <li><strong>Изменения в Политике</strong><br>
-        Обновления публикуются на <a href="privacy-cookie-policy.html">privacy-cookie-policy.html</a>.
+        Обновления публикуются на этой же странице.
       </li>
     </ol>
   </main>
 
+  <!-- Скрипты политики -->
   <script src="Policy.js"></script>
 </body>
 </html>

@@ -1,0 +1,79 @@
+/* gallery.css */
+
+/* Стили шапки (копия из главного style.css + responsive) */
+
+header#site-header {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.logo a {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.8em;
+  font-weight: 600;
+  color: #007BFF;
+  text-decoration: none;
+}
+
+.burger-menu {
+  display: none;
+  font-size: 1.8em;
+  background: none;
+  border: none;
+  color: #007BFF;
+  cursor: pointer;
+}
+
+nav.main-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+nav.main-nav a {
+  text-decoration: none;
+  font-weight: 500;
+  color: #007BFF;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+  .burger-menu {
+    display: block;
+  }
+  nav.main-nav {
+    display: none;
+    position: absolute;
+    top: 60px; left: 0;
+    width: 100%;
+    background: #f9f9f9;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+  }
+  nav.main-nav.open {
+    display: block;
+  }
+  nav.main-nav ul {
+    flex-direction: column;
+    padding: 8px 0;
+  }
+  nav.main-nav li + li {
+    margin-top: 6px;
+  }
+  nav.main-nav a {
+    display: block;
+    padding: 8px 12px;
+    background: #e6f7ff;
+    border-left: 4px solid #007BFF;
+    border-radius: 6px;
+  }
+}

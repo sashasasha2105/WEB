@@ -1,0 +1,64 @@
+/* instruction.css */
+
+.instruction-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 80px 20px 20px; /* отступ сверху под фикс. шапку */
+  font-family: 'Montserrat', sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+.instruction-container h1 {
+  text-align: center;
+  font-size: 2em;
+  margin-bottom: 30px;
+  color: #007BFF;
+}
+
+.step {
+  margin-bottom: 40px;
+}
+
+.step h2 {
+  font-size: 1.4em;
+  margin-bottom: 10px;
+  color: #005bb5;
+}
+
+.step p {
+  margin-bottom: 10px;
+}
+
+.step ul {
+  margin: 10px 0 10px 20px;
+}
+
+.instruction-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 15px auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+figcaption {
+  text-align: center;
+  font-size: 0.9em;
+  color: #555;
+  margin-top: 5px;
+}
+
+@media (max-width: 768px) {
+  .instruction-container {
+    margin: 20px auto;
+    padding-top: 100px;
+  }
+  .instruction-container h1 {
+    font-size: 1.8em;
+  }
+  .step h2 {
+    font-size: 1.2em;
+  }
+}
