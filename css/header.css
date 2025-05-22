@@ -1,0 +1,60 @@
+/* Сбрасываем inline display:none на бургер для мобилок */
+@media (max-width: 767px) {
+  #site-header .burger-menu {
+    display: block !important;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin: 0 1rem;
+  }
+
+  /* Скрываем десктопные блоки */
+  #site-header .main-nav,
+  #site-header .header-buttons,
+  #site-header .cart-link {
+    display: none;
+  }
+
+  /* Делаем header фиксированным и прячем за верх */
+  #site-header {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    transform: translateY(-100%);
+    transition: transform 0.3s ease-out;
+    background: #fff;
+    z-index: 1000;
+  }
+  /* Появление после прокрутки GIF */
+  #site-header.mobile-visible {
+    transform: translateY(0);
+  }
+
+  /* При открытом меню показываем nav-wrapper */
+  #site-header.mobile-menu-open .nav-wrapper {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  #site-header.mobile-menu-open .main-nav ul {
+    flex-direction: column;
+    padding: 0.5rem 1rem;
+    gap: 0.5rem;
+  }
+  #site-header.mobile-menu-open .header-buttons {
+    flex-direction: column;
+    padding: 0 1rem;
+    gap: 0.5rem;
+  }
+  #site-header.mobile-menu-open .cart-link {
+    margin: 0.5rem 1rem;
+  }
+}

@@ -1,14 +1,15 @@
+// instruction.js
+
 document.addEventListener('DOMContentLoaded', () => {
-  const burger = document.querySelector('.burger-menu');
-  const nav    = document.querySelector('nav.main-nav');
-
-  burger.addEventListener('click', () => {
-    nav.classList.toggle('open');
-  });
-
-  document.querySelectorAll('nav.main-nav a').forEach(link => {
-    link.addEventListener('click', () => {
-      nav.classList.remove('open');
+  const steps = document.querySelectorAll('.step');
+  const observer = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        obs.unobserve(entry.target);
+      }
     });
-  });
+  }, { threshold: 0.15 });
+
+  steps.forEach(step => observer.observe(step));
 });

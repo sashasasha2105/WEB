@@ -4,51 +4,49 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>clip & go</title>
+
   <!-- Подключаем шрифт Montserrat -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
     rel="stylesheet"
   />
+
   <!-- Десктоп-стили -->
   <link rel="stylesheet" href="css/style.css" />
-  <!-- Мобильные стили (≤768px) -->
+  <!-- Стили мобильной шапки (≤767px) -->
   <link
     rel="stylesheet"
-    href="css/responsive.css"
-    media="(max-width: 768px)"
+    href="css/mobile-header.css"
+    media="(max-width: 767px)"
   />
 </head>
 <body>
 
-  <!-- Здесь подтянем общий header -->
-  <div id="header-container"></div>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      fetch('header.html')
-        .then(resp => resp.text())
-        .then(html => {
-          document.getElementById('header-container').innerHTML = html;
-
-          // после вставки шапки вешаем scroll-handler
-          const header = document.getElementById('site-header');
-          const SCROLL_THRESHOLD = 50; // высота, после которой фон меняется
-
-          const onScroll = () => {
-            if (window.scrollY > SCROLL_THRESHOLD) {
-              header.classList.add('scrolled');
-            } else {
-              header.classList.remove('scrolled');
-            }
-          };
-
-          // инициализируем сразу
-          onScroll();
-          window.addEventListener('scroll', onScroll);
-        })
-        .catch(err => console.error('Не удалось загрузить header:', err));
-    });
-  </script>
+  <!-- Шапка (один и тот же для всех устройств) -->
+  <header id="site-header">
+    <button class="burger-menu" aria-label="Открыть меню" style="display:none;">☰</button>
+    <div class="logo">
+      <a href="/index.html" onclick="scrollToTop()">clip & go</a>
+    </div>
+    <nav class="main-nav">
+      <ul>
+        <li><a href="/index.html#product">О продукте</a></li>
+        <li><a href="/index.html#main">Главная</a></li>
+        <li><a href="/index.html#contact">Контакты</a></li>
+        <li><a href="/gallery/gallery.html">Галерея</a></li>
+        <li><a href="/instruction/instruction.html">Инструкция</a></li>
+      </ul>
+    </nav>
+    <div class="header-buttons">
+      <a href="/gallery/gallery.html" class="btn-header">Галерея</a>
+      <a href="/instruction/instruction.html" class="btn-header">Инструкция</a>
+    </div>
+    <a href="/cart/cart.html" class="cart-link" title="Корзина">
+      <span class="cart-icon">🛒</span>
+      <span class="cart-count">0</span>
+    </a>
+  </header>
 
   <!-- Баннер cookies -->
   <div class="cookie-banner" style="display: flex;">
@@ -187,17 +185,26 @@
   <section id="product" class="product-section fade-in-on-scroll">
     <h2>О продукте</h2>
     <div class="product-item">
-      <div class="product-img"><img src="assets/gif1.GIF" alt="Мгновенная съёмка" /></div>
+      <div class="product-img">
+        <img src="assets/gif1.GIF" alt="Мгновенная съёмка" />
+      </div>
       <div class="product-text">
         <h3>Мгновенная съёмка</h3>
-        <p>Компактная экшн-камера размером с большой палец и весом 35 г, мгновенный отклик и широкий угол обзора.</p>
+        <p>
+          Компактная экшн-камера размером с большой палец и весом 35 г,
+          мгновенный отклик и широкий угол обзора.
+        </p>
       </div>
     </div>
     <div class="product-item reverse">
-      <div class="product-img"><img src="assets/gif2.GIF" alt="Экшн-камера GH88" /></div>
+      <div class="product-img">
+        <img src="assets/gif2.GIF" alt="Экшн-камера GH88" />
+      </div>
       <div class="product-text">
         <h3>Экшн-камера GH88</h3>
-        <p>До 180 мин 4K-видео, компактная и лёгкая — идеальна для спорта и путешествий.</p>
+        <p>
+          До 180 мин 4K-видео, компактная и лёгкая — идеальна для спорта и путешествий.
+        </p>
       </div>
     </div>
   </section>
@@ -212,11 +219,15 @@
   <!-- Футер -->
   <footer class="fade-in-on-scroll">
     <p>&copy; 2025 clip & go. Все права защищены.</p>
-    <p><a href="Policy/privacy-cookie-policy.html">Политика cookies и конфиденциальности</a></p>
+    <p>
+      <a href="Policy/privacy-cookie-policy.html">
+        Политика cookies и конфиденциальности
+      </a>
+    </p>
   </footer>
 
   <!-- Скрипты -->
   <script src="js/script.js"></script>
-  <script src="js/mobile.js"></script>
+  <script src="js/mobile-header.js"></script>
 </body>
 </html>
