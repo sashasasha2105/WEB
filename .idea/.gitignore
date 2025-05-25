@@ -1,3 +1,5 @@
-# Default ignored files
+# WEB/.gitignore
 /shelf/
 /workspace.xml
+node_modules/
+.env

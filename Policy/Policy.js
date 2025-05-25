@@ -1,4 +1,4 @@
-// Политика: плавные появления и «Вверх» по логотипу
+// === File: Policy/Policy.js ===
 
 document.addEventListener('DOMContentLoaded', () => {
   const elems = document.querySelectorAll('.fade-in-on-scroll');

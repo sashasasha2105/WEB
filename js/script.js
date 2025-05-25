@@ -1,4 +1,4 @@
-// js/script.js
+// === File: js/script.js ===
 
 // ==== State & Prices ====
 let cameraCount = 0;

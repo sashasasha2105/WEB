@@ -1,4 +1,4 @@
-// instruction.js
+// === File: instruction/instruction.js ===
 
 document.addEventListener('DOMContentLoaded', () => {
   const steps = document.querySelectorAll('.step');

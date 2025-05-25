@@ -1,4 +1,4 @@
-// cart/cart.js
+// === File: cart/cart.js ===
 
 // ==== Prices ====
 const prices = {
@@ -119,5 +119,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-
-

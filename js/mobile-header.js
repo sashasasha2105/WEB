@@ -1,3 +1,5 @@
+<!-- === File: js/mobile-header.js === -->
+
 document.addEventListener('DOMContentLoaded', () => {
   if (!window.matchMedia('(max-width: 767px)').matches) return;
 
