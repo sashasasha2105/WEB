@@ -1,4 +1,3 @@
-// WEB/server.js
 require('dotenv').config();
 const path = require('path');
 const express = require('express');
@@ -9,22 +8,22 @@ const PORT = process.env.PORT || 3000;
 
 // Базовый URL для API СДЭК
 const CDEK_BASE = 'https://cdek.orderadmin.ru/api';
-// Собираем Basic Auth из .env
-const auth = Buffer.from(`${process.env.CDEK_USER}:${process.env.CDEK_PASSWORD}`).toString('base64');
 
-// Раздаём всё содержимое папки WEB как статику
+// Basic Auth из .env (CDEK_CLIENT_ID и CDEK_CLIENT_SECRET)
+const auth = Buffer
+    .from(`${process.env.CDEK_CLIENT_ID}:${process.env.CDEK_CLIENT_SECRET}`)
+    .toString('base64');
+
+// Статика и JSON-парсинг
 app.use(express.static(path.join(__dirname)));
+app.use(express.json());
 
-// 1) Поиск городов (autocomplete)
+// 1) Поиск городов (autocomplete) через v2
 app.get('/api/cdek/cities', async (req, res) => {
-    const q = (req.query.q||'').trim();
-    if (!q) return res.status(400).json({ error: 'q parameter missing' });
+    const search = (req.query.search || '').trim();
+    if (!search) return res.status(400).json({ error: 'search parameter missing' });
 
-    // частичный поиск по name, только города
-    const url = `${CDEK_BASE}/locations/localities`
-        + `?filter[0][type]=ilike&filter[0][field]=name&filter[0][value]=${encodeURIComponent(q)}%25`
-        + `&filter[1][type]=eq&filter[1][field]=type&filter[1][value]=город`;
-
+    const url = `${CDEK_BASE}/v2/location/cities?search=${encodeURIComponent(search)}`;
     try {
         const r = await fetch(url, {
             headers: {
@@ -33,7 +32,7 @@ app.get('/api/cdek/cities', async (req, res) => {
             }
         });
         const json = await r.json();
-        return res.json(json._embedded?.localities || []);
+        return res.json(json.cities || []);
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'CDEK cities API error' });
@@ -45,9 +44,7 @@ app.get('/api/cdek/pvz', async (req, res) => {
     const cityId = req.query.cityId;
     if (!cityId) return res.status(400).json({ error: 'cityId missing' });
 
-    const url = `${CDEK_BASE}/delivery-services/service-points`
-        + `?filter[0][type]=eq&filter[0][field]=city&filter[0][value]=${encodeURIComponent(cityId)}`;
-
+    const url = `${CDEK_BASE}/v2/location/service-points?city_code=${encodeURIComponent(cityId)}`;
     try {
         const r = await fetch(url, {
             headers: {
@@ -56,10 +53,34 @@ app.get('/api/cdek/pvz', async (req, res) => {
             }
         });
         const json = await r.json();
-        return res.json(json._embedded?.items || []);
+        return res.json(json.items || []);
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'CDEK PVZ API error' });
+    }
+});
+
+// 3) Расчёт тарифа
+app.post('/api/cdek/tariff', async (req, res) => {
+    const body = req.body;
+    if (!body) return res.status(400).json({ error: 'body missing' });
+
+    const url = `${CDEK_BASE}/v2/tariff`;
+    try {
+        const r = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': `Basic ${auth}`,
+            },
+            body: JSON.stringify(body)
+        });
+        const json = await r.json();
+        return res.json(json);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'CDEK tariff API error' });
     }
 });
 
