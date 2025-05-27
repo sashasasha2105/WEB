@@ -2,30 +2,21 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>clip & go • Корзина</title>
 
   <!-- Шрифты -->
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
-          rel="stylesheet"
-  />
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet"/>
 
-  <!-- Глобальные стили -->
-  <link rel="stylesheet" href="../css/style.css">
-  <link
-          rel="stylesheet"
-          href="../css/responsive.css"
-          media="(max-width: 768px)"
-  />
-
-  <!-- Стили корзины + доставки -->
-  <link rel="stylesheet" href="cart.css">
+  <!-- Стили -->
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/responsive.css" media="(max-width:768px)"/>
+  <link rel="stylesheet" href="cart.css" />
 </head>
 <body>
 
-<!-- Общая шапка -->
+<!-- Шапка -->
 <div id="header-container"></div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -34,6 +25,13 @@
             .then(html => {
               document.getElementById('header-container').innerHTML = html;
               document.getElementById('site-header').classList.add('scrolled');
+              // Обновляем счётчик...
+              try {
+                const d = JSON.parse(localStorage.getItem('cartData')||'{}');
+                const cnt = (d.cameraCount||0)+(d.memoryCount||0);
+                const b = document.querySelector('.cart-count');
+                if (b) b.textContent = cnt;
+              } catch {}
             })
             .catch(console.error);
   });
@@ -42,9 +40,9 @@
 <main>
   <h1>Ваша корзина</h1>
 
-  <!-- Карточки товаров -->
+  <!-- Камера -->
   <div class="cart-item" data-id="camera" style="display:none;">
-    <img src="../assets/images/cam1.jpg" alt="clip & go">
+    <img src="../assets/images/cam3.jpg" alt="clip & go">
     <div class="item-info">
       <h2>clip & go</h2>
       <p>Цвет: <span id="cameraColor">—</span></p>
@@ -58,6 +56,7 @@
     <button class="remove-item-btn" data-id="camera">Удалить</button>
   </div>
 
+  <!-- Карта памяти -->
   <div class="cart-item" data-id="memory" style="display:none;">
     <img src="../assets/images/CardPhoto.png" alt="Карта памяти 8 ГБ">
     <div class="item-info">
@@ -80,28 +79,21 @@
     <button id="removePromoBtn" style="display:none;">Убрать промокод</button>
   </div>
 
-  <!-- Адрес и доставка -->
+  <!-- Доставка -->
   <section class="delivery-section">
     <h2>Адрес и доставка</h2>
-
-    <label for="addressInput">Адрес (город, улица, дом):</label>
+    <label for="addressInput">Город:</label>
     <div class="address-wrapper">
-      <input
-              type="text"
-              id="addressInput"
-              placeholder="г. Москва, ул. Пушкина, д. 10"
-              autocomplete="off"
-      >
+      <input type="text" id="addressInput" autocomplete="off" placeholder="Начните вводить город…">
       <ul id="addressSuggestions" class="suggestions"></ul>
     </div>
-
     <label for="pvzSelect">Пункт выдачи (ПВЗ):</label>
     <select id="pvzSelect" disabled>
-      <option value="">Сначала выберите адрес</option>
+      <option value="">Сначала выберите город</option>
     </select>
   </section>
 
-  <!-- Итоговая сумма -->
+  <!-- Итог -->
   <div class="cart-summary">
     <p>Доставка: <strong><span id="shippingCostValue">0</span> ₽</strong></p>
     <h2>Итоговая сумма: <span id="cartTotalValue">0</span> ₽</h2>
@@ -114,7 +106,6 @@
   <p><a href="../Policy/privacy-cookie-policy.html">Политика cookies и конфиденциальности</a></p>
 </footer>
 
-<!-- Скрипты -->
 <script src="../js/script.js"></script>
 <script src="../js/mobile-header.js"></script>
 <script src="cart.js"></script>
