@@ -15,13 +15,23 @@ const cookieBanner     = () => document.querySelector('.cookie-banner');
 const acceptCookiesBtn = () => document.getElementById('accept-cookies');
 
 // ==== Persist Cart State ====
+function loadCartState() {
+  try {
+    const data = JSON.parse(localStorage.getItem('cartData') || '{}');
+    cameraCount = data.cameraCount || 0;
+    memoryCount = data.memoryCount || 0;
+  } catch {
+    cameraCount = 0;
+    memoryCount = 0;
+  }
+}
 function saveCartState() {
   const data = {
     cameraCount,
     memoryCount,
     cartColor: document
-      .querySelector('#colorOptions .option-btn.selected')
-      .dataset.color === 'black'
+        .querySelector('#colorOptions .option-btn.selected')
+        .dataset.color === 'black'
         ? 'Чёрный'
         : 'Белый'
   };
@@ -47,24 +57,13 @@ function updatePriceDisplay() {
 
 // ==== Add to Cart Handler ====
 function addToCart() {
+  // Гарантируем хотя бы по одному при первом добавлении
   if (cameraCount === 0) cameraCount = 1;
   if (wantMemory && memoryCount === 0) memoryCount = 1;
 
   updateCartBadge();
   updatePriceDisplay();
   saveCartState();
-
-  const pb = purchaseButtons();
-  if (pb) {
-    pb.innerHTML = '';
-    const goBtn = document.createElement('button');
-    goBtn.id = 'goToCartBtn';
-    goBtn.textContent = 'В корзину';
-    goBtn.style.display = 'block';
-    goBtn.style.margin = '0 auto';
-    goBtn.onclick = () => window.location.href = '../cart/cart.html';
-    pb.append(goBtn);
-  }
 
   // Flying animation
   const img = document.querySelector('.slider-img.active');
@@ -168,6 +167,9 @@ function toggleShipping()        { toggleTab('shippingContainer'); }
 
 // ==== Initialization ====
 document.addEventListener('DOMContentLoaded', () => {
+  // Считываем из localStorage
+  loadCartState();
+
   // Fade-in on scroll
   document.querySelectorAll('.fade-in-on-scroll').forEach(el => {
     const io = new IntersectionObserver(entries => {
@@ -188,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#colorOptions .option-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#colorOptions .option-btn')
-        .forEach(x => x.classList.remove('selected'));
+          .forEach(x => x.classList.remove('selected'));
       btn.classList.add('selected');
     });
   });
@@ -198,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.addEventListener('click', () => {
       wantMemory = btn.dataset.memory === '8gb';
       document.querySelectorAll('#memoryOptions .memory-btn')
-        .forEach(x => x.classList.remove('selected'));
+          .forEach(x => x.classList.remove('selected'));
       btn.classList.add('selected');
       updatePriceDisplay();
     });

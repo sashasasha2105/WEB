@@ -1,5 +1,3 @@
-// === File: cart/cart.js ===
-
 // ==== Prices и стейт ====
 const prices = { camera: 8900, memory: 500 };
 let counts = { camera: 0, memory: 0 };
@@ -27,10 +25,12 @@ function debounce(fn, ms) {
 function loadCart() {
   const raw = localStorage.getItem('cartData');
   if (!raw) return;
-  const d = JSON.parse(raw);
-  counts.camera = d.cameraCount || 0;
-  counts.memory = d.memoryCount || 0;
-  document.getElementById('cameraColor').textContent = d.cartColor || '—';
+  try {
+    const d = JSON.parse(raw);
+    counts.camera = d.cameraCount || 0;
+    counts.memory = d.memoryCount || 0;
+    document.getElementById('cameraColor').textContent = d.cartColor || '—';
+  } catch {}
 }
 function saveCart() {
   localStorage.setItem('cartData', JSON.stringify({
@@ -42,14 +42,20 @@ function saveCart() {
 
 // ==== UI обновление ====
 function updateUI() {
-  badgeEl().textContent = counts.camera + counts.memory;
-  shippingEl().textContent = shippingCost.toLocaleString('ru-RU');
+  // update header badge
+  const badge = badgeEl();
+  if (badge) {
+    badge.textContent = counts.camera + counts.memory;
+  }
 
+  // shipping & total
+  shippingEl().textContent = shippingCost.toLocaleString('ru-RU');
   let sum = counts.camera * prices.camera + counts.memory * prices.memory;
   sum -= Math.round(sum * discountPercent / 100);
   sum += shippingCost;
   totalEl().textContent = sum.toLocaleString('ru-RU');
 
+  // show/hide each cart item
   ['camera','memory'].forEach(id => {
     const block = document.querySelector(`.cart-item[data-id="${id}"]`);
     const qty   = document.querySelector(`.quantity-value[data-id="${id}"]`);
@@ -154,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             const cityCode = cities[0].code;
 
-            // загружаем ПВЗ
+            // загрузка ПВЗ
             const pvzList = await fetchPVZ(cityCode);
             pvzSelectEl().innerHTML = '<option value="">Выберите ПВЗ</option>';
             pvzList.forEach(p => {

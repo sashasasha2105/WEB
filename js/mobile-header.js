@@ -1,10 +1,12 @@
-<!-- === File: js/mobile-header.js === -->
+// File: js/mobile-header.js
 
 document.addEventListener('DOMContentLoaded', () => {
   if (!window.matchMedia('(max-width: 767px)').matches) return;
 
   const header = document.getElementById('site-header');
-  const burger = header.querySelector('.burger-menu');
+  if (!header) return;
+
+  const burger  = header.querySelector('.burger-menu');
   const heroGif = document.querySelector('.hero-gif');
   const threshold = heroGif ? heroGif.offsetHeight : 200;
   let hasAppeared = false;
@@ -22,9 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  burger.addEventListener('click', () => {
-    header.classList.toggle('mobile-menu-open');
-  });
+  // Только если кнопка бургер найдена
+  if (burger) {
+    burger.addEventListener('click', () => {
+      header.classList.toggle('mobile-menu-open');
+    });
+  }
 
   // Обновление счётчика корзины
   let count = 0;

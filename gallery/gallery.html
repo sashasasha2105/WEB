@@ -1,5 +1,3 @@
-<!-- === File: gallery/gallery.html === -->
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -10,16 +8,16 @@
   <!-- Подключаем шрифт Montserrat -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
-    rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
+          rel="stylesheet"
   />
 
   <!-- Глобальные стили -->
   <link rel="stylesheet" href="../css/style.css" />
   <link
-    rel="stylesheet"
-    href="../css/responsive.css"
-    media="(max-width: 768px)"
+          rel="stylesheet"
+          href="../css/responsive.css"
+          media="(max-width: 768px)"
   />
 
   <!-- Стили галереи -->
@@ -27,40 +25,39 @@
 </head>
 <body>
 
-  <!-- Общая шапка -->
-  <div id="header-container"></div>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      fetch('../header.html')
-        .then(resp => resp.text())
-        .then(html => {
-          document.getElementById('header-container').innerHTML = html;
+<!-- Общая шапка -->
+<header id="site-header">
+  <button class="burger-menu" aria-label="Открыть меню" style="display:none;">☰</button>
+  <div class="logo">
+    <a href="/index.html" onclick="scrollToTop()">clip & go</a>
+  </div>
 
-          // после вставки шапки вешаем scroll-handler
-          const header = document.getElementById('site-header');
-          const SCROLL_THRESHOLD = 50;
-          const onScroll = () => {
-            if (window.scrollY > SCROLL_THRESHOLD) {
-              header.classList.add('scrolled');
-            } else {
-              header.classList.remove('scrolled');
-            }
-          };
-          onScroll();
-          window.addEventListener('scroll', onScroll);
-        })
-        .catch(err => console.error('Не удалось загрузить header:', err));
-    });
-  </script>
+  <nav class="main-nav">
+    <ul>
+      <li><a href="/index.html#product">О продукте</a></li>
+      <li><a href="/index.html#main">Главная</a></li>
+      <li><a href="/index.html#contact">Контакты</a></li>
+      <li><a href="/gallery/gallery.html">Галерея</a></li>
+      <li><a href="/instruction/instruction.html">Инструкция</a></li>
+    </ul>
+  </nav>
 
-  <!-- Контейнер галереи -->
-  <main class="gallery-container fade-in-on-scroll">
-    <!-- сюда вставляет свои элементы gallery.js -->
-  </main>
+  <a href="/cart/cart.html" class="cart-link" title="Корзина">
+      <span class="cart-icon">
+        <img src="/assets/icons/carticon.png" alt="Корзина" width="32" height="32" />
+      </span>
+    <span class="cart-count">0</span>
+  </a>
+</header>
 
-  <!-- Скрипты -->
-  <script src="../js/script.js"></script>
-  <script src="../js/mobile.js"></script>
-  <script src="gallery.js"></script>
+<!-- Контейнер галереи -->
+<main class="gallery-container fade-in-on-scroll">
+  <!-- gallery.js вставляет сюда изображения -->
+</main>
+
+<!-- Скрипты -->
+<script src="../js/script.js"></script>
+<script src="../js/mobile-header.js"></script>
+<script src="gallery.js"></script>
 </body>
 </html>

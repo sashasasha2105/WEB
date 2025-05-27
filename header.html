@@ -1,5 +1,3 @@
-<!-- === File: header.html === -->
-
 <header id="site-header">
   <button class="burger-menu" aria-label="Открыть меню" style="display:none;">☰</button>
   <div class="logo">
@@ -23,7 +21,10 @@
   </div>
 
   <a href="/cart/cart.html" class="cart-link" title="Корзина">
-    <span class="cart-icon">🛒</span>
+    <span class="cart-icon">
+      <!-- теперь подгружается правильный PNG из assets -->
+      <img src="/assets/icons/carticon.png" alt="Корзина" width="32" height="32" />
+    </span>
     <span class="cart-count">0</span>
   </a>
 </header>
