@@ -1,34 +1,30 @@
-// File: server.js
-
-
 require('dotenv').config();
-const path    = require('path');
 const express = require('express');
 const fetch   = require('node-fetch');
+const path    = require('path');
 
 const app       = express();
 const PORT      = process.env.PORT || 3000;
-// Хост и базовый путь без лишнего "/api"
-const CDEK_HOST = process.env.CDEK_HOST   || 'https://api.edu.cdek.ru';
-const CDEK_BASE = process.env.CDEK_API_BASE|| 'https://api.edu.cdek.ru';
+const CDEK_HOST = process.env.CDEK_HOST;
+const CDEK_BASE = process.env.CDEK_API_BASE;
+const Y_JS_KEY  = process.env.YANDEX_JSAPI_KEY;
+const Y_SUG_KEY = process.env.YANDEX_SUGGEST_KEY;
 
-const authHeader = Buffer
-    .from(`${process.env.CDEK_CLIENT_ID}:${process.env.CDEK_CLIENT_SECRET}`)
-    .toString('base64');
+// Отдаём клиенту ключи
+app.get('/config.js', (_, res) => {
+    res.type('application/javascript').send(
+        `window.__ENV={YANDEX_JSAPI_KEY:"${Y_JS_KEY}",YANDEX_SUGGEST_KEY:"${Y_SUG_KEY}"};`
+    );
+});
 
 app.use(express.static(path.join(__dirname)));
 app.use(express.json());
 
-/**
- * Получаем и кешируем OAuth-токен
- */
-async function ensureToken() {
-    if (ensureToken.token && Date.now() < ensureToken.expires) {
-        return ensureToken.token;
-    }
-    const url = `${CDEK_HOST}/v2/oauth/token`;
-    console.log(`[CDEK] Запрос токена → ${url}`);
-    const res = await fetch(url, {
+// Кеш OAuth-токена CDEK
+let cdekToken = null, cdekExp = 0;
+async function getCdekToken() {
+    if (cdekToken && Date.now() < cdekExp) return cdekToken;
+    const resp = await fetch(`${CDEK_HOST}/v2/oauth/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
@@ -37,104 +33,73 @@ async function ensureToken() {
             client_secret: process.env.CDEK_CLIENT_SECRET
         })
     });
-    const text = await res.text();
-    if (!res.ok) {
-        console.error(`[CDEK] Ошибка токена ${res.status} — ${text}`);
-        throw new Error(`Token request failed: ${res.status} — ${text}`);
-    }
-    const json = JSON.parse(text);
-    ensureToken.token   = json.access_token;
-    ensureToken.expires = Date.now() + (json.expires_in * 1000) - 5000;
-    console.log(`[CDEK] Токен получен, действует ${json.expires_in} сек`);
-    return ensureToken.token;
+    const j = await resp.json();
+    cdekToken = j.access_token;
+    cdekExp   = Date.now() + j.expires_in * 1000 - 5000;
+    return cdekToken;
 }
 
-/**
- * Подсказки городов (suggested cities)
- */
+// CDEK: подсказки городов
 app.get('/api/cdek/cities', async (req, res) => {
-    const search = (req.query.search || '').trim();
-    if (!search) return res.status(400).json({ error: 'search parameter missing' });
+    const q = (req.query.search || '').trim();
+    if (!q) return res.status(400).json({ error: 'missing search' });
     try {
-        const token = await ensureToken();
-        // Собираем URL без лишнего "/api"
-        const url = `${CDEK_BASE}/v2/location/suggest/cities?limit=10&name=${encodeURIComponent(search)}`;
-        console.log(`[CitiesSuggest] -> ${url}`);
-        const r = await fetch(url, {
-            headers: {
-                'Accept':        'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        console.log(`[CitiesSuggest] ответ HTTP ${r.status}`);
-        const body = await r.text();
-        try {
-            const json = JSON.parse(body);
-            console.log(`[CitiesSuggest] найдено ${json.length}`);
-            return res.json(json);
-        } catch {
-            console.error(`[CitiesSuggest] ошибка парсинга JSON`, body);
-            return res.status(502).json({ error: 'Invalid JSON from CDEK' });
-        }
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'CDEK cities API error' });
+        const tok = await getCdekToken();
+        const r = await fetch(
+            `${CDEK_BASE}/v2/location/suggest/cities?limit=10&name=${encodeURIComponent(q)}`,
+            { headers: { Authorization: `Bearer ${tok}` } }
+        );
+        const json = await r.json();
+        res.status(r.status).json(json);
+    } catch (e) {
+        console.error('CDEK cities error', e);
+        res.status(500).json({ error: 'cdek cities failed' });
     }
 });
 
-/**
- * Список ПВЗ по коду города
- */
+// CDEK: список ПВЗ
 app.get('/api/cdek/pvz', async (req, res) => {
     const cityId = req.query.cityId;
-    if (!cityId) return res.status(400).json({ error: 'cityId missing' });
+    if (!cityId) return res.status(400).json({ error: 'missing cityId' });
     try {
-        const token = await ensureToken();
-        const url   = `${CDEK_BASE}/v2/location/service-points?city_code=${encodeURIComponent(cityId)}`;
-        console.log(`[PVZ] -> ${url}`);
-        const r     = await fetch(url, {
-            headers: {
-                'Accept':        'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        });
-        console.log(`[PVZ] ответ HTTP ${r.status}`);
-        const json = await r.json();
-        res.json(json.items || []);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'CDEK PVZ API error' });
+        const tok = await getCdekToken();
+        const r = await fetch(
+            `${CDEK_BASE}/v2/location/service-points?city_code=${encodeURIComponent(cityId)}`,
+            { headers: { Authorization: `Bearer ${tok}` } }
+        );
+        const j = await r.json();
+        res.status(r.status).json(j.items || []);
+    } catch (e) {
+        console.error('CDEK pvz error', e);
+        res.status(500).json({ error: 'cdek pvz failed' });
     }
 });
 
-/**
- * Расчёт тарифа
- */
-app.post('/api/cdek/tariff', async (req, res) => {
-    const body = req.body;
-    if (!body) return res.status(400).json({ error: 'body missing' });
+// Yandex HTTP-Suggest v1 прокси
+app.get('/api/yandex/suggest', async (req, res) => {
+    const text = (req.query.text || '').trim();
+    if (!text) return res.status(400).json({ error: 'missing text' });
+    const url = `https://suggest-maps.yandex.ru/v1/suggest?apikey=${Y_SUG_KEY}`
+        + `&text=${encodeURIComponent(text)}&lang=ru_RU&results=7`;
     try {
-        const token = await ensureToken();
-        const url   = `${CDEK_BASE}/v2/tariff`;
-        console.log(`[Tariff] -> ${url}`, body);
-        const r     = await fetch(url, {
-            method:  'POST',
-            headers: {
-                'Accept':        'application/json',
-                'Content-Type':  'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(body)
-        });
-        console.log(`[Tariff] ответ HTTP ${r.status}`);
-        const json = await r.json();
-        res.json(json);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'CDEK tariff API error' });
+        const r = await fetch(url);
+        const body = await r.text();
+        if (!body) {
+            console.warn('Yandex suggest empty body');
+            return res.json({ results: [] });
+        }
+        let json;
+        try {
+            json = JSON.parse(body);
+        } catch {
+            console.warn('Yandex suggest invalid JSON:', body);
+            json = { results: [] };
+        }
+        return res.json(json);
+    } catch (e) {
+        console.error('Suggest fetch error', e);
+        return res.status(500).json({ error: 'suggest failed' });
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 Server запущен на http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Server запущен на http://localhost:${PORT}`));

@@ -1,6 +1,3 @@
-<!-- === File: cart/cart.html === -->
-
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -10,12 +7,34 @@
 
   <!-- Шрифты -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet"/>
+  <link
+          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
+          rel="stylesheet"
+  />
 
   <!-- Стили -->
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/responsive.css" media="(max-width:768px)"/>
   <link rel="stylesheet" href="cart.css" />
+
+  <style>
+    /* === поля ввода и подсказки === */
+    #addressInput {
+      width:100%; padding:12px; font-size:1em;
+      border:1px solid #ccc; border-radius:6px;
+    }
+    .suggestions {
+      position:absolute; top:100%; left:0; right:0;
+      background:#fff; border:1px solid #ccc;
+      max-height:200px; overflow-y:auto;
+      list-style:none; margin:0; padding:0; z-index:200;
+    }
+    .suggestions li { padding:8px; cursor:pointer; }
+    .suggestions li:hover { background:#f0f0f0; }
+  </style>
+
+  <!-- Yandex JS-API v2.1 (для карты & геокодера) -->
+  <script src="https://api-maps.yandex.ru/2.1/?apikey=7aa53453-1c38-4bb5-9f18-e6984d5f0938&lang=ru_RU&load=Map,geocode"></script>
 </head>
 <body>
 
@@ -28,13 +47,6 @@
             .then(html => {
               document.getElementById('header-container').innerHTML = html;
               document.getElementById('site-header').classList.add('scrolled');
-              // Обновляем счётчик...
-              try {
-                const d = JSON.parse(localStorage.getItem('cartData')||'{}');
-                const cnt = (d.cameraCount||0)+(d.memoryCount||0);
-                const b = document.querySelector('.cart-count');
-                if (b) b.textContent = cnt;
-              } catch {}
             })
             .catch(console.error);
   });
@@ -44,7 +56,7 @@
   <h1>Ваша корзина</h1>
 
   <!-- Камера -->
-  <div class="cart-item" data-id="camera" style="display:none;">
+  <div class="cart-item" data-id="camera">
     <img src="../assets/images/cam3.jpg" alt="clip & go">
     <div class="item-info">
       <h2>clip & go</h2>
@@ -60,7 +72,7 @@
   </div>
 
   <!-- Карта памяти -->
-  <div class="cart-item" data-id="memory" style="display:none;">
+  <div class="cart-item" data-id="memory">
     <img src="../assets/images/CardPhoto.png" alt="Карта памяти 8 ГБ">
     <div class="item-info">
       <h2>Карта памяти 8 ГБ</h2>
@@ -85,15 +97,18 @@
   <!-- Доставка -->
   <section class="delivery-section">
     <h2>Адрес и доставка</h2>
+
+    <!-- ввод города -->
     <label for="addressInput">Город:</label>
-    <div class="address-wrapper">
-      <input type="text" id="addressInput" autocomplete="off" placeholder="Начните вводить город…">
-      <ul id="addressSuggestions" class="suggestions"></ul>
+    <div class="address-wrapper" style="position:relative;">
+      <input
+              type="text"
+              id="addressInput"
+              autocomplete="off"
+              placeholder="Начните вводить город…"
+      />
+      <ul id="citySuggestions" class="suggestions"></ul>
     </div>
-    <label for="pvzSelect">Пункт выдачи (ПВЗ):</label>
-    <select id="pvzSelect" disabled>
-      <option value="">Сначала выберите город</option>
-    </select>
   </section>
 
   <!-- Итог -->
@@ -109,8 +124,6 @@
   <p><a href="../Policy/privacy-cookie-policy.html">Политика cookies и конфиденциальности</a></p>
 </footer>
 
-<script src="../js/script.js"></script>
-<script src="../js/mobile-header.js"></script>
 <script src="cart.js"></script>
 </body>
 </html>
