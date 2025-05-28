@@ -1,5 +1,3 @@
-// File: server.js
-
 require('dotenv').config();
 const express = require('express');
 const fetch   = require('node-fetch');
@@ -12,7 +10,7 @@ const CDEK_BASE = process.env.CDEK_API_BASE;
 const Y_JS_KEY  = process.env.YANDEX_JSAPI_KEY;
 const Y_SUG_KEY = process.env.YANDEX_SUGGEST_KEY;
 
-// Отдаём клиенту ключи из process.env
+// Отдаём клиенту ключи
 app.get('/config.js', (_, res) => {
     res.type('application/javascript').send(
         `window.__ENV = {
@@ -22,18 +20,13 @@ app.get('/config.js', (_, res) => {
     );
 });
 
-// Статика и парсинг JSON
 app.use(express.static(path.join(__dirname)));
 app.use(express.json());
 
 // Кеш OAuth-токена CDEK
-let cdekToken = null;
-let cdekExp   = 0;
-
+let cdekToken = null, cdekExp = 0;
 async function getCdekToken() {
-    if (cdekToken && Date.now() < cdekExp) {
-        return cdekToken;
-    }
+    if (cdekToken && Date.now() < cdekExp) return cdekToken;
     const resp = await fetch(`${CDEK_HOST}/v2/oauth/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -45,17 +38,14 @@ async function getCdekToken() {
     });
     const j = await resp.json();
     cdekToken = j.access_token;
-    // Устанавливаем время истечения за 5 секунд до реального
     cdekExp   = Date.now() + j.expires_in * 1000 - 5000;
     return cdekToken;
 }
 
-// CDEK: подсказки городов
+// Прокси для подсказок городов
 app.get('/api/cdek/cities', async (req, res) => {
     const q = (req.query.search || '').trim();
-    if (!q) {
-        return res.status(400).json({ error: 'missing search' });
-    }
+    if (!q) return res.status(400).json({ error: 'missing search' });
     try {
         const tok = await getCdekToken();
         const r = await fetch(
@@ -70,49 +60,38 @@ app.get('/api/cdek/cities', async (req, res) => {
     }
 });
 
-// CDEK: список ПВЗ по коду города
+// Прокси для списка ПВЗ через новый эндпоинт /v2/deliverypoints
 app.get('/api/cdek/pvz', async (req, res) => {
-    const cityId = req.query.cityId;
-    if (!cityId) {
-        return res.status(400).json({ error: 'missing cityId' });
-    }
+    const cityCode = req.query.cityId;
+    if (!cityCode) return res.status(400).json({ error: 'missing cityId' });
     try {
         const tok = await getCdekToken();
-        const r = await fetch(
-            `${CDEK_BASE}/v2/location/service-points?city_code=${encodeURIComponent(cityId)}`,
-            { headers: { Authorization: `Bearer ${tok}` } }
-        );
-        const j = await r.json();
-        // Возвращаем массив пунктов выдачи
-        res.status(r.status).json(j.items || []);
+        const url = `${CDEK_BASE}/v2/deliverypoints?city_code=${encodeURIComponent(cityCode)}&type=PVZ&size=1000`;
+        const r = await fetch(url, {
+            headers: { Authorization: `Bearer ${tok}`, Accept: 'application/json' }
+        });
+        const text = await r.text();
+        if (r.status === 404) return res.status(200).json([]);
+        const json = JSON.parse(text || '[]');
+        res.status(200).json(json);
     } catch (e) {
         console.error('CDEK pvz error', e);
         res.status(500).json({ error: 'cdek pvz failed' });
     }
 });
 
-// Яндекс HTTP-Suggest v1 прокси
+// Прокси для Yandex Suggest
 app.get('/api/yandex/suggest', async (req, res) => {
     const text = (req.query.text || '').trim();
-    if (!text) {
-        return res.status(400).json({ error: 'missing text' });
-    }
+    if (!text) return res.status(400).json({ error: 'missing text' });
     const url = `https://suggest-maps.yandex.ru/v1/suggest?apikey=${Y_SUG_KEY}`
         + `&text=${encodeURIComponent(text)}&lang=ru_RU&results=7`;
     try {
         const r = await fetch(url);
         const body = await r.text();
-        if (!body) {
-            console.warn('Yandex suggest empty body');
-            return res.json({ results: [] });
-        }
         let json;
-        try {
-            json = JSON.parse(body);
-        } catch {
-            console.warn('Yandex suggest invalid JSON:', body);
-            json = { results: [] };
-        }
+        try { json = JSON.parse(body); }
+        catch { json = { results: [] }; }
         return res.json(json);
     } catch (e) {
         console.error('Suggest fetch error', e);
@@ -120,7 +99,4 @@ app.get('/api/yandex/suggest', async (req, res) => {
     }
 });
 
-// Запуск сервера
-app.listen(PORT, () => {
-    console.log(`🚀 Server запущен на http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Server запущен на http://localhost:${PORT}`));

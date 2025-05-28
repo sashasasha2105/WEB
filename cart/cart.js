@@ -12,18 +12,17 @@ const cityIn  = () => document.getElementById('addressInput');
 const citySug = () => document.getElementById('citySuggestions');
 const deliverySection = () => document.getElementById('deliveryMethodSection');
 
-// === Yandex map variables ===
+// === Yandex map & CDEK variables ===
 let mapInstance = null;
 let currentCity = '';
+let cityCode = null;
+let pvzPlacemarks = [];
 
 // === Init ===
 document.addEventListener('DOMContentLoaded', () => {
-  // Загружаем ключи из config.js
   const script = document.createElement('script');
   script.src = '/config.js';
-  script.onload = () => {
-    initAll();
-  };
+  script.onload = initAll;
   document.head.appendChild(script);
 });
 
@@ -111,60 +110,101 @@ function initCartControls() {
 function initCitySuggest() {
   cityIn().addEventListener('input', debounce(async e => {
     const q = e.target.value.trim();
-    currentCity = '';              // сброс перед новым вводом
-    hideMap();                     // скрыть карту
+    currentCity = '';
+    cityCode = null;
+    clearPvzPlacemarks();
+    hideMap();
     deliverySection().style.display = 'none';
     citySug().innerHTML = '';
     if (q.length < 2) return;
-    try {
-      // Автоподбор через прокси на сервере
-      const resp = await fetch(`/api/yandex/suggest?text=${encodeURIComponent(q)}`);
-      if (!resp.ok) throw new Error(`Status ${resp.status}`);
-      const json = await resp.json();
-      renderSuggestions(json.results);
-    } catch (err) {
-      console.error('[Suggest] Error:', err);
-    }
+    const resp = await fetch(`/api/yandex/suggest?text=${encodeURIComponent(q)}`);
+    const json = await resp.json();
+    renderSuggestions(json.results);
   }), 300);
 }
 
-// === Render suggestions ===
 function renderSuggestions(items) {
   const ul = citySug();
   ul.innerHTML = '';
   items.forEach(item => {
-    const li = document.createElement('li');
     const text = item.title.text + (item.subtitle ? ', ' + item.subtitle.text : '');
+    const li = document.createElement('li');
     li.textContent = text;
-    li.addEventListener('click', () => {
+    li.addEventListener('click', async () => {
       cityIn().value = text;
-      currentCity = text;           // сохраняем выбранный город
+      currentCity = text;
       ul.innerHTML = '';
+      await fetchCdekCityCode(text);
       deliverySection().style.display = 'block';
     });
     ul.append(li);
   });
 }
 
+// === Fetch CDEK city code ===
+async function fetchCdekCityCode(cityName) {
+  const resp = await fetch(`/api/cdek/cities?search=${encodeURIComponent(cityName)}`);
+  const json = await resp.json();
+  const first = Array.isArray(json) ? json[0] : (json.results && json.results[0]);
+  cityCode = first ? (first.code || first.cityCode || first.id) : null;
+}
+
 // === Init delivery method toggling ===
 function initDeliveryToggle() {
   document.getElementById('deliveryPvz').addEventListener('change', () => {
     if (document.getElementById('deliveryPvz').checked) {
-      showMap(currentCity);
+      showMap(currentCity, fetchAndPlotPvz);
     }
   });
   document.getElementById('deliveryCourier').addEventListener('change', () => {
     if (document.getElementById('deliveryCourier').checked) {
       hideMap();
+      clearPvzPlacemarks();
     }
   });
 }
 
+// === Fetch PVZ points and plot on map ===
+async function fetchAndPlotPvz() {
+  if (!cityCode || !mapInstance) return;
+  const url = `/api/cdek/pvz?cityId=${encodeURIComponent(cityCode)}`;
+  const resp = await fetch(url);
+  const items = await resp.json();
+  items.forEach(point => {
+    const loc = point.location || {};
+    const coords = loc.latitude && loc.longitude
+        ? [loc.latitude, loc.longitude]
+        : null;
+    if (coords) {
+      const placemark = new ymaps.Placemark(
+          coords,
+          { balloonContent: point.address_full || point.name },
+          { preset: 'islands#violetDotIcon' }
+      );
+      mapInstance.geoObjects.add(placemark);
+      pvzPlacemarks.push(placemark);
+    }
+  });
+  if (pvzPlacemarks.length) {
+    const bounds = mapInstance.geoObjects.getBounds();
+    mapInstance.setBounds(bounds, { checkZoomRange: true });
+  }
+}
+
+// === Clear existing PVZ markers ===
+function clearPvzPlacemarks() {
+  pvzPlacemarks.forEach(pm => mapInstance && mapInstance.geoObjects.remove(pm));
+  pvzPlacemarks = [];
+}
+
 // === Show Yandex map centered on city ===
-function showMap(city) {
+function showMap(city, callback) {
   const mapContainer = document.getElementById('map');
   mapContainer.style.display = 'block';
-  if (!city) return;
+  if (!city) {
+    if (callback) callback();
+    return;
+  }
   ymaps.ready(() => {
     ymaps.geocode(city).then(res => {
       const coords = res.geoObjects.get(0).geometry.getCoordinates();
@@ -177,6 +217,7 @@ function showMap(city) {
           controls: ['zoomControl']
         });
       }
+      if (callback) callback();
     });
   });
 }
@@ -188,7 +229,10 @@ function hideMap() {
 }
 
 // === Debounce helper ===
-function debounce(fn, ms=300) {
+function debounce(fn, ms = 300) {
   let t;
-  return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+  return (...a) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...a), ms);
+  };
 }
