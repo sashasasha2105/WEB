@@ -1,3 +1,5 @@
+// File: server.js
+
 require('dotenv').config();
 const express = require('express');
 const fetch   = require('node-fetch');
@@ -10,20 +12,28 @@ const CDEK_BASE = process.env.CDEK_API_BASE;
 const Y_JS_KEY  = process.env.YANDEX_JSAPI_KEY;
 const Y_SUG_KEY = process.env.YANDEX_SUGGEST_KEY;
 
-// Отдаём клиенту ключи
+// Отдаём клиенту ключи из process.env
 app.get('/config.js', (_, res) => {
     res.type('application/javascript').send(
-        `window.__ENV={YANDEX_JSAPI_KEY:"${Y_JS_KEY}",YANDEX_SUGGEST_KEY:"${Y_SUG_KEY}"};`
+        `window.__ENV = {
+      YANDEX_JSAPI_KEY: "${Y_JS_KEY}",
+      YANDEX_SUGGEST_KEY: "${Y_SUG_KEY}"
+    };`
     );
 });
 
+// Статика и парсинг JSON
 app.use(express.static(path.join(__dirname)));
 app.use(express.json());
 
 // Кеш OAuth-токена CDEK
-let cdekToken = null, cdekExp = 0;
+let cdekToken = null;
+let cdekExp   = 0;
+
 async function getCdekToken() {
-    if (cdekToken && Date.now() < cdekExp) return cdekToken;
+    if (cdekToken && Date.now() < cdekExp) {
+        return cdekToken;
+    }
     const resp = await fetch(`${CDEK_HOST}/v2/oauth/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -35,6 +45,7 @@ async function getCdekToken() {
     });
     const j = await resp.json();
     cdekToken = j.access_token;
+    // Устанавливаем время истечения за 5 секунд до реального
     cdekExp   = Date.now() + j.expires_in * 1000 - 5000;
     return cdekToken;
 }
@@ -42,7 +53,9 @@ async function getCdekToken() {
 // CDEK: подсказки городов
 app.get('/api/cdek/cities', async (req, res) => {
     const q = (req.query.search || '').trim();
-    if (!q) return res.status(400).json({ error: 'missing search' });
+    if (!q) {
+        return res.status(400).json({ error: 'missing search' });
+    }
     try {
         const tok = await getCdekToken();
         const r = await fetch(
@@ -57,10 +70,12 @@ app.get('/api/cdek/cities', async (req, res) => {
     }
 });
 
-// CDEK: список ПВЗ
+// CDEK: список ПВЗ по коду города
 app.get('/api/cdek/pvz', async (req, res) => {
     const cityId = req.query.cityId;
-    if (!cityId) return res.status(400).json({ error: 'missing cityId' });
+    if (!cityId) {
+        return res.status(400).json({ error: 'missing cityId' });
+    }
     try {
         const tok = await getCdekToken();
         const r = await fetch(
@@ -68,6 +83,7 @@ app.get('/api/cdek/pvz', async (req, res) => {
             { headers: { Authorization: `Bearer ${tok}` } }
         );
         const j = await r.json();
+        // Возвращаем массив пунктов выдачи
         res.status(r.status).json(j.items || []);
     } catch (e) {
         console.error('CDEK pvz error', e);
@@ -75,10 +91,12 @@ app.get('/api/cdek/pvz', async (req, res) => {
     }
 });
 
-// Yandex HTTP-Suggest v1 прокси
+// Яндекс HTTP-Suggest v1 прокси
 app.get('/api/yandex/suggest', async (req, res) => {
     const text = (req.query.text || '').trim();
-    if (!text) return res.status(400).json({ error: 'missing text' });
+    if (!text) {
+        return res.status(400).json({ error: 'missing text' });
+    }
     const url = `https://suggest-maps.yandex.ru/v1/suggest?apikey=${Y_SUG_KEY}`
         + `&text=${encodeURIComponent(text)}&lang=ru_RU&results=7`;
     try {
@@ -102,4 +120,7 @@ app.get('/api/yandex/suggest', async (req, res) => {
     }
 });
 
-app.listen(PORT, () => console.log(`🚀 Server запущен на http://localhost:${PORT}`));
+// Запуск сервера
+app.listen(PORT, () => {
+    console.log(`🚀 Server запущен на http://localhost:${PORT}`);
+});

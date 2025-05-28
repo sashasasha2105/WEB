@@ -1,3 +1,4 @@
+<!-- File: cart/cart.html -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -31,10 +32,31 @@
     }
     .suggestions li { padding:8px; cursor:pointer; }
     .suggestions li:hover { background:#f0f0f0; }
+
+    /* CHANGED: контейнер для карты */
+    #map {
+      display: none;
+      width: 100%;
+      height: 300px;
+      margin-top: 15px;
+      border-radius: 12px;
+    }
   </style>
 
-  <!-- Yandex JS-API v2.1 (для карты & геокодера) -->
-  <script src="https://api-maps.yandex.ru/2.1/?apikey=7aa53453-1c38-4bb5-9f18-e6984d5f0938&lang=ru_RU&load=Map,geocode"></script>
+  <!-- CHANGED: подключение config.js и динамическая загрузка Yandex Maps API -->
+  <script src="/config.js"></script>
+  <script>
+    (function() {
+      if (window.__ENV && window.__ENV.YANDEX_JSAPI_KEY) {
+        const script = document.createElement('script');
+        script.src = `https://api-maps.yandex.ru/2.1/?apikey=${window.__ENV.YANDEX_JSAPI_KEY}&lang=ru_RU`;
+        document.head.appendChild(script);
+      } else {
+        console.error('Yandex API key is not available in window.__ENV');
+      }
+    })();
+  </script>
+  <!-- /CHANGED -->
 </head>
 <body>
 
@@ -55,6 +77,7 @@
 <main>
   <h1>Ваша корзина</h1>
 
+  <!-- UNCHANGED: Блок с товарами -->
   <!-- Камера -->
   <div class="cart-item" data-id="camera">
     <img src="../assets/images/cam3.jpg" alt="clip & go">
@@ -85,20 +108,22 @@
     </div>
     <button class="remove-item-btn" data-id="memory">Удалить</button>
   </div>
+  <!-- /UNCHANGED -->
 
-  <!-- Промокод -->
+  <!-- UNCHANGED: Блок с промокодом -->
   <div class="promo-section">
     <label for="promoInput">Промокод:</label>
     <input type="text" id="promoInput" placeholder="Введите промокод…">
     <button id="applyPromoBtn">Применить</button>
     <button id="removePromoBtn" style="display:none;">Убрать промокод</button>
   </div>
+  <!-- /UNCHANGED -->
 
   <!-- Доставка -->
   <section class="delivery-section">
     <h2>Адрес и доставка</h2>
 
-    <!-- ввод города -->
+    <!-- UNCHANGED: ввод города -->
     <label for="addressInput">Город:</label>
     <div class="address-wrapper" style="position:relative;">
       <input
@@ -109,14 +134,36 @@
       />
       <ul id="citySuggestions" class="suggestions"></ul>
     </div>
+    <!-- /UNCHANGED -->
+
+    <!-- CHANGED: выбор способа доставки -->
+    <div id="deliveryMethodSection" style="display:none; margin-top:15px;">
+      <label>Способ доставки:</label>
+      <div>
+        <input type="radio" id="deliveryCourier" name="deliveryMethod" value="courier">
+        <label for="deliveryCourier">Курьер СДЭК</label>
+      </div>
+      <div>
+        <input type="radio" id="deliveryPvz" name="deliveryMethod" value="pvz">
+        <label for="deliveryPvz">ПВЗ СДЭК</label>
+      </div>
+    </div>
+    <!-- /CHANGED -->
+
+    <!-- CHANGED: контейнер для карты при выборе ПВЗ -->
+    <div id="map"></div>
+    <!-- /CHANGED -->
+
   </section>
 
-  <!-- Итог -->
+  <!-- UNCHANGED: Итоговая сумма и кнопка оформления -->
   <div class="cart-summary">
     <p>Доставка: <strong><span id="shippingCostValue">0</span> ₽</strong></p>
     <h2>Итоговая сумма: <span id="cartTotalValue">0</span> ₽</h2>
     <button id="checkoutBtn">Оформить заказ</button>
   </div>
+  <!-- /UNCHANGED -->
+
 </main>
 
 <footer>

@@ -1,3 +1,5 @@
+// File: cart/cart.js
+
 // === Prices & state ===
 const prices = { camera: 8900, memory: 500 };
 let counts = { camera: 0, memory: 0 }, discount = 0, shipping = 0;
@@ -8,16 +10,32 @@ const totalEl = () => document.getElementById('cartTotalValue');
 const shipEl  = () => document.getElementById('shippingCostValue');
 const cityIn  = () => document.getElementById('addressInput');
 const citySug = () => document.getElementById('citySuggestions');
+const deliverySection = () => document.getElementById('deliveryMethodSection');
+
+// === Yandex map variables ===
+let mapInstance = null;
+let currentCity = '';
 
 // === Init ===
 document.addEventListener('DOMContentLoaded', () => {
+  // Загружаем ключи из config.js
+  const script = document.createElement('script');
+  script.src = '/config.js';
+  script.onload = () => {
+    initAll();
+  };
+  document.head.appendChild(script);
+});
+
+function initAll() {
   loadCart();
   updateUI();
   initCartControls();
   initCitySuggest();
-});
+  initDeliveryToggle();
+}
 
-// Load/save cart
+// === Load/save cart ===
 function loadCart() {
   const d = JSON.parse(localStorage.getItem('cartData') || '{}');
   counts.camera = d.cameraCount || 0;
@@ -30,7 +48,7 @@ function saveCart() {
   }));
 }
 
-// Update UI
+// === Update UI ===
 function updateUI() {
   if (badgeEl()) badgeEl().textContent = (counts.camera + counts.memory);
   shipEl().textContent = shipping.toLocaleString('ru-RU');
@@ -48,7 +66,7 @@ function updateUI() {
   });
 }
 
-// Cart controls
+// === Cart controls ===
 function initCartControls() {
   document.querySelectorAll('.plus-btn').forEach(btn =>
       btn.addEventListener('click', () => {
@@ -76,6 +94,12 @@ function initCartControls() {
     if (code === 'clipgo25') discount = 7;
     else if (code === 'clipgo222') discount = 20;
     else return alert('Неверный промокод!');
+    document.getElementById('removePromoBtn').style.display = 'inline-block';
+    updateUI();
+  });
+  document.getElementById('removePromoBtn').addEventListener('click', () => {
+    discount = 0;
+    document.getElementById('removePromoBtn').style.display = 'none';
     updateUI();
   });
   document.getElementById('checkoutBtn').addEventListener('click', () => {
@@ -87,21 +111,14 @@ function initCartControls() {
 function initCitySuggest() {
   cityIn().addEventListener('input', debounce(async e => {
     const q = e.target.value.trim();
+    currentCity = '';              // сброс перед новым вводом
+    hideMap();                     // скрыть карту
+    deliverySection().style.display = 'none';
     citySug().innerHTML = '';
     if (q.length < 2) return;
     try {
-      const url = new URL('https://suggest-maps.yandex.ru/v1/suggest');
-      url.searchParams.set('apikey', 'b957c69b-a847-42b4-af58-58feaa2359f9');
-      url.searchParams.set('text', q);
-      url.searchParams.set('sessiontoken', '123e4567-e89b-12d3-a456-426614174000');
-      url.searchParams.set('lang', 'ru_RU');
-      url.searchParams.set('results', '7');
-      url.searchParams.set('types', 'locality');
-      url.searchParams.set('print_address', '1');
-      url.searchParams.set('strict_bounds', '0');
-
-      console.log('[Suggest] URL:', url.toString());
-      const resp = await fetch(url);
+      // Автоподбор через прокси на сервере
+      const resp = await fetch(`/api/yandex/suggest?text=${encodeURIComponent(q)}`);
       if (!resp.ok) throw new Error(`Status ${resp.status}`);
       const json = await resp.json();
       renderSuggestions(json.results);
@@ -111,22 +128,66 @@ function initCitySuggest() {
   }), 300);
 }
 
-// Render list
+// === Render suggestions ===
 function renderSuggestions(items) {
   const ul = citySug();
   ul.innerHTML = '';
   items.forEach(item => {
     const li = document.createElement('li');
-    li.textContent = item.title.text + (item.subtitle ? ', ' + item.subtitle.text : '');
+    const text = item.title.text + (item.subtitle ? ', ' + item.subtitle.text : '');
+    li.textContent = text;
     li.addEventListener('click', () => {
-      cityIn().value = li.textContent;
+      cityIn().value = text;
+      currentCity = text;           // сохраняем выбранный город
       ul.innerHTML = '';
+      deliverySection().style.display = 'block';
     });
     ul.append(li);
   });
 }
 
-// Debounce helper
+// === Init delivery method toggling ===
+function initDeliveryToggle() {
+  document.getElementById('deliveryPvz').addEventListener('change', () => {
+    if (document.getElementById('deliveryPvz').checked) {
+      showMap(currentCity);
+    }
+  });
+  document.getElementById('deliveryCourier').addEventListener('change', () => {
+    if (document.getElementById('deliveryCourier').checked) {
+      hideMap();
+    }
+  });
+}
+
+// === Show Yandex map centered on city ===
+function showMap(city) {
+  const mapContainer = document.getElementById('map');
+  mapContainer.style.display = 'block';
+  if (!city) return;
+  ymaps.ready(() => {
+    ymaps.geocode(city).then(res => {
+      const coords = res.geoObjects.get(0).geometry.getCoordinates();
+      if (mapInstance) {
+        mapInstance.setCenter(coords);
+      } else {
+        mapInstance = new ymaps.Map('map', {
+          center: coords,
+          zoom: 10,
+          controls: ['zoomControl']
+        });
+      }
+    });
+  });
+}
+
+// === Hide map ===
+function hideMap() {
+  const mapContainer = document.getElementById('map');
+  mapContainer.style.display = 'none';
+}
+
+// === Debounce helper ===
 function debounce(fn, ms=300) {
   let t;
   return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
