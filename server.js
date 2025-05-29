@@ -52,7 +52,14 @@ app.get('/api/cdek/cities', async (req, res) => {
             `${CDEK_BASE}/v2/location/suggest/cities?limit=10&name=${encodeURIComponent(q)}`,
             { headers: { Authorization: `Bearer ${tok}` } }
         );
-        const json = await r.json();
+        const text = await r.text();
+        let json;
+        try {
+            json = text ? JSON.parse(text) : [];
+        } catch (e) {
+            console.warn('CDEK cities: invalid JSON, returning empty array', e);
+            json = [];
+        }
         res.status(r.status).json(json);
     } catch (e) {
         console.error('CDEK cities error', e);
@@ -60,19 +67,29 @@ app.get('/api/cdek/cities', async (req, res) => {
     }
 });
 
-// Прокси для списка ПВЗ через новый эндпоинт /v2/deliverypoints
+// Прокси для списка всех офисов (PVZ + POSTAMAT и др.)
 app.get('/api/cdek/pvz', async (req, res) => {
     const cityCode = req.query.cityId;
+    const page     = req.query.page || 0;
     if (!cityCode) return res.status(400).json({ error: 'missing cityId' });
     try {
         const tok = await getCdekToken();
-        const url = `${CDEK_BASE}/v2/deliverypoints?city_code=${encodeURIComponent(cityCode)}&type=PVZ&size=1000`;
+        const url = `${CDEK_BASE}/v2/deliverypoints`
+            + `?city_code=${encodeURIComponent(cityCode)}`
+            + `&type=ALL&size=1000&page=${page}`;
         const r = await fetch(url, {
             headers: { Authorization: `Bearer ${tok}`, Accept: 'application/json' }
         });
         const text = await r.text();
-        if (r.status === 404) return res.status(200).json([]);
-        const json = JSON.parse(text || '[]');
+        let json;
+        try {
+            json = text ? JSON.parse(text) : [];
+        } catch (e) {
+            console.warn('CDEK pvz: invalid JSON, returning empty array', e);
+            json = [];
+        }
+        // Передаём заголовок количества страниц
+        res.set('x-total-pages', r.headers.get('x-total-pages') || '1');
         res.status(200).json(json);
     } catch (e) {
         console.error('CDEK pvz error', e);
@@ -90,12 +107,16 @@ app.get('/api/yandex/suggest', async (req, res) => {
         const r = await fetch(url);
         const body = await r.text();
         let json;
-        try { json = JSON.parse(body); }
-        catch { json = { results: [] }; }
-        return res.json(json);
+        try {
+            json = body ? JSON.parse(body) : { results: [] };
+        } catch {
+            console.warn('Yandex suggest: invalid JSON, returning empty results');
+            json = { results: [] };
+        }
+        res.json(json);
     } catch (e) {
         console.error('Suggest fetch error', e);
-        return res.status(500).json({ error: 'suggest failed' });
+        res.status(500).json({ error: 'suggest failed' });
     }
 });
 
