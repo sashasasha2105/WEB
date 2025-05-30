@@ -19,34 +19,48 @@
 
   <style>
     /* === поля ввода и подсказки === */
-    #addressInput {
-      width:100%; padding:12px; font-size:1em;
-      border:1px solid #ccc; border-radius:6px;
+    #addressInput, #streetInput {
+      width: 100%;
+      padding: 12px;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
     .suggestions {
-      position:absolute; top:100%; left:0; right:0;
-      background:#fff; border:1px solid #ccc;
-      max-height:200px; overflow-y:auto;
-      list-style:none; margin:0; padding:0; z-index:200;
+      position: absolute;
+      top: 100%;
+      left: 0; right: 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      max-height: 200px;
+      overflow-y: auto;
+      list-style: none;
+      margin: 0; padding: 0;
+      z-index: 200;
+      border-radius: 4px;
     }
-    .suggestions li { padding:8px; cursor:pointer; }
-    .suggestions li:hover { background:#f0f0f0; }
+    .suggestions li {
+      padding: 8px;
+      cursor: pointer;
+    }
+    .suggestions li:hover {
+      background: #f0f0f0;
+    }
   </style>
 
-  <!-- CHANGED: подключение config.js и динамическая загрузка Yandex Maps API -->
+  <!-- config.js и динамическая загрузка Яндекс.Карт -->
   <script src="/config.js"></script>
   <script>
     (function() {
       if (window.__ENV && window.__ENV.YANDEX_JSAPI_KEY) {
-        const script = document.createElement('script');
-        script.src = `https://api-maps.yandex.ru/2.1/?apikey=${window.__ENV.YANDEX_JSAPI_KEY}&lang=ru_RU`;
-        document.head.appendChild(script);
+        const s = document.createElement('script');
+        s.src = `https://api-maps.yandex.ru/2.1/?apikey=${window.__ENV.YANDEX_JSAPI_KEY}&lang=ru_RU`;
+        document.head.appendChild(s);
       } else {
-        console.error('Yandex API key is not available in window.__ENV');
+        console.error('Yandex API key отсутствует в window.__ENV');
       }
     })();
   </script>
-  <!-- /CHANGED -->
 </head>
 <body>
 
@@ -67,8 +81,7 @@
 <main>
   <h1>Ваша корзина</h1>
 
-  <!-- UNCHANGED: Блок с товарами -->
-  <!-- Камера -->
+  <!-- Блок с товарами -->
   <div class="cart-item" data-id="camera">
     <img src="../assets/images/cam3.jpg" alt="clip & go">
     <div class="item-info">
@@ -84,7 +97,6 @@
     <button class="remove-item-btn" data-id="camera">Удалить</button>
   </div>
 
-  <!-- Карта памяти -->
   <div class="cart-item" data-id="memory">
     <img src="../assets/images/CardPhoto.png" alt="Карта памяти 8 ГБ">
     <div class="item-info">
@@ -98,35 +110,29 @@
     </div>
     <button class="remove-item-btn" data-id="memory">Удалить</button>
   </div>
-  <!-- /UNCHANGED -->
+  <!-- /Блок с товарами -->
 
-  <!-- UNCHANGED: Блок с промокодом -->
+  <!-- Блок с промокодом -->
   <div class="promo-section">
     <label for="promoInput">Промокод:</label>
     <input type="text" id="promoInput" placeholder="Введите промокод…">
     <button id="applyPromoBtn">Применить</button>
     <button id="removePromoBtn" style="display:none;">Убрать промокод</button>
   </div>
-  <!-- /UNCHANGED -->
+  <!-- /Блок с промокодом -->
 
   <!-- Адрес и доставка -->
   <section class="delivery-section">
     <h2>Адрес и доставка</h2>
 
-    <!-- UNCHANGED: ввод города -->
+    <!-- ввод города -->
     <label for="addressInput">Город:</label>
     <div class="address-wrapper" style="position:relative;">
-      <input
-              type="text"
-              id="addressInput"
-              autocomplete="off"
-              placeholder="Начните вводить город…"
-      />
+      <input type="text" id="addressInput" autocomplete="off" placeholder="Начните вводить город…" />
       <ul id="citySuggestions" class="suggestions"></ul>
     </div>
-    <!-- /UNCHANGED -->
 
-    <!-- CHANGED: выбор способа доставки -->
+    <!-- выбор способа доставки -->
     <div id="deliveryMethodSection" style="display:none; margin-top:15px;">
       <label>Способ доставки:</label>
       <div>
@@ -138,25 +144,26 @@
         <label for="deliveryPvz">ПВЗ СДЭК</label>
       </div>
     </div>
-    <!-- /CHANGED -->
 
-    <!-- CHANGED: обёртка для карты и панели -->
+    <!-- поле ввода улицы/дома (только после выбора ПВЗ) -->
+    <div id="streetWrapper" style="display:none; margin-top:15px;">
+      <label for="streetInput">Улица и дом:</label>
+      <input type="text" id="streetInput" placeholder="Введите адрес в городе…" />
+    </div>
+
+    <!-- карта и панель -->
     <div class="map-wrapper">
       <div id="map"></div>
       <div id="pvz-info-panel"></div>
     </div>
-    <!-- /CHANGED -->
-
   </section>
 
-  <!-- UNCHANGED: Итоговая сумма и кнопка оформления -->
+  <!-- Итоговая сумма и кнопка оформления -->
   <div class="cart-summary">
     <p>Доставка: <strong><span id="shippingCostValue">0</span> ₽</strong></p>
     <h2>Итоговая сумма: <span id="cartTotalValue">0</span> ₽</h2>
     <button id="checkoutBtn">Оформить заказ</button>
   </div>
-  <!-- /UNCHANGED -->
-
 </main>
 
 <footer>

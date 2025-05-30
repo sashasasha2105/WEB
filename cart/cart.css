@@ -197,11 +197,13 @@ main h1 {
   position: relative;
 }
 
-.address-wrapper input {
+.address-wrapper input,
+#streetInput {
   width: 100%;
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  margin-bottom: 10px;
 }
 
 .suggestions {
@@ -231,29 +233,26 @@ main h1 {
 .map-wrapper {
   display: flex;
   gap: 10px;
-  align-items: flex-start;
   margin-top: 15px;
   position: relative;
 }
 
-/* квадратная карта */
 #map {
   flex: 2;
   height: 600px;
   border-radius: 12px;
-  display: none;       /* показывается после полной загрузки */
+  display: none;
   overflow: hidden;
 }
 
-/* панель справа от карты */
 #pvz-info-panel {
   flex: 1;
   height: 600px;
-  overflow-y: auto;
+  padding: 12px;
   background: rgba(255,255,255,0.97);
   box-shadow: 0 2px 12px rgba(0,0,0,0.3);
-  padding: 12px;
   border-radius: 8px;
+  overflow-y: auto;
   font-family: 'Montserrat', sans-serif;
   display: none;
   opacity: 0;
@@ -262,14 +261,12 @@ main h1 {
   z-index: 2000;
 }
 
-/* активная панель */
 #pvz-info-panel.active {
   display: block;
   opacity: 1;
   transform: translateX(0);
 }
 
-/* состояние-заглушка */
 #pvz-info-panel.placeholder {
   border: 2px dashed #ccc;
   font-style: italic;
