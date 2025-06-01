@@ -1,3 +1,4 @@
+<!-- === File: cart/cart.html === -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -18,33 +19,9 @@
   <link rel="stylesheet" href="cart.css" />
 
   <style>
-    /* === поля ввода и подсказки === */
+    /* Повышаем приоритет стилей для подсказок и карт */
     #addressInput, #streetInput {
-      width: 100%;
-      padding: 12px;
-      font-size: 1em;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    .suggestions {
-      position: absolute;
-      top: 100%;
-      left: 0; right: 0;
-      background: #fff;
-      border: 1px solid #ccc;
-      max-height: 200px;
-      overflow-y: auto;
-      list-style: none;
-      margin: 0; padding: 0;
-      z-index: 200;
-      border-radius: 4px;
-    }
-    .suggestions li {
-      padding: 8px;
-      cursor: pointer;
-    }
-    .suggestions li:hover {
-      background: #f0f0f0;
+      position: relative;
     }
   </style>
 
@@ -65,65 +42,70 @@
 <body>
 
 <!-- Шапка -->
-<div id="header-container"></div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    fetch('../header.html')
-            .then(r => r.text())
-            .then(html => {
-              document.getElementById('header-container').innerHTML = html;
-              document.getElementById('site-header').classList.add('scrolled');
-            })
-            .catch(console.error);
-  });
-</script>
+<header>
+  <a href="/" class="header-left logo">clip & go</a>
+  <nav>
+    <ul>
+      <li><a href="/">Главная</a></li>
+      <li><a href="/product">О продукте</a></li>
+      <li><a href="/contacts">Контакты</a></li>
+    </ul>
+  </nav>
+  <div>
+    <button id="cartIcon">
+      🛒 <span class="cart-count">0</span>
+    </button>
+  </div>
+</header>
 
 <main>
   <h1>Ваша корзина</h1>
 
   <!-- Блок с товарами -->
-  <div class="cart-item" data-id="camera">
-    <img src="../assets/images/cam3.jpg" alt="clip & go">
-    <div class="item-info">
-      <h2>clip & go</h2>
-      <p>Цвет: <span id="cameraColor">—</span></p>
-      <p>Цена за шт.: <span id="cameraUnitPrice">8 900</span> ₽</p>
+  <div id="cartItemsContainer">
+    <div class="cart-item" data-id="camera">
+      <img src="../assets/images/cam3.jpg" alt="clip & go">
+      <div class="item-info">
+        <h2>clip & go</h2>
+        <p>Цвет: <span id="cameraColor">—</span></p>
+        <p>Цена за шт.: <span id="cameraUnitPrice">8 900</span> ₽</p>
+      </div>
+      <div class="quantity-selector">
+        <button class="minus-btn" data-id="camera">–</button>
+        <span class="quantity-value" data-id="camera">0</span>
+        <button class="plus-btn" data-id="camera">+</button>
+      </div>
+      <button class="remove-item-btn" data-id="camera">Удалить</button>
     </div>
-    <div class="quantity-selector">
-      <button class="minus-btn" data-id="camera">–</button>
-      <span class="quantity-value" data-id="camera">0</span>
-      <button class="plus-btn" data-id="camera">+</button>
-    </div>
-    <button class="remove-item-btn" data-id="camera">Удалить</button>
-  </div>
 
-  <div class="cart-item" data-id="memory">
-    <img src="../assets/images/CardPhoto.png" alt="Карта памяти 8 ГБ">
-    <div class="item-info">
-      <h2>Карта памяти 8 ГБ</h2>
-      <p>Цена за шт.: <span id="memoryUnitPrice">500</span> ₽</p>
+    <div class="cart-item" data-id="memory">
+      <img src="../assets/images/CardPhoto.png" alt="Карта памяти 8 ГБ">
+      <div class="item-info">
+        <h2>Карта памяти 8 ГБ</h2>
+        <p>Цена за шт.: <span id="memoryUnitPrice">500</span> ₽</p>
+      </div>
+      <div class="quantity-selector">
+        <button class="minus-btn" data-id="memory">–</button>
+        <span class="quantity-value" data-id="memory">0</span>
+        <button class="plus-btn" data-id="memory">+</button>
+      </div>
+      <button class="remove-item-btn" data-id="memory">Удалить</button>
     </div>
-    <div class="quantity-selector">
-      <button class="minus-btn" data-id="memory">–</button>
-      <span class="quantity-value" data-id="memory">0</span>
-      <button class="plus-btn" data-id="memory">+</button>
-    </div>
-    <button class="remove-item-btn" data-id="memory">Удалить</button>
   </div>
   <!-- /Блок с товарами -->
 
   <!-- Блок с промокодом -->
   <div class="promo-section">
     <label for="promoInput">Промокод:</label>
-    <input type="text" id="promoInput" placeholder="Введите промокод…">
+    <input type="text" id="promoInput" placeholder="Введите промокод…" />
     <button id="applyPromoBtn">Применить</button>
     <button id="removePromoBtn" style="display:none;">Убрать промокод</button>
   </div>
   <!-- /Блок с промокодом -->
 
-  <!-- Адрес и доставка -->
+  <!-- Адрес и способ доставки -->
   <section class="delivery-section">
-    <h2>Адрес и доставка</h2>
+    <h2>Адрес и способ доставки</h2>
 
     <!-- ввод города -->
     <label for="addressInput">Город:</label>
@@ -136,26 +118,29 @@
     <div id="deliveryMethodSection" style="display:none; margin-top:15px;">
       <label>Способ доставки:</label>
       <div>
-        <input type="radio" id="deliveryCourier" name="deliveryMethod" value="courier">
+        <input type="radio" id="deliveryCourier" name="deliveryMethod" value="courier" />
         <label for="deliveryCourier">Курьер СДЭК</label>
       </div>
       <div>
-        <input type="radio" id="deliveryPvz" name="deliveryMethod" value="pvz">
+        <input type="radio" id="deliveryPvz" name="deliveryMethod" value="pvz" />
         <label for="deliveryPvz">ПВЗ СДЭК</label>
       </div>
     </div>
 
-    <!-- поле ввода улицы/дома (только после выбора ПВЗ) -->
+    <!-- ввод улицы и дома (только при выборе курьера) -->
     <div id="streetWrapper" style="display:none; margin-top:15px;">
       <label for="streetInput">Улица и дом:</label>
       <input type="text" id="streetInput" placeholder="Введите адрес в городе…" />
     </div>
 
-    <!-- карта и панель -->
+    <!-- карта и панель с описанием ПВЗ/постаматов -->
     <div class="map-wrapper">
       <div id="map"></div>
       <div id="pvz-info-panel"></div>
     </div>
+
+    <!-- контейнер для вариантов тарифов -->
+    <div id="tariffOptions"></div>
   </section>
 
   <!-- Итоговая сумма и кнопка оформления -->
@@ -174,3 +159,4 @@
 <script src="cart.js"></script>
 </body>
 </html>
+<!-- === Конец файла cart/cart.html === -->
