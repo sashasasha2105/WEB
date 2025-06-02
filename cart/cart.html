@@ -1,31 +1,26 @@
-<!-- === File: cart/cart.html === -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>clip & go • Корзина</title>
 
-  <!-- Шрифты -->
+  <!-- Montserrat -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link
           href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
           rel="stylesheet"
   />
 
-  <!-- Стили -->
+  <!-- Глобальные стили -->
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/responsive.css" media="(max-width:768px)" />
+  <link rel="stylesheet" href="../css/header.css" />
+
+  <!-- Локальные стили корзины -->
   <link rel="stylesheet" href="cart.css" />
 
-  <style>
-    /* Повышаем приоритет стилей для подсказок и карт */
-    #addressInput, #streetInput {
-      position: relative;
-    }
-  </style>
-
-  <!-- config.js и динамическая загрузка Яндекс.Карт -->
+  <!-- Загрузка конфигурации для Яндекс.Карт -->
   <script src="/config.js"></script>
   <script>
     (function() {
@@ -41,30 +36,35 @@
 </head>
 <body>
 
-<!-- Шапка -->
-<header>
-  <a href="/" class="header-left logo">clip & go</a>
-  <nav>
-    <ul>
-      <li><a href="/">Главная</a></li>
-      <li><a href="/product">О продукте</a></li>
-      <li><a href="/contacts">Контакты</a></li>
-    </ul>
-  </nav>
-  <div>
-    <button id="cartIcon">
-      🛒 <span class="cart-count">0</span>
-    </button>
-  </div>
-</header>
+<!-- Общий header (будет подгружаться из /header.html) -->
+<div id="header-container"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch('../header.html')
+            .then(r => r.text())
+            .then(html => {
+              document.getElementById('header-container').innerHTML = html;
+              const hdr = document.getElementById('site-header');
+              hdr.classList.remove('scrolled');
+              const TH = 50;
+              const onScroll = () =>
+                      window.scrollY > TH
+                              ? hdr.classList.add('scrolled')
+                              : hdr.classList.remove('scrolled');
+              onScroll();
+              window.addEventListener('scroll', onScroll);
+            })
+            .catch(console.error);
+  });
+</script>
 
 <main>
   <h1>Ваша корзина</h1>
 
-  <!-- Блок с товарами -->
+  <!-- === Блок с товарами === -->
   <div id="cartItemsContainer">
     <div class="cart-item" data-id="camera">
-      <img src="../assets/images/cam3.jpg" alt="clip & go">
+      <img src="../assets/images/cam3.jpg" alt="clip & go" />
       <div class="item-info">
         <h2>clip & go</h2>
         <p>Цвет: <span id="cameraColor">—</span></p>
@@ -79,7 +79,7 @@
     </div>
 
     <div class="cart-item" data-id="memory">
-      <img src="../assets/images/CardPhoto.png" alt="Карта памяти 8 ГБ">
+      <img src="../assets/images/CardPhoto.png" alt="Карта памяти 8 ГБ" />
       <div class="item-info">
         <h2>Карта памяти 8 ГБ</h2>
         <p>Цена за шт.: <span id="memoryUnitPrice">500</span> ₽</p>
@@ -92,71 +92,122 @@
       <button class="remove-item-btn" data-id="memory">Удалить</button>
     </div>
   </div>
-  <!-- /Блок с товарами -->
+  <!-- === /Блок с товарами === -->
 
-  <!-- Блок с промокодом -->
+  <!-- === Блок с промокодом === -->
   <div class="promo-section">
     <label for="promoInput">Промокод:</label>
     <input type="text" id="promoInput" placeholder="Введите промокод…" />
     <button id="applyPromoBtn">Применить</button>
     <button id="removePromoBtn" style="display:none;">Убрать промокод</button>
   </div>
-  <!-- /Блок с промокодом -->
+  <!-- === /Блок с промокодом === -->
 
-  <!-- Адрес и способ доставки -->
+  <!-- === Адрес и способ доставки === -->
   <section class="delivery-section">
     <h2>Адрес и способ доставки</h2>
 
     <!-- ввод города -->
     <label for="addressInput">Город:</label>
     <div class="address-wrapper" style="position:relative;">
-      <input type="text" id="addressInput" autocomplete="off" placeholder="Начните вводить город…" />
+      <input
+              type="text"
+              id="addressInput"
+              autocomplete="off"
+              placeholder="Начните вводить город…"
+      />
       <ul id="citySuggestions" class="suggestions"></ul>
     </div>
 
-    <!-- выбор способа доставки -->
-    <div id="deliveryMethodSection" style="display:none; margin-top:15px;">
+    <!-- выбор способа доставки (плавно появится после выбора города) -->
+    <div id="deliveryMethodSection" class="section-block">
       <label>Способ доставки:</label>
-      <div>
-        <input type="radio" id="deliveryCourier" name="deliveryMethod" value="courier" />
-        <label for="deliveryCourier">Курьер СДЭК</label>
-      </div>
-      <div>
-        <input type="radio" id="deliveryPvz" name="deliveryMethod" value="pvz" />
-        <label for="deliveryPvz">ПВЗ СДЭК</label>
+      <div class="delivery-options-container">
+
+        <!-- === Курьер СДЭК === -->
+        <div class="delivery-option">
+          <input
+                  type="radio"
+                  id="deliveryCourier"
+                  name="deliveryMethod"
+                  value="courier"
+          />
+          <label for="deliveryCourier">
+            <img
+                    src="../assets/icons/cdek-truck.png"
+                    class="delivery-icon"
+                    alt="Курьер СДЭК"
+            />
+            Курьер СДЭК
+          </label>
+        </div>
+
+        <!-- === ПВЗ СДЭК === -->
+        <div class="delivery-option">
+          <input
+                  type="radio"
+                  id="deliveryPvz"
+                  name="deliveryMethod"
+                  value="pvz"
+          />
+          <label for="deliveryPvz">
+            <img
+                    src="../assets/icons/cdek-pvz.png"
+                    class="delivery-icon"
+                    alt="ПВЗ СДЭК"
+            />
+            ПВЗ СДЭК
+          </label>
+        </div>
+
       </div>
     </div>
 
-    <!-- ввод улицы и дома (только при выборе курьера) -->
-    <div id="streetWrapper" style="display:none; margin-top:15px;">
+    <!-- ввод улицы и дома (отображается при выборе «Курьер») -->
+    <div id="streetWrapper" class="section-block" style="margin-top:15px;">
       <label for="streetInput">Улица и дом:</label>
-      <input type="text" id="streetInput" placeholder="Введите адрес в городе…" />
+      <input
+              type="text"
+              id="streetInput"
+              placeholder="Введите адрес в городе…"
+      />
     </div>
 
-    <!-- карта и панель с описанием ПВЗ/постаматов -->
+    <!-- карта и панель с описанием ПВЗ/постаматов (появятся при выборе «ПВЗ») -->
     <div class="map-wrapper">
       <div id="map"></div>
       <div id="pvz-info-panel"></div>
     </div>
 
-    <!-- контейнер для вариантов тарифов -->
+    <!-- контейнер для вариантов тарифов (появится после «Выбрать пункт») -->
     <div id="tariffOptions"></div>
   </section>
+  <!-- === /Адрес и способ доставки === -->
 
-  <!-- Итоговая сумма и кнопка оформления -->
+  <!-- === Итоговая сумма и кнопка оформления === -->
   <div class="cart-summary">
-    <p>Доставка: <strong><span id="shippingCostValue">0</span> ₽</strong></p>
+    <p>
+      Доставка: <strong><span id="shippingCostValue">0</span> ₽</strong>
+    </p>
     <h2>Итоговая сумма: <span id="cartTotalValue">0</span> ₽</h2>
     <button id="checkoutBtn">Оформить заказ</button>
   </div>
+  <!-- === /Итоговая сумма === -->
+
 </main>
 
 <footer>
   <p>© 2025 clip & go. Все права защищены.</p>
-  <p><a href="../Policy/privacy-cookie-policy.html">Политика cookies и конфиденциальности</a></p>
+  <p>
+    <a href="../Policy/privacy-cookie-policy.html"
+    >Политика cookies и конфиденциальности</a
+    >
+  </p>
 </footer>
 
+<!-- Скрипты -->
+<script src="../js/script.js"></script>
+<script src="../js/mobile-header.js"></script>
 <script src="cart.js"></script>
 </body>
 </html>
-<!-- === Конец файла cart/cart.html === -->
