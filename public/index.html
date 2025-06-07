@@ -1,14 +1,10 @@
-<!-- === File: index.html === -->
-
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>clip & go</title>
-
-  <!-- Подключаем шрифт Montserrat -->
+  <!-- Google Fonts Montserrat -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link
           href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
@@ -16,59 +12,47 @@
   />
 
   <!-- Десктоп-стили -->
-  <link rel="stylesheet" href="css/style.css" />
-  <!-- Стили мобильной шапки (≤767px) -->
-  <link
-          rel="stylesheet"
-          href="css/mobile-header.css"
-          media="(max-width: 767px)"
-  />
+  <link rel="stylesheet" href="/css/style.css" />
+
+  <!-- Мобильные стили шапки -->
+  <link rel="stylesheet" href="/css/mobile-header.css" media="(max-width: 767px)" />
 </head>
 <body>
 
-<!-- Шапка (одинаково для всех страниц) -->
-<header id="site-header">
-  <button class="burger-menu" aria-label="Открыть меню" style="display:none;">☰</button>
-  <div class="logo">
-    <a href="/index.html" onclick="scrollToTop()">clip & go</a>
-  </div>
-
-  <nav class="main-nav">
-    <ul>
-      <li><a href="/index.html#product">О продукте</a></li>
-      <li><a href="/index.html#main">Главная</a></li>
-      <li><a href="/index.html#contact">Контакты</a></li>
-      <li><a href="/gallery/gallery.html">Галерея</a></li>
-      <li><a href="/instruction/instruction.html">Инструкция</a></li>
-    </ul>
-  </nav>
-
-  <div class="header-buttons">
-    <a href="/gallery/gallery.html" class="btn-header">Галерея</a>
-    <a href="/instruction/instruction.html" class="btn-header">Инструкция</a>
-  </div>
-
-  <a href="/cart/cart.html" class="cart-link" title="Корзина">
-      <span class="cart-icon">
-        <!-- заменили эмодзи на svg, увеличили до 32×32 -->
-        <img src="assets/icons/carticon.png" alt="Корзина" width="32" height="32" />
-      </span>
-    <span class="cart-count">0</span>
-  </a>
-</header>
+<!-- Шапка будет загружаться через JS из /header.html -->
+<div id="header-container"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch('/header.html')
+            .then(r => r.text())
+            .then(html => {
+              document.getElementById('header-container').innerHTML = html;
+              const hdr = document.getElementById('site-header');
+              hdr.classList.remove('scrolled');
+              const TH = 50;
+              const onScroll = () =>
+                      window.scrollY > TH
+                              ? hdr.classList.add('scrolled')
+                              : hdr.classList.remove('scrolled');
+              onScroll();
+              window.addEventListener('scroll', onScroll);
+            })
+            .catch(console.error);
+  });
+</script>
 
 <!-- Баннер cookies -->
 <div class="cookie-banner" style="display: flex;">
     <span>
       Пользуясь сайтом, вы соглашаетесь с тем, что мы используем
-      <a href="Policy/privacy-cookie-policy.html" class="cookie-link">cookies</a> 🍪
+      <a href="/Policy/privacy-cookie-policy.html" class="cookie-link">cookies</a> 🍪
     </span>
   <button id="accept-cookies">Окей</button>
 </div>
 
-<!-- HERO-секция -->
+<!-- HERO -->
 <section id="hero" class="hero-gif fade-in-on-scroll">
-  <img src="assets/images/main_page.GIF" alt="Презентация продукта" />
+  <img src="/assets/images/main_page.GIF" alt="Презентация продукта" />
   <div class="hero-overlay">
     <h1>UNLOCK YOUR POTENTIAL<br />clip & go</h1>
     <p>Уже в продаже • Уже в России</p>
@@ -80,14 +64,13 @@
   <div class="left-column">
     <section class="slider-container">
       <div class="slider-wrapper">
-        <!-- Только cam1–cam5, гифки убраны -->
-        <img src="assets/images/cam1.jpg" class="slider-img active" alt="Cam1" />
-        <img src="assets/images/cam2.jpg" class="slider-img"        alt="Cam2" />
-        <img src="assets/images/cam3.jpg" class="slider-img"        alt="Cam3" />
-        <img src="assets/images/cam4.jpg" class="slider-img"        alt="Cam4" />
-        <img src="assets/images/cam5.jpg" class="slider-img"        alt="Cam5" />
+        <img src="/assets/images/cam1.jpg" class="slider-img active" alt="Cam1" />
+        <img src="/assets/images/cam2.jpg" class="slider-img" alt="Cam2" />
+        <img src="/assets/images/cam3.jpg" class="slider-img" alt="Cam3" />
+        <img src="/assets/images/cam4.jpg" class="slider-img" alt="Cam4" />
+        <img src="/assets/images/cam5.jpg" class="slider-img" alt="Cam5" />
       </div>
-      <button class="slider-arrow slider-arrow-left"  onclick="prevSlide()">&#10094;</button>
+      <button class="slider-arrow slider-arrow-left" onclick="prevSlide()">&#10094;</button>
       <button class="slider-arrow slider-arrow-right" onclick="nextSlide()">&#10095;</button>
     </section>
   </div>
@@ -100,14 +83,14 @@
           <span class="option-label">Цвет камеры</span>
           <div id="colorOptions" class="option-buttons">
             <button class="option-btn selected" data-color="black" aria-label="Чёрный"></button>
-            <button class="option-btn"          data-color="white" aria-label="Белый"></button>
+            <button class="option-btn" data-color="white" aria-label="Белый"></button>
           </div>
         </div>
         <div class="option-group">
           <span class="option-label">Размер карты памяти</span>
           <div id="memoryOptions" class="option-buttons">
             <button class="memory-btn selected" data-memory="none">Без накопителя</button>
-            <button class="memory-btn"          data-memory="8gb">8 ГБ</button>
+            <button class="memory-btn" data-memory="8gb">8 ГБ</button>
           </div>
         </div>
       </div>
@@ -135,7 +118,7 @@
   </div>
 </section>
 
-<!-- Вкладки -->
+<!-- Вкладки (характеристики, FAQ) -->
 <section id="tabsBlock" class="tabs-block fade-in-on-scroll">
   <div class="tab-item">
     <div class="tab-header" onclick="toggleCharacteristics()">
@@ -166,7 +149,7 @@
     <div id="faqContainer" class="tab-content">
       <div class="faq-item">
         <strong>Может ли clip & go делать фотографии?</strong>
-        <p>Да, камера поддерживает фотосъёмку мгновенных снимков важных моментов.</p>
+        <p>Да, камера поддерживает фотосъёмку мгновенных снимков.</p>
       </div>
       <div class="faq-item">
         <strong>Как долго работает аккумулятор?</strong>
@@ -186,7 +169,7 @@
       </div>
       <div class="faq-item">
         <strong>Как выгрузить видео?</strong>
-        <p>Через приложение на смартфоне по Wi-Fi или извлеките MicroSD и скопируйте файлы на ПК.</p>
+        <p>Через приложение по Wi-Fi или извлеките MicroSD и скопируйте на ПК.</p>
       </div>
     </div>
   </div>
@@ -197,7 +180,7 @@
   <h2>О продукте</h2>
   <div class="product-item">
     <div class="product-img">
-      <img src="assets/images/description1.GIF" alt="Мгновенная съёмка" />
+      <img src="/assets/images/description1.GIF" alt="Мгновенная съёмка" />
     </div>
     <div class="product-text">
       <h3>Мгновенная съёмка</h3>
@@ -209,7 +192,7 @@
   </div>
   <div class="product-item reverse">
     <div class="product-img">
-      <img src="assets/images/description2.GIF" alt="Экшн-камера GH88" />
+      <img src="/assets/images/description2.GIF" alt="Экшн-камера GH88" />
     </div>
     <div class="product-text">
       <h3>Экшн-камера GH88</h3>
@@ -227,18 +210,17 @@
   <p>Телефон: <strong>+1 (234) 567-89-00</strong></p>
 </section>
 
-<!-- Футер -->
 <footer class="fade-in-on-scroll">
   <p>&copy; 2025 clip & go. Все права защищены.</p>
   <p>
-    <a href="Policy/privacy-cookie-policy.html">
+    <a href="/Policy/privacy-cookie-policy.html">
       Политика cookies и конфиденциальности
     </a>
   </p>
 </footer>
 
 <!-- Скрипты -->
-<script src="js/script.js"></script>
-<script src="js/mobile-header.js"></script>
+<script src="/js/script.js"></script>
+<script src="/js/mobile-header.js"></script>
 </body>
 </html>

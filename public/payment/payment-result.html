@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Результат оплаты — clip & go</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Montserrat -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
+            rel="stylesheet"
+    />
+
+    <!-- Локальные стили -->
+    <link rel="stylesheet" href="payment-result.css" />
+</head>
+<body>
+<div class="container">
+    <!-- Хедер с благодарностью -->
+    <div class="header">
+        <h1>Спасибо за покупку!</h1>
+        <p>Ваш платёж успешно обработан и подтверждён.</p>
+    </div>
+
+    <!-- Детали заказа -->
+    <div class="order-details">
+        <h2>Ваш заказ:</h2>
+        <ul class="items-list" id="itemsList">
+            <!-- JS подставит li с товарами -->
+        </ul>
+
+        <div class="total-block">
+            <h2>Итого: <span id="totalAmount">0 ₽</span></h2>
+        </div>
+    </div>
+
+    <!-- Кнопки навигации -->
+    <div class="buttons">
+        <a href="/cart/cart.html" class="btn-home">Вернуться в корзину</a>
+        <a href="/orders.html" class="btn-orders">Мои заказы</a>
+    </div>
+
+    <!-- Способы оплаты -->
+    <div class="payment-methods">
+        <h3>Мы принимаем:</h3>
+        <ul class="methods-list">
+            <li><img src="/assets/icons/payments/visa.png" alt="Visa" /></li>
+            <li><img src="/assets/icons/payments/mastercard.png" alt="Mastercard" /></li>
+            <li><img src="/assets/icons/payments/mir.png" alt="Мир" /></li>
+            <li><img src="/assets/icons/payments/sbp.png" alt="СБП" /></li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    // При загрузке страницы читаем данные из localStorage (cartData),
+    // чтобы вывести купленные товары, их количество и цены.
+    document.addEventListener('DOMContentLoaded', () => {
+        const itemsListEl = document.getElementById('itemsList');
+        const totalAmountEl = document.getElementById('totalAmount');
+
+        // Достаём данные корзины: { cameraCount: X, memoryCount: Y }
+        const cartData = JSON.parse(localStorage.getItem('cartData') || '{}');
+        const cameraCount = cartData.cameraCount || 0;
+        const memoryCount = cartData.memoryCount || 0;
+
+        // Цены (должны совпадать с тем, что в cart.js)
+        const CAMERA_PRICE = 8900;
+        const MEMORY_PRICE = 500;
+
+        let total = 0;
+
+        // Если купили хотя бы одну камеру:
+        if (cameraCount > 0) {
+            const li = document.createElement('li');
+            li.innerHTML = `
+          <img class="item-image" src="/assets/images/cam3.jpg" alt="clip & go" />
+          <div class="item-info">
+            <h3>clip & go</h3>
+            <p>Количество: ${cameraCount} шт.</p>
+            <p>Цена за шт.: ${CAMERA_PRICE.toLocaleString('ru-RU')} ₽</p>
+          </div>
+          <div class="item-price">${(CAMERA_PRICE * cameraCount).toLocaleString('ru-RU')} ₽</div>
+        `;
+            itemsListEl.appendChild(li);
+            total += CAMERA_PRICE * cameraCount;
+        }
+
+        // Если купили карты памяти:
+        if (memoryCount > 0) {
+            const li = document.createElement('li');
+            li.innerHTML = `
+          <img class="item-image" src="/assets/images/CardPhoto.png" alt="Карта памяти 8 ГБ" />
+          <div class="item-info">
+            <h3>Карта памяти 8 ГБ</h3>
+            <p>Количество: ${memoryCount} шт.</p>
+            <p>Цена за шт.: ${MEMORY_PRICE.toLocaleString('ru-RU')} ₽</p>
+          </div>
+          <div class="item-price">${(MEMORY_PRICE * memoryCount).toLocaleString('ru-RU')} ₽</div>
+        `;
+            itemsListEl.appendChild(li);
+            total += MEMORY_PRICE * memoryCount;
+        }
+
+        // Если корзина пуста (на всякий случай)
+        if (cameraCount === 0 && memoryCount === 0) {
+            const li = document.createElement('li');
+            li.style.textAlign = 'center';
+            li.style.fontSize = '1.1em';
+            li.style.color = '#777';
+            li.textContent = 'Корзина пуста';
+            itemsListEl.appendChild(li);
+        }
+
+        // Устанавливаем итоговую сумму
+        totalAmountEl.textContent = total.toLocaleString('ru-RU') + ' ₽';
+
+        // Очищаем корзину, чтобы при возврате она была пустой
+        localStorage.removeItem('cartData');
+    });
+</script>
+
+</body>
+</html>

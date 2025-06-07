@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Оформление заказа — clip & go</title>
+
+    <!-- Montserrat -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
+            rel="stylesheet"
+    />
+
+    <!-- Глобальные стили -->
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/responsive.css" media="(max-width:768px)" />
+    <link rel="stylesheet" href="../css/header.css" />
+
+    <!-- Локальные стили (если нужны) -->
+    <style>
+        /* Простейшие стили для полей формы оформления заказа */
+        .checkout-container {
+            max-width: 600px;
+            margin: 100px auto 40px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+        }
+        .checkout-container h1 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #007BFF;
+        }
+        .checkout-container label {
+            display: block;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+        .checkout-container input,
+        .checkout-container select {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 5px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background: #fafafa;
+            transition: border 0.3s ease, box-shadow 0.3s ease;
+        }
+        .checkout-container input:focus,
+        .checkout-container select:focus {
+            outline: none;
+            border-color: #007BFF;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+        }
+        .checkout-container button {
+            display: block;
+            width: 100%;
+            margin-top: 25px;
+            padding: 12px 0;
+            font-size: 1.1em;
+            background: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+        .checkout-container button:hover {
+            background: #005bb5;
+            transform: scale(1.02);
+        }
+        .field-group {
+            position: relative;
+        }
+        .suggestions {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .suggestions.visible {
+            display: block;
+        }
+        .suggestions li {
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            list-style: none;
+        }
+        .suggestions li:hover {
+            background: #f0f0f0;
+        }
+    </style>
+
+    <!-- JS-ключ для Яндекс.Советник (не нужна карта здесь, только подсказки) -->
+    <script src="/config.js"></script>
+</head>
+<body>
+
+<!-- Общий header -->
+<div id="header-container"></div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('../header.html')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('header-container').innerHTML = html;
+                const hdr = document.getElementById('site-header');
+                hdr.classList.remove('scrolled');
+                const TH = 50;
+                const onScroll = () =>
+                    window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
+                onScroll();
+                window.addEventListener('scroll', onScroll);
+            })
+            .catch(console.error);
+    });
+</script>
+
+<div class="checkout-container">
+    <h1>Оформление заказа</h1>
+
+    <!-- 1. Фамилия и имя получателя -->
+    <label for="buyerName">ФИО получателя:</label>
+    <input type="text" id="buyerName" placeholder="Иванов Иван Иванович" />
+
+    <!-- 2. Телефон -->
+    <label for="buyerPhone">Телефон получателя:</label>
+    <input type="tel" id="buyerPhone" placeholder="+7 999 000 1122" />
+
+    <!-- 3. Email -->
+    <label for="buyerEmail">Email (для уведомлений):</label>
+    <input type="email" id="buyerEmail" placeholder="ivanov@example.com" />
+
+    <!-- 4. Город (с подсказками Яндекс-Сервис) -->
+    <label for="addressInput">Город доставки:</label>
+    <div class="field-group">
+        <input
+                type="text"
+                id="addressInput"
+                autocomplete="off"
+                placeholder="Начните вводить город…"
+        />
+        <ul id="citySuggestions" class="suggestions"></ul>
+    </div>
+
+    <!-- 5. Улица и дом (если курьер), но здесь оставляем просто поле -->
+    <label for="streetInput">Улица и дом:</label>
+    <input type="text" id="streetInput" placeholder="ул. Ленина, д. 10" />
+
+    <!-- 6. Кнопка «Перейти к оплате» -->
+    <button id="proceedPaymentBtn">Перейти к оплате</button>
+</div>
+
+<!-- Скрипты -->
+<script src="../js/script.js"></script>
+<script src="../js/mobile-header.js"></script>
+<script src="payment.js"></script>
+</body>
+</html>

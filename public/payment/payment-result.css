@@ -1,0 +1,192 @@
+/* === File: public/payment/payment-result.css === */
+
+/* Сброс и базовые стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: #f4f7f6;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* === Контейнер === */
+.container {
+    max-width: 800px;
+    margin: 60px auto 40px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+/* === Хедер с благодарностью === */
+.header {
+    background: #2d9cdb; /* более мягкий синий */
+    color: #ffffff;
+    padding: 30px 20px;
+    text-align: center;
+}
+.header h1 {
+    font-size: 2.4em;
+    margin-bottom: 8px;
+}
+.header p {
+    font-size: 1.1em;
+    opacity: 0.9;
+}
+
+/* === Секция с деталями заказа === */
+.order-details {
+    padding: 24px 20px;
+}
+.order-details h2 {
+    font-size: 1.8em;
+    color: #1f78c1; /* более глубокий синий */
+    margin-bottom: 20px;
+}
+.items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.items-list li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 18px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 12px;
+}
+.items-list li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 18px;
+    border: 1px solid #ddd;
+}
+.item-info {
+    flex: 1;
+}
+.item-info h3 {
+    font-size: 1.2em;
+    margin: 0 0 6px;
+    color: #333;
+}
+.item-info p {
+    margin: 3px 0;
+    font-size: 0.95em;
+    color: #555;
+}
+.item-price {
+    font-size: 1em;
+    font-weight: 600;
+    color: #333;
+    margin-left: 18px;
+    white-space: nowrap;
+}
+
+/* === Блок с итоговой суммой === */
+.total-block {
+    margin-top: 20px;
+    text-align: right;
+}
+.total-block h2 {
+    font-size: 1.8em;
+    margin: 0;
+    color: #333;
+}
+
+/* === Кнопки навигации === */
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 26px 20px;
+    background: #f8f9fa;
+}
+.buttons a {
+    display: inline-block;
+    padding: 12px 26px;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: 500;
+    transition: background 0.3s ease;
+    color: #ffffff;
+}
+.btn-home {
+    background: #28a745; /* зелёный */
+}
+.btn-orders {
+    background: #1f78c1; /* синий оттенок */
+}
+.buttons a:hover {
+    opacity: 0.9;
+}
+
+/* === Секция с иконками платёжных систем === */
+.payment-methods {
+    padding: 20px;
+}
+.payment-methods h3 {
+    font-size: 1.4em;
+    margin-bottom: 14px;
+    color: #1f78c1;
+}
+.methods-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.methods-list li {
+    width: 100px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    background: transparent;
+    transition: transform 0.2s ease;
+}
+.methods-list li:hover {
+    transform: scale(1.05);
+}
+.methods-list img {
+    max-width: 80px;
+    max-height: 40px;
+    object-fit: contain;
+}
+
+/* === Адаптив для мобильных === */
+@media (max-width: 600px) {
+    .items-list li {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .item-image {
+        margin-bottom: 8px;
+    }
+    .item-price {
+        margin-left: 0;
+        margin-top: 8px;
+    }
+    .buttons {
+        flex-direction: column;
+    }
+    .methods-list {
+        gap: 12px;
+    }
+}

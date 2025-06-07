@@ -1,3 +1,4 @@
+<!-- File: public/cart/cart.html -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -13,14 +14,14 @@
   />
 
   <!-- Глобальные стили -->
-  <link rel="stylesheet" href="../css/style.css" />
-  <link rel="stylesheet" href="../css/responsive.css" media="(max-width:768px)" />
-  <link rel="stylesheet" href="../css/header.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/responsive.css" media="(max-width:768px)" />
+  <link rel="stylesheet" href="/css/header.css" />
 
   <!-- Локальные стили корзины -->
-  <link rel="stylesheet" href="cart.css" />
+  <link rel="stylesheet" href="/cart/cart.css" />
 
-  <!-- Загрузка конфигурации для Яндекс.Карт -->
+  <!-- Конфигурация Яндекс.Карт (вытягиваем ключ) -->
   <script src="/config.js"></script>
   <script>
     (function() {
@@ -35,12 +36,11 @@
   </script>
 </head>
 <body>
-
-<!-- Общий header (будет подгружаться из /header.html) -->
+<!-- Общий header (подгружается из /public/header.html) -->
 <div id="header-container"></div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    fetch('../header.html')
+    fetch('/header.html')
             .then(r => r.text())
             .then(html => {
               document.getElementById('header-container').innerHTML = html;
@@ -48,9 +48,7 @@
               hdr.classList.remove('scrolled');
               const TH = 50;
               const onScroll = () =>
-                      window.scrollY > TH
-                              ? hdr.classList.add('scrolled')
-                              : hdr.classList.remove('scrolled');
+                      window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
               onScroll();
               window.addEventListener('scroll', onScroll);
             })
@@ -64,7 +62,7 @@
   <!-- === Блок с товарами === -->
   <div id="cartItemsContainer">
     <div class="cart-item" data-id="camera">
-      <img src="../assets/images/cam3.jpg" alt="clip & go" />
+      <img src="/assets/images/cam3.jpg" alt="clip & go" />
       <div class="item-info">
         <h2>clip & go</h2>
         <p>Цвет: <span id="cameraColor">—</span></p>
@@ -79,7 +77,7 @@
     </div>
 
     <div class="cart-item" data-id="memory">
-      <img src="../assets/images/CardPhoto.png" alt="Карта памяти 8 ГБ" />
+      <img src="/assets/images/CardPhoto.png" alt="Карта памяти 8 ГБ" />
       <div class="item-info">
         <h2>Карта памяти 8 ГБ</h2>
         <p>Цена за шт.: <span id="memoryUnitPrice">500</span> ₽</p>
@@ -119,12 +117,10 @@
       <ul id="citySuggestions" class="suggestions"></ul>
     </div>
 
-    <!-- выбор способа доставки (плавно появится после выбора города) -->
+    <!-- выбор способа доставки (скрыто до выбора города) -->
     <div id="deliveryMethodSection" class="section-block">
       <label>Способ доставки:</label>
       <div class="delivery-options-container">
-
-        <!-- === Курьер СДЭК === -->
         <div class="delivery-option">
           <input
                   type="radio"
@@ -134,15 +130,13 @@
           />
           <label for="deliveryCourier">
             <img
-                    src="../assets/icons/cdek-truck.png"
+                    src="/assets/icons/cdek-truck.png"
                     class="delivery-icon"
                     alt="Курьер СДЭК"
             />
             Курьер СДЭК
           </label>
         </div>
-
-        <!-- === ПВЗ СДЭК === -->
         <div class="delivery-option">
           <input
                   type="radio"
@@ -152,18 +146,17 @@
           />
           <label for="deliveryPvz">
             <img
-                    src="../assets/icons/cdek-pvz.png"
+                    src="/assets/icons/cdek-pvz.png"
                     class="delivery-icon"
                     alt="ПВЗ СДЭК"
             />
             ПВЗ СДЭК
           </label>
         </div>
-
       </div>
     </div>
 
-    <!-- ввод улицы и дома (отображается при выборе «Курьер») -->
+    <!-- ввод улицы (скрыто до выбора «Курьер») -->
     <div id="streetWrapper" class="section-block" style="margin-top:15px;">
       <label for="streetInput">Улица и дом:</label>
       <input
@@ -173,13 +166,13 @@
       />
     </div>
 
-    <!-- карта и панель с описанием ПВЗ/постаматов (появятся при выборе «ПВЗ») -->
+    <!-- карта и панель с описанием (скрыты до выбора «ПВЗ») -->
     <div class="map-wrapper">
       <div id="map"></div>
       <div id="pvz-info-panel"></div>
     </div>
 
-    <!-- контейнер для вариантов тарифов (появится после «Выбрать пункт») -->
+    <!-- контейнер для вариантов тарифов (скрыт до «Выбрать пункт») -->
     <div id="tariffOptions"></div>
   </section>
   <!-- === /Адрес и способ доставки === -->
@@ -199,15 +192,15 @@
 <footer>
   <p>© 2025 clip & go. Все права защищены.</p>
   <p>
-    <a href="../Policy/privacy-cookie-policy.html"
+    <a href="/Policy/privacy-cookie-policy.html"
     >Политика cookies и конфиденциальности</a
     >
   </p>
 </footer>
 
 <!-- Скрипты -->
-<script src="../js/script.js"></script>
-<script src="../js/mobile-header.js"></script>
-<script src="cart.js"></script>
+<script src="/js/script.js"></script>
+<script src="/js/mobile-header.js"></script>
+<script src="/cart/cart.js"></script>
 </body>
 </html>

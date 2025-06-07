@@ -1,6 +1,6 @@
-// === File: cart/cart.js ===
+// File: public/cart/cart.js
 
-// === Prices & state ===
+// === Цены и состояние ===
 const prices = { camera: 8900, memory: 500 };
 
 // вес и габариты (целые числа для габаритов, вес дробный)
@@ -17,11 +17,10 @@ let discount = 0, shipping = 0;
 let cityCode = null;       // числовой код города CDEK
 let currentCity = '';      // выбранный город из подсказки
 
-// Для того, чтобы «первый» input не срабатывал сразу после клика по подсказке
+// Чтобы «первый» input не срабатывал сразу после клика по подсказке
 let justSelectedCity = false;
 
-// Данные, в которые мы будем сохранять «превью тарифов»
-// Структура: { кодТарифа: { deliverySum, periodMin, periodMax } }
+// Кеш «превью тарифов»: { кодТарифа: { deliverySum, periodMin, periodMax } }
 let cachedPreviews = {};
 
 
@@ -45,7 +44,7 @@ let postamatClusterer = null;
 let streetMarker = null;
 
 
-// === Init ===
+// === Инициализация ===
 document.addEventListener('DOMContentLoaded', () => {
   console.log('[Log] [init] DOMContentLoaded');
 
@@ -56,13 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initDeliveryToggle();
   initStreetInput();
 
-  // Сбрасываем контейнер тарифов
+  // Скрываем контейнер тарифов
   hideTariffs();
   cachedPreviews = {};
 });
 
 
-// === Load/save cart ===
+// === Загрузка/сохранение корзины из localStorage ===
 function loadCart() {
   const d = JSON.parse(localStorage.getItem('cartData') || '{}');
   counts.camera = d.cameraCount || 0;
@@ -77,7 +76,7 @@ function saveCart() {
 }
 
 
-// === Update UI (итоговая сумма + бейджик) ===
+// === Обновление UI (итоговая сумма + бейджик) ===
 function updateUI() {
   if (badgeEl()) badgeEl().textContent = counts.camera + counts.memory;
   shipEl().textContent = shipping.toLocaleString('ru-RU');
@@ -91,7 +90,7 @@ function updateUI() {
 }
 
 
-// === Cart controls (плюс/минус/удалить/промокод) ===
+// === Контролы корзины (плюс/минус/удалить/промокод) ===
 function initCartControls() {
   console.log('[Log] [initCartControls] Навешиваем кнопки +/–/удалить/промокод');
 
@@ -131,20 +130,52 @@ function initCartControls() {
     updateUI();
   });
 
-  document.getElementById('checkoutBtn').addEventListener('click', () => {
-    alert('Заказ успешно оформлен!');
+  // --- Новый код для «Оформить заказ» ---
+  document.getElementById('checkoutBtn').addEventListener('click', async () => {
+    // Считаем окончательную сумму: стоимость товаров – скидка + доставка
+    const totalItemsSum = counts.camera * prices.camera + counts.memory * prices.memory;
+    const discounted   = totalItemsSum - Math.round(totalItemsSum * discount / 100);
+    const amount       = discounted + shipping; // рубли
+    if (amount <= 0) {
+      return alert('Корзина пуста или сумма должна быть больше нуля');
+    }
+
+    try {
+      console.log('[Payment] Инициируем создание платежа на сумму:', amount);
+      const resp = await fetch('/api/yookassa/create-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount,
+          currency: 'RUB',
+          description: `Оплата заказа clip & go: ${amount} ₽`
+        })
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        console.error('[Payment] Ошибка создания платежа:', data);
+        return alert('Ошибка создания платежа, попробуйте позже');
+      }
+
+      // Перенаправляем пользователя на confirmation_url, полученный от YooKassa
+      window.location.href = data.confirmation_url;
+    } catch (e) {
+      console.error('[Payment] Ошибка при fetch:', e);
+      alert('Ошибка при попытке оплаты');
+    }
   });
+  // ---------------------------------------------------
 }
 
 
-// === City suggest (Яндекс.Советник) ===
+// === City suggest (Яндекс.Suggest) ===
 function initCitySuggest() {
   console.log('[Log] [initCitySuggest] Навешиваем автоподсказку городов');
 
   cityIn().addEventListener(
       'input',
       debounce(async e => {
-        // Если только что кликнули по подсказке, пропускаем одно срабатывание
+        // Если только что кликнули по подсказке, пропускаем
         if (justSelectedCity) {
           justSelectedCity = false;
           return;
@@ -220,9 +251,7 @@ async function fetchCdekCityCode(cityName) {
 
     const first = Array.isArray(json)
         ? json[0]
-        : json.results
-            ? json.results[0]
-            : null;
+        : (json.results ? json.results[0] : null);
 
     cityCode = first ? first.code : null;
     console.log('[Log] [fetchCdekCityCode] Установлен cityCode:', cityCode);
@@ -282,17 +311,17 @@ function initDeliveryToggle() {
     hideTariffs();
     showMapWrapper(currentCity, async () => {
       await fetchAndPlotPvz();
-      console.log('[Log] [DeliveryToggle] Карта и PVZ загружены');
+      console.log('[Log] [DeliveryToggle] Карта и PVЗ загружены');
     });
   });
 }
 
 
-// === Fetch & plot PVZ/POSTAMAT + заранее запрашиваем «превью» тарифов ===
+// === Fetch & plot PVZ/POSTAMAT + предварительное кеширование тарифов ===
 async function fetchAndPlotPvz() {
   if (!cityCode || !mapInstance) return;
 
-  console.log('[Log] [fetchAndPlotPvz] Начало загрузки PVZ для cityCode =', cityCode);
+  console.log('[Log] [fetchAndPlotPvz] Начало загрузки PVЗ для cityCode =', cityCode);
 
   if (!cityClusterer) {
     cityClusterer = new ymaps.Clusterer({
@@ -343,10 +372,10 @@ async function fetchAndPlotPvz() {
     pm.events.add('click', () => {
       console.log('[Log] [PVZ] Клик по метке:', pt.code, loc.address_full);
 
-      // Сразу устанавливаем центр карты с анимацией
+      // Панорамируем карту
       mapInstance.setCenter(coords, 14, { duration: 500 });
 
-      // Заполняем информационную панель
+      // Собираем HTML для инфо-панели
       let html = '';
       const imgs = (pt.office_image_list || []).slice(0, 3);
       if (imgs.length) {
@@ -372,17 +401,17 @@ async function fetchAndPlotPvz() {
           pt.have_cash ? 'есть' : 'нет'
       }, безнал ${pt.have_cashless ? 'есть' : 'нет'}</p>`;
       html += `<button id="selectPvzBtn" style="
-                  width:100%;
-                  margin-top:14px;
-                  padding:14px 0;
-                  background:#28a745;
-                  color:#fff;
-                  border:none;
-                  border-radius:6px;
-                  font-size:1em;
-                  cursor:pointer;
-                  transition:background 0.3s ease,transform 0.2s ease;
-                ">
+                width:100%;
+                margin-top:14px;
+                padding:14px 0;
+                background:#28a745;
+                color:#fff;
+                border:none;
+                border-radius:6px;
+                font-size:1em;
+                cursor:pointer;
+                transition:background 0.3s ease, transform 0.2s ease;
+              ">
                 Выбрать пункт
               </button>`;
 
@@ -390,10 +419,9 @@ async function fetchAndPlotPvz() {
       mapWrapper().classList.add('with-panel');
       showElement(infoPanel());
 
-      // Сразу запрашиваем превью тарифов (150 и 250 руб., например)
+      // Предзапрос превью тарифов
       preloadTariffPreviews([136, 483, 368, 486]);
 
-      // Навешиваем на кнопку «Выбрать пункт»
       document.getElementById('selectPvzBtn').addEventListener('click', () => {
         const markerType = type; // "PVZ" или "POSTAMAT"
         const addressFull = loc.address_full || '—';
@@ -405,7 +433,7 @@ async function fetchAndPlotPvz() {
     else postamatClusterer.add(pm);
   });
 
-  // Обработчики клика по кластеру: плавно «зумим» и панорама к центру кластера
+  // Обработчики клика по кластерам
   [cityClusterer, postamatClusterer].forEach(clusterer => {
     clusterer.events.add('click', function(e) {
       const cluster = e.get('target');
@@ -420,12 +448,12 @@ async function fetchAndPlotPvz() {
       .add(postamatClusterer);
 }
 
-// === Preload: запрашиваем превью тарифов сразу, как пользователь кликнул по метке PVZ ===
+
+// === Предзапрос («превью») тарифов ===
 async function preloadTariffPreviews(codes) {
   if (!cityCode) return;
 
   codes.forEach(async tariffCode => {
-    // Если уже в кеше — пропускаем
     if (cachedPreviews[tariffCode]) return;
 
     // Рассчитываем вес и габариты
@@ -491,9 +519,8 @@ async function preloadTariffPreviews(codes) {
 }
 
 
-// === Рендерим кнопки тарифов (плавно) ===
+// === Рендерим кнопки тарифов ===
 function renderTariffButtons(markerType, addressFull) {
-  // Доступные тарифы
   let availableTariffs;
   if (markerType === 'PVZ') {
     availableTariffs = [
@@ -507,12 +534,10 @@ function renderTariffButtons(markerType, addressFull) {
     ];
   }
 
-  // Строим HTML-кнопок на основе уже закешированных превью
   let tariffsHtml = '<h3 style="margin-bottom:16px;font-size:1.3em;color:#007BFF;">Выберите тариф:</h3>';
   availableTariffs.forEach(t => {
     const prev = cachedPreviews[t.code] || { deliverySum: 0, periodMin: 0, periodMax: 0 };
     const rawSum = prev.deliverySum;
-    // Округляем вверх до ближайших 10 рублей
     const roundedSum = Math.ceil(rawSum / 10) * 10;
     const costStr = roundedSum.toLocaleString('ru-RU');
     const period = prev.periodMin === prev.periodMax
@@ -528,7 +553,6 @@ function renderTariffButtons(markerType, addressFull) {
   tariffContainer.innerHTML = tariffsHtml;
   showTariffs();
 
-  // Навешиваем клики по новым кнопкам
   document.querySelectorAll('.tariff-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const tariffCode = Number(btn.dataset.code);
@@ -540,7 +564,7 @@ function renderTariffButtons(markerType, addressFull) {
 }
 
 
-// === Calculate shipping (с округлённым значением) ===
+// === Рассчитываем доставку для выбранного тарифа ===
 async function calculateForTariff(tariffCode, markerType, addressFull, roundedCost) {
   shipping = roundedCost;
   updateUI();
@@ -553,20 +577,19 @@ async function calculateForTariff(tariffCode, markerType, addressFull, roundedCo
 }
 
 
-// === Helpers ===
+// === Вспомогательные функции ===
 function clearClusters() {
   if (cityClusterer) cityClusterer.removeAll();
   if (postamatClusterer) postamatClusterer.removeAll();
   console.log('[Log] [clearClusters] Кластеры очищены');
 }
 
-// Показать map-wrapper + инициализировать или установить центр
+// Показать map-wrapper + инициализировать/установить центр
 function showMapWrapper(city, cb) {
   mapWrapper().style.display = 'flex';
   mapContainer().style.display = 'block';
 
   if (mapInstance) {
-    // Плавно изменяем центр (zoom=10)
     ymaps.ready(() => {
       ymaps.geocode(city).then(r => {
         const c = r.geoObjects.get(0).geometry.getCoordinates();
@@ -578,7 +601,6 @@ function showMapWrapper(city, cb) {
     return;
   }
 
-  // Если ещё нет mapInstance — создаём новую карту
   ymaps.ready(() => {
     ymaps.geocode(city).then(r => {
       const c = r.geoObjects.get(0).geometry.getCoordinates();
@@ -617,7 +639,7 @@ function hideTariffs() {
   tariffContainer.innerHTML = '';
 }
 
-// Сброс «flow» выбора доставки (радиокнопки, карта, тарифы)
+// Сбрасываем «flow» выбора доставки
 function resetDeliveryFlow() {
   hideElement(deliverySection());
   hideElement(streetWrapper());
