@@ -3,12 +3,24 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "npm run minify-css && npm run minify-js",
+    "minify-css": "cleancss -o public/css/style.min.css public/css/style.css",
+    "minify-js": "terser public/js/script.js -o public/js/script.min.js"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.0.0",
     "node-fetch": "^3.3.2",
     "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "nodemon": "^3.1.10",
+    "terser": "^5.41.0"
   }
 }

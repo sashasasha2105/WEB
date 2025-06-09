@@ -1,0 +1,27 @@
+# robots.txt для clip & go
+User-agent: *
+Allow: /
+
+# Запрещаем индексацию служебных страниц
+Disallow: /api/
+Disallow: /config.js
+Disallow: /payment/payment-result.html
+Disallow: *.json
+Disallow: *.env
+Disallow: /node_modules/
+
+# Указываем расположение sitemap
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Crawl-delay для вежливого краулинга
+Crawl-delay: 1
+
+# Специальные правила для популярных ботов
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Yandex
+Allow: /
+Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content
+Host: yourdomain.com
