@@ -1,4 +1,4 @@
-/* === File: cart/cart.css === */
+/* File: public/cart/cart.css */
 
 /* === Сброс и базовые стили === */
 * {
@@ -17,7 +17,7 @@ body {
 main {
   max-width: 1200px;
   margin: 40px auto;
-  padding: 140px 20px 40px; /* Учитываем высоту фикcированного header */
+  padding: 140px 20px 40px; /* Учитываем высоту фиксированного header */
 }
 main h1 {
   font-size: 2.4em;
@@ -28,7 +28,9 @@ main h1 {
   letter-spacing: 0.5px;
 }
 
-/* === Блок товара в корзине === */
+/* ==========================================================================
+   Блок товара в корзине
+   ========================================================================== */
 .cart-item {
   display: flex;
   flex-wrap: wrap;
@@ -108,7 +110,9 @@ main h1 {
   transform: scale(1.03);
 }
 
-/* === Промокод === */
+/* ==========================================================================
+   Промокод
+   ========================================================================== */
 .promo-section {
   display: flex;
   align-items: center;
@@ -130,6 +134,7 @@ main h1 {
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 0.95em;
+  background: #fafafa;
   transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 .promo-section input:focus {
@@ -151,14 +156,12 @@ main h1 {
   transform: scale(1.02);
 }
 
-/* === Адрес и способ доставки === */
+/* ==========================================================================
+   Адрес и способ доставки
+   ========================================================================== */
 .delivery-section {
   background: #fff;
   border-radius: 12px;
-  /* -----------------------------
-     Изменено: padding снизу увеличен
-     чтобы карточки «Курьер/ПВЗ» влезали полностью
-     ----------------------------- */
   padding: 24px 24px 40px;
   margin-bottom: 20px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
@@ -177,7 +180,7 @@ main h1 {
   font-size: 1em;
 }
 
-/* === Блок, который плавно раскрывается после выбора города === */
+/* === Раскрывающиеся блоки === */
 .section-block {
   max-height: 0;
   opacity: 0;
@@ -190,7 +193,7 @@ main h1 {
   opacity: 1;
 }
 
-/* === Flex-контейнер для карточек способа доставки === */
+/* === Flex-контейнер для вариантов доставки === */
 .delivery-options-container {
   display: flex;
   gap: 12px;
@@ -199,22 +202,24 @@ main h1 {
   justify-content: flex-start;
 }
 
-/* === Кастомные «карточки»-опции способа доставки === */
+/* === Карточки способа доставки (ВЕРНУТЬ КАК БЫЛО) === */
 .delivery-option {
   position: relative;
-  flex: 1 1 calc(50% - 8px); /* по две карточки в ряд */
+  flex: 1 1 calc(50% - 8px);
   max-width: calc(50% - 8px);
   margin-bottom: 12px;
+}
+.delivery-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 .delivery-option label {
   display: flex;
   align-items: center;
-  gap: 12px;            /* расстояние между иконкой и текстом */
+  gap: 12px;
   cursor: pointer;
-  /* -----------------------------
-     Изменено: padding стал чуть компактнее
-     чтобы карточка помещалась полностью
-     ----------------------------- */
   padding: 10px 14px;
   border: 2px solid #ccc;
   border-radius: 10px;
@@ -223,40 +228,32 @@ main h1 {
   transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
   user-select: none;
 }
-.delivery-option input[type="radio"] {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-/* Иконка слева увеличена до 48×48px */
+/* Иконка доставки 32×32 вместо 48×48 */
 .delivery-icon {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   transition: transform 0.2s ease;
 }
-/* Hover: подсвечиваем рамку и даём лёгкую тень */
 .delivery-option label:hover {
   border-color: #007BFF;
   box-shadow: 0 2px 8px rgba(0,123,255,0.15);
 }
-/* Focus (радиокнопка в фокусе) */
 .delivery-option input[type="radio"]:focus + label {
   border-color: #005bb5;
   box-shadow: 0 0 6px rgba(0,91,181,0.3);
 }
-/* Checked: фон и рамка меняют цвет, текст становится акцентным */
 .delivery-option input[type="radio"]:checked + label {
   background: #e6f0ff;
   border-color: #007BFF;
   color: #005bb5;
 }
-/* Checked: иконка чуть увеличивается */
 .delivery-option input[type="radio"]:checked + label .delivery-icon {
   transform: scale(1.2);
 }
 
-/* === Поля ввода и подсказки === */
+/* ==========================================================================
+   Поля ввода и подсказки
+   ========================================================================== */
 #addressInput,
 #streetInput {
   width: 100%;
@@ -264,8 +261,8 @@ main h1 {
   font-size: 1em;
   border: 1px solid #ccc;
   border-radius: 8px;
-  transition: border 0.3s ease, box-shadow 0.3s ease;
   background: #fafafa;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 #addressInput:focus,
 #streetInput:focus {
@@ -273,14 +270,11 @@ main h1 {
   border-color: #007BFF;
   box-shadow: 0 0 8px rgba(0,123,255,0.2);
 }
-
-/* === Список подсказок === */
 .suggestions {
-  display: none; /* скрыт до появления подсказок */
+  display: none;
   position: absolute;
   top: 100%;
-  left: 0;
-  right: 0;
+  left: 0; right: 0;
   background: #fff;
   border: 1px solid #ccc;
   border-top: none;
@@ -304,7 +298,9 @@ main h1 {
   background: #f0f0f0;
 }
 
-/* === Обёртка карты + панели === */
+/* ==========================================================================
+   Карта и ПВЗ
+   ========================================================================== */
 .map-wrapper {
   display: none;
   gap: 12px;
@@ -324,8 +320,6 @@ main h1 {
   flex: 2 1 0;
   display: block;
 }
-
-/* === Информационная панель ПВЗ/Постамата === */
 #pvz-info-panel {
   flex: 1 1 0;
   max-width: 320px;
@@ -378,7 +372,9 @@ main h1 {
   transform: scale(1.02);
 }
 
-/* === Контейнер тарифов под картой === */
+/* ==========================================================================
+   Контейнер тарифов
+   ========================================================================== */
 #tariffOptions {
   display: none;
   background: #fff;
@@ -401,7 +397,9 @@ main h1 {
   font-size: 1.3em;
 }
 .tariff-btn {
-  display: block;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
   margin-bottom: 16px;
   padding: 16px 20px;
@@ -410,27 +408,82 @@ main h1 {
   border: none;
   border-radius: 6px;
   font-size: 1em;
-  text-align: left;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
 }
-.tariff-btn strong {
-  display: inline-block;
-  min-width: 80px;
+.tariff-btn .tariff-details {
+  text-align: right;
+  line-height: 1.2;
 }
 .tariff-btn:hover {
   background: #005bb5;
   transform: scale(1.02);
 }
 
-/* === Итоговая сумма === */
+/* ==========================================================================
+   Блок «Данные получателя»
+   ========================================================================== */
+#recipientSection {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#recipientSection h2 {
+  font-size: 1.8em;
+  color: #007BFF;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 24px;
+}
+.recipient-form {
+  width: 100%;
+  max-width: 800px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-field.full {
+  grid-column: 1 / -1; /* ФИО на всю ширину */
+}
+#recipientSection label {
+  font-weight: 600;
+  font-size: 1em;
+  color: #333;
+}
+#recipientSection input {
+  width: 100%;
+  height: 48px;
+  padding: 10px 14px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fafafa;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+#recipientSection input:focus {
+  outline: none;
+  border-color: #007BFF;
+  box-shadow: 0 0 8px rgba(0,123,255,0.2);
+}
+
+/* === Итоговая сумма и кнопка === */
 .cart-summary {
   background: #fff;
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-  text-align: center;
   margin-bottom: 40px;
+  text-align: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 .cart-summary p {
   font-size: 1em;
@@ -443,20 +496,21 @@ main h1 {
   color: #333;
 }
 #checkoutBtn {
-  padding: 14px 48px;
+  padding: 18px 64px;
   background: #007BFF;
   color: #fff;
   border: none;
   border-radius: 50px;
+  font-size: 1.15em;
   cursor: pointer;
-  transition: background 0.3s ease, transform 0.3s ease;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 #checkoutBtn:hover {
   background: #005bb5;
   transform: scale(1.05);
 }
 
-/* === Футер === */
+/* === Footer === */
 footer {
   text-align: center;
   padding: 15px 10px;
@@ -469,37 +523,15 @@ footer {
 
 /* === Адаптив === */
 @media (max-width: 768px) {
-  .cart-item {
-    flex-direction: column;
-    text-align: center;
-  }
-  .quantity-selector {
-    margin-top: 10px;
-  }
-  .promo-section {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .delivery-section {
-    padding: 20px 20px 36px; /* оставляем запас снизу */
-  }
-  .section-block.visible {
-    max-height: 400px; /* чуть больше для мобильного */
-  }
-  .map-wrapper {
-    flex-direction: column;
-  }
+  .cart-item { flex-direction: column; text-align: center; }
+  .quantity-selector { margin-top: 10px; }
+  .promo-section { flex-direction: column; gap: 10px; }
+  .delivery-section { padding: 20px 20px 36px; }
+  .section-block.visible { max-height: 400px; }
+  .map-wrapper { flex-direction: column; }
   .map-wrapper #map,
-  .map-wrapper #pvz-info-panel {
-    width: 100%;
-    height: 300px;
-  }
-  /* На мобильном карточки доставки занимают всю ширину */
-  .delivery-option {
-    flex: 1 1 100%;
-    max-width: 100%;
-  }
-  #tariffOptions {
-    margin-top: 20px;
-  }
+  .map-wrapper #pvz-info-panel { width: 100%; height: 300px; }
+  .delivery-option { flex: 1 1 100%; max-width: 100%; }
+  #tariffOptions { margin-top: 20px; }
+  .recipient-form { grid-template-columns: 1fr; }
 }

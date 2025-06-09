@@ -1,33 +1,29 @@
-// File: public/cart/cart.js
+/* File: public/cart/cart.js */
 
-// === Цены и состояние ===
+/* === Цены и параметры === */
 const prices = { camera: 8900, memory: 500 };
+const CAMERA_WEIGHT_KG   = 0.327;
+const MEMORY_WEIGHT_KG   = 0.008;
+const CAMERA_DIMENSIONS  = { length: 20, width: 12, height: 6 };
+const MEMORY_DIMENSIONS  = { length: 13, width: 8, height: 1 };
+const FROM_LOCATION      = 44;  // код Москвы в CDEK
 
-// вес и габариты (целые числа для габаритов, вес дробный)
-const CAMERA_WEIGHT_KG = 0.327;   // 327 грамм
-const MEMORY_WEIGHT_KG = 0.008;   // 8 грамм
-const CAMERA_DIMENSIONS = { length: 20, width: 12, height: 6 };
-const MEMORY_DIMENSIONS = { length: 13, width: 8, height: 1 };
-
-// код города отправки (Москва по умолчанию)
-const FROM_LOCATION = 44;
-
+/* === Состояние === */
 let counts = { camera: 0, memory: 0 };
-let discount = 0, shipping = 0;
-let cityCode = null;       // числовой код города CDEK
-let currentCity = '';      // выбранный город из подсказки
+let discount = 0;
+let shipping = 0;
 
-// Чтобы «первый» input не срабатывал сразу после клика по подсказке
+let cityCode = null;
+let currentCity = '';
+let cachedPreviews = {};
+let selectedTariff = null;  // { code, type, pvzCode, address }
 let justSelectedCity = false;
 
-// Кеш «превью тарифов»: { кодТарифа: { deliverySum, periodMin, periodMax } }
-let cachedPreviews = {};
-
-
-// === DOM shortcuts ===
+/* === DOM-шорткаты === */
 const badgeEl         = () => document.querySelector('.cart-count');
 const totalEl         = () => document.getElementById('cartTotalValue');
 const shipEl          = () => document.getElementById('shippingCostValue');
+const deliveryInfoEl  = () => document.getElementById('deliveryInfo');
 const cityIn          = () => document.getElementById('addressInput');
 const citySug         = () => document.getElementById('citySuggestions');
 const deliverySection = () => document.getElementById('deliveryMethodSection');
@@ -37,36 +33,30 @@ const mapContainer    = () => document.getElementById('map');
 const infoPanel       = () => document.getElementById('pvz-info-panel');
 const mapWrapper      = () => document.querySelector('.map-wrapper');
 const tariffContainer = document.getElementById('tariffOptions');
+const recNameIn       = () => document.getElementById('recipientName');
+const recPhoneIn      = () => document.getElementById('recipientPhone');
+const recEmailIn      = () => document.getElementById('recipientEmail');
 
-let mapInstance = null;
-let cityClusterer = null;
-let postamatClusterer = null;
-let streetMarker = null;
+/* === Переменные карты === */
+let mapInstance = null, cityClusterer = null, postamatClusterer = null, streetMarker = null;
 
-
-// === Инициализация ===
+/* === Инициализация === */
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('[Log] [init] DOMContentLoaded');
-
   loadCart();
   updateUI();
   initCartControls();
   initCitySuggest();
   initDeliveryToggle();
   initStreetInput();
-
-  // Скрываем контейнер тарифов
   hideTariffs();
   cachedPreviews = {};
 });
 
-
-// === Загрузка/сохранение корзины из localStorage ===
+/* === localStorage === */
 function loadCart() {
   const d = JSON.parse(localStorage.getItem('cartData') || '{}');
   counts.camera = d.cameraCount || 0;
   counts.memory = d.memoryCount || 0;
-  console.log('[Log] [loadCart] загружены данные корзины:', d);
 }
 function saveCart() {
   localStorage.setItem('cartData', JSON.stringify({
@@ -75,8 +65,7 @@ function saveCart() {
   }));
 }
 
-
-// === Обновление UI (итоговая сумма + бейджик) ===
+/* === Обновление UI === */
 function updateUI() {
   if (badgeEl()) badgeEl().textContent = counts.camera + counts.memory;
   shipEl().textContent = shipping.toLocaleString('ru-RU');
@@ -85,15 +74,10 @@ function updateUI() {
   sum -= Math.round(sum * discount / 100);
   sum += shipping;
   totalEl().textContent = sum.toLocaleString('ru-RU');
-
-  console.log('[Log] [updateUI] Итоговая сумма обновлена:', sum);
 }
 
-
-// === Контролы корзины (плюс/минус/удалить/промокод) ===
+/* === Контролы корзины + оплата === */
 function initCartControls() {
-  console.log('[Log] [initCartControls] Навешиваем кнопки +/–/удалить/промокод');
-
   document.querySelectorAll('.plus-btn').forEach(btn =>
       btn.addEventListener('click', () => {
         counts[btn.dataset.id]++;
@@ -130,141 +114,142 @@ function initCartControls() {
     updateUI();
   });
 
-  // --- Новый код для «Оформить заказ» ---
   document.getElementById('checkoutBtn').addEventListener('click', async () => {
-    // Считаем окончательную сумму: стоимость товаров – скидка + доставка
-    const totalItemsSum = counts.camera * prices.camera + counts.memory * prices.memory;
-    const discounted   = totalItemsSum - Math.round(totalItemsSum * discount / 100);
-    const amount       = discounted + shipping; // рубли
-    if (amount <= 0) {
-      return alert('Корзина пуста или сумма должна быть больше нуля');
-    }
+    const itemsSum = counts.camera * prices.camera + counts.memory * prices.memory;
+    const discounted = itemsSum - Math.round(itemsSum * discount / 100);
+    const amount = discounted + shipping;
+    if (amount <= 0) return alert('Корзина пуста или сумма должна быть больше нуля');
+    if (!selectedTariff) return alert('Выберите тариф доставки');
+    if (!recNameIn().value.trim() || !recPhoneIn().value.trim()) return alert('Заполните ФИО и телефон получателя');
 
+    // 1. Создание платежа
+    let payment;
     try {
-      console.log('[Payment] Инициируем создание платежа на сумму:', amount);
       const resp = await fetch('/api/yookassa/create-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount,
-          currency: 'RUB',
-          description: `Оплата заказа clip & go: ${amount} ₽`
-        })
+        body: JSON.stringify({ amount, currency: 'RUB', description: `clip & go ${amount} ₽` })
       });
-      const data = await resp.json();
-      if (!resp.ok) {
-        console.error('[Payment] Ошибка создания платежа:', data);
-        return alert('Ошибка создания платежа, попробуйте позже');
-      }
-
-      // Перенаправляем пользователя на confirmation_url, полученный от YooKassa
-      window.location.href = data.confirmation_url;
-    } catch (e) {
-      console.error('[Payment] Ошибка при fetch:', e);
-      alert('Ошибка при попытке оплаты');
+      payment = await resp.json();
+      if (!resp.ok) throw 0;
+    } catch {
+      return alert('Ошибка при создании платежа');
     }
+
+    // 2. Регистрация заказа в СДЕК (fire-and-forget)
+    try {
+      fetch('/api/cdek/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildCdekOrderRequest(amount))
+      })
+          .then(r => r.json())
+          .then(j => console.log('[CDEK order]', j))
+          .catch(e => console.error('[CDEK order error]', e));
+    } catch (e) {
+      console.error('[CDEK build]', e);
+    }
+
+    // 3. Редирект на оплату
+    window.location.href = payment.confirmation_url;
   });
-  // ---------------------------------------------------
 }
 
+/* === Сбор тела запроса для CDEK === */
+function buildCdekOrderRequest(amount) {
+  const totalWeight = counts.camera * CAMERA_WEIGHT_KG + counts.memory * MEMORY_WEIGHT_KG;
+  const dims = counts.camera > 0
+      ? CAMERA_DIMENSIONS
+      : counts.memory > 0
+          ? MEMORY_DIMENSIONS
+          : { length: 1, width: 1, height: 1 };
 
-// === City suggest (Яндекс.Suggest) ===
-function initCitySuggest() {
-  console.log('[Log] [initCitySuggest] Навешиваем автоподсказку городов');
+  const packages = [{
+    number: '1',
+    weight: Number(totalWeight.toFixed(3)),
+    ...dims,
+    items: [{ name: 'clip & go order', ware_key: 'cg1', cost: amount }]
+  }];
 
-  cityIn().addEventListener(
-      'input',
-      debounce(async e => {
-        // Если только что кликнули по подсказке, пропускаем
-        if (justSelectedCity) {
-          justSelectedCity = false;
-          return;
-        }
+  const recipient = {
+    name: recNameIn().value.trim(),
+    phones: [{ number: recPhoneIn().value.trim() }],
+    email: recEmailIn().value.trim() || undefined
+  };
 
-        const q = e.target.value.trim();
-        currentCity = '';
-        cityCode = null;
-        resetDeliveryFlow();
-
-        const ul = citySug();
-        ul.innerHTML = '';
-        ul.classList.remove('visible');
-
-        if (q.length < 2) return;
-
-        console.log('[Log] [CitySuggest] Запрашиваем подсказки Yandex для:', q);
-        try {
-          const resp = await fetch(`/api/yandex/suggest?text=${encodeURIComponent(q)}`);
-          const json = await resp.json();
-          console.log('[Log] [CitySuggest] Получены подсказки от Yandex:', json);
-          renderSuggestions(json.results);
-        } catch (err) {
-          console.error('[Log] [CitySuggest] Ошибка при запросе подсказок:', err);
-        }
-      }),
-      300
-  );
-}
-
-function renderSuggestions(items) {
-  const ul = citySug();
-  ul.innerHTML = '';
-
-  if (!items || !items.length) {
-    ul.classList.remove('visible');
-    return;
+  if (selectedTariff.type === 'PVZ' || selectedTariff.type === 'POSTAMAT') {
+    return {
+      type: 2,
+      tariff_code: selectedTariff.code,
+      delivery_point: selectedTariff.pvzCode,
+      recipient,
+      packages
+    };
   }
 
-  items.forEach(item => {
-    const text = item.title.text + (item.subtitle ? ', ' + item.subtitle.text : '');
+  return {
+    type: 2,
+    tariff_code: selectedTariff.code,
+    to_location: {
+      code: cityCode,
+      address: streetIn().value.trim(),
+      city: currentCity
+    },
+    recipient,
+    packages
+  };
+}
+
+/* === Яндекс-подсказки городов === */
+function initCitySuggest() {
+  cityIn().addEventListener('input', debounce(async e => {
+    if (justSelectedCity) { justSelectedCity = false; return; }
+    const q = e.target.value.trim();
+    currentCity = ''; cityCode = null;
+    resetDeliveryFlow();
+
+    const ul = citySug();
+    ul.innerHTML = ''; ul.classList.remove('visible');
+    if (q.length < 2) return;
+
+    try {
+      const resp = await fetch(`/api/yandex/suggest?text=${encodeURIComponent(q)}`);
+      const j = await resp.json();
+      renderCitySuggestions(j.results || []);
+    } catch (e) { console.error(e); }
+  }, 300));
+}
+function renderCitySuggestions(items) {
+  const ul = citySug();
+  ul.innerHTML = '';
+  if (!items.length) { ul.classList.remove('visible'); return; }
+  items.forEach(it => {
+    const txt = it.title.text + (it.subtitle ? ', ' + it.subtitle.text : '');
     const li = document.createElement('li');
-    li.textContent = text;
-    li.style.padding = '10px';
-    li.style.cursor = 'pointer';
-    li.addEventListener('mouseover', () => li.style.background = '#f0f0f0');
-    li.addEventListener('mouseout', () => li.style.background = '#fff');
+    li.textContent = txt;
     li.addEventListener('click', async () => {
       justSelectedCity = true;
-      cityIn().value = text;
-      currentCity = text;
-      ul.innerHTML = '';
-      ul.classList.remove('visible');
-      console.log('[Log] [CitySuggest] Пользователь выбрал город:', text);
-      await fetchCdekCityCode(text);
+      cityIn().value = txt; currentCity = txt;
+      ul.innerHTML = ''; ul.classList.remove('visible');
+      await fetchCdekCityCode(txt);
       showElement(deliverySection());
     });
     ul.append(li);
   });
-
   ul.classList.add('visible');
 }
-
 async function fetchCdekCityCode(cityName) {
   try {
-    console.log('[Log] [fetchCdekCityCode] Изначальный город:', cityName);
-    let queryName = cityName.split(',')[0].trim();
-    console.log('[Log] [fetchCdekCityCode] Используем для поиска CDEK:', queryName);
-
-    const resp = await fetch(`/api/cdek/cities?search=${encodeURIComponent(queryName)}`);
-    const json = await resp.json();
-    console.log('[Log] [fetchCdekCityCode] Ответ API CDEК (cities):', json);
-
-    const first = Array.isArray(json)
-        ? json[0]
-        : (json.results ? json.results[0] : null);
-
-    cityCode = first ? first.code : null;
-    console.log('[Log] [fetchCdekCityCode] Установлен cityCode:', cityCode);
-  } catch (err) {
-    console.error('[Log] [fetchCdekCityCode] CDEК Cities error', err);
-  }
+    const q = cityName.split(',')[0].trim();
+    const resp = await fetch(`/api/cdek/cities?search=${encodeURIComponent(q)}`);
+    const j = await resp.json();
+    const f = Array.isArray(j) ? j[0] : (j.results ? j.results[0] : null);
+    cityCode = f ? f.code : null;
+  } catch (e) { console.error(e); }
 }
 
-
-// === Street input & геокодинг (курьер) ===
+/* === Ввод улицы и карта (карта без изменений) === */
 function initStreetInput() {
-  console.log('[Log] [initStreetInput] Навешиваем геокодинг на ввод улицы');
-
   streetIn().addEventListener('change', async () => {
     const addr = streetIn().value.trim();
     if (!addr || !mapInstance) return;
@@ -272,388 +257,206 @@ function initStreetInput() {
     try {
       const res = await ymaps.geocode(full);
       const coords = res.geoObjects.get(0).geometry.getCoordinates();
-      console.log('[Log] [StreetInput] Координаты после геокодера:', coords);
       mapInstance.setCenter(coords, 14, { duration: 500 });
-      if (streetMarker) {
-        mapInstance.geoObjects.remove(streetMarker);
-      }
+      if (streetMarker) mapInstance.geoObjects.remove(streetMarker);
       streetMarker = new ymaps.Placemark(coords, {}, {
-        preset: 'islands#circleIcon',
-        iconColor: '#FF5733'
+        preset: 'islands#circleIcon', iconColor: '#FF5733'
       });
       mapInstance.geoObjects.add(streetMarker);
-    } catch (e) {
-      console.error('[Log] [StreetInput] Geocode street error', e);
-    }
+    } catch (e) { console.error(e); }
   });
 }
 
-
-// === Delivery toggle (Курьер / ПВЗ) ===
+/* === Delivery toggle и показ карты === */
 function initDeliveryToggle() {
-  console.log('[Log] [initDeliveryToggle] Навешиваем переключатели «Курьер/PVZ»');
-
   document.getElementById('deliveryCourier').addEventListener('change', () => {
     if (!cityCode) return;
-    console.log('[Log] [DeliveryToggle] Выбран Courier');
-    hideElement(streetWrapper());
-    hideMapWrapper();
-    hideTariffs();
+    hideElement(streetWrapper()); hideMapWrapper(); hideTariffs();
+    selectedTariff = null; shipping = 0; deliveryInfoEl().textContent = ''; updateUI();
   });
-
   document.getElementById('deliveryPvz').addEventListener('change', () => {
-    if (!cityCode) {
-      console.warn('[Log] [DeliveryToggle] Нет cityCode, PVZ не будет загружаться');
-      return;
-    }
-    console.log('[Log] [DeliveryToggle] Выбран PVZ. cityCode =', cityCode);
-    showElement(streetWrapper());
-    hideTariffs();
-    showMapWrapper(currentCity, async () => {
-      await fetchAndPlotPvz();
-      console.log('[Log] [DeliveryToggle] Карта и PVЗ загружены');
-    });
+    if (!cityCode) return;
+    showElement(streetWrapper()); hideTariffs();
+    selectedTariff = null; shipping = 0; deliveryInfoEl().textContent = ''; updateUI();
+    showMapWrapper(currentCity, fetchAndPlotPvz);
   });
 }
-
-
-// === Fetch & plot PVZ/POSTAMAT + предварительное кеширование тарифов ===
-async function fetchAndPlotPvz() {
-  if (!cityCode || !mapInstance) return;
-
-  console.log('[Log] [fetchAndPlotPvz] Начало загрузки PVЗ для cityCode =', cityCode);
-
-  if (!cityClusterer) {
-    cityClusterer = new ymaps.Clusterer({
-      preset: 'islands#invertedDarkBlueClusterIcons',
-      groupByCoordinates: false,
-      clusterDisableClickZoom: false,
-      clusterOpenBalloonOnClick: false
-    });
-    postamatClusterer = new ymaps.Clusterer({
-      preset: 'islands#invertedLightBlueClusterIcons',
-      groupByCoordinates: false,
-      clusterDisableClickZoom: false,
-      clusterOpenBalloonOnClick: false
-    });
-    console.log('[Log] [fetchAndPlotPvz] Кластеризаторы созданы');
-  }
-
-  clearClusters();
-
-  let page = 0, totalPages = 1, allItems = [];
-  while (page < totalPages) {
-    const url = `/api/cdek/pvz?cityId=${encodeURIComponent(cityCode)}&type=ALL&size=1000&page=${page}`;
-    console.log(`[Log] [fetchAndPlotPvz] Fetch PVZ, page=${page}, URL="${url}"`);
-    const resp = await fetch(url);
-    const items = await resp.json();
-    allItems.push(...items);
-    totalPages = parseInt(resp.headers.get('x-total-pages') || '1', 10);
-    page++;
-  }
-  console.log('[Log] [fetchAndPlotPvz] Собрано всех пунктов:', allItems.length);
-
-  allItems.forEach(pt => {
-    const loc = pt.location || {};
-    if (!loc.latitude || !loc.longitude) return;
-    const coords = [loc.latitude, loc.longitude];
-    const type = (pt.type || '').toUpperCase(); // "PVZ" или "POSTAMAT"
-    const iconHref = type === 'PVZ'
-        ? '/assets/icons/pvz.png'
-        : '/assets/icons/postamat.png';
-
-    const pm = new ymaps.Placemark(coords, {}, {
-      iconLayout: 'default#image',
-      iconImageHref: iconHref,
-      iconImageSize: [32, 32],
-      iconImageOffset: [-16, -32]
-    });
-
-    pm.events.add('click', () => {
-      console.log('[Log] [PVZ] Клик по метке:', pt.code, loc.address_full);
-
-      // Панорамируем карту
-      mapInstance.setCenter(coords, 14, { duration: 500 });
-
-      // Собираем HTML для инфо-панели
-      let html = '';
-      const imgs = (pt.office_image_list || []).slice(0, 3);
-      if (imgs.length) {
-        html += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">';
-        imgs.forEach(i =>
-            html += `<img src="${i.url}" style="width:80px;height:80px;object-fit:cover;border-radius:4px;margin-right:4px;">`
-        );
-        html += '</div>';
-      }
-      html += `<h3 style="margin:4px 0;color:#007BFF;font-size:1.2em;">${
-          type === 'PVZ' ? 'Пункт выдачи' : 'Постамат'
-      }</h3>`;
-      html += `<p style="margin-bottom:8px;font-size:0.95em;color:#555;"><strong>Адрес:</strong> ${
-          loc.address_full || '—'
-      }</p>`;
-      html += `<p style="margin-bottom:8px;font-size:0.95em;color:#555;"><strong>Время работы:</strong> ${
-          pt.work_time || '—'
-      }</p>`;
-      html += `<p style="margin-bottom:8px;font-size:0.95em;color:#555;"><strong>Телефон:</strong> ${
-          (pt.phones || []).map(p => p.number).join(', ') || '—'
-      }</p>`;
-      html += `<p style="margin-bottom:8px;font-size:0.95em;color:#555;"><strong>Оплата:</strong> наличные ${
-          pt.have_cash ? 'есть' : 'нет'
-      }, безнал ${pt.have_cashless ? 'есть' : 'нет'}</p>`;
-      html += `<button id="selectPvzBtn" style="
-                width:100%;
-                margin-top:14px;
-                padding:14px 0;
-                background:#28a745;
-                color:#fff;
-                border:none;
-                border-radius:6px;
-                font-size:1em;
-                cursor:pointer;
-                transition:background 0.3s ease, transform 0.2s ease;
-              ">
-                Выбрать пункт
-              </button>`;
-
-      infoPanel().innerHTML = html;
-      mapWrapper().classList.add('with-panel');
-      showElement(infoPanel());
-
-      // Предзапрос превью тарифов
-      preloadTariffPreviews([136, 483, 368, 486]);
-
-      document.getElementById('selectPvzBtn').addEventListener('click', () => {
-        const markerType = type; // "PVZ" или "POSTAMAT"
-        const addressFull = loc.address_full || '—';
-        renderTariffButtons(markerType, addressFull);
-      });
-    });
-
-    if (type === 'PVZ') cityClusterer.add(pm);
-    else postamatClusterer.add(pm);
-  });
-
-  // Обработчики клика по кластерам
-  [cityClusterer, postamatClusterer].forEach(clusterer => {
-    clusterer.events.add('click', function(e) {
-      const cluster = e.get('target');
-      const center = cluster.geometry.getCoordinates();
-      const newZoom = mapInstance.getZoom() + 1;
-      mapInstance.setCenter(center, newZoom, { duration: 500 });
-    });
-  });
-
-  mapInstance.geoObjects
-      .add(cityClusterer)
-      .add(postamatClusterer);
-}
-
-
-// === Предзапрос («превью») тарифов ===
-async function preloadTariffPreviews(codes) {
-  if (!cityCode) return;
-
-  codes.forEach(async tariffCode => {
-    if (cachedPreviews[tariffCode]) return;
-
-    // Рассчитываем вес и габариты
-    const totalCameraWeight = counts.camera * CAMERA_WEIGHT_KG;
-    const totalMemoryWeight = counts.memory * MEMORY_WEIGHT_KG;
-    const totalWeight = totalCameraWeight + totalMemoryWeight;
-
-    let length, width, height;
-    if (counts.camera > 0) {
-      length = CAMERA_DIMENSIONS.length;
-      width  = CAMERA_DIMENSIONS.width;
-      height = CAMERA_DIMENSIONS.height;
-    } else if (counts.memory > 0) {
-      length = MEMORY_DIMENSIONS.length;
-      width  = MEMORY_DIMENSIONS.width;
-      height = MEMORY_DIMENSIONS.height;
-    } else {
-      length = 1; width = 1; height = 1;
-    }
-
-    const body = {
-      date: new Date().toISOString().replace(/\.\d{3}Z$/, '+0300'),
-      type: 1,
-      currency: 0,
-      lang: 'rus',
-      tariff_code: tariffCode,
-      from_location: { code: FROM_LOCATION },
-      to_location:   { code: cityCode },
-      packages: [
-        {
-          weight: Number(totalWeight.toFixed(3)),
-          length: length,
-          width: width,
-          height: height
-        }
-      ],
-      additional_order_types: []
-    };
-
-    try {
-      const resp = await fetch('/api/cdek/calculator/tariff', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      const result = await resp.json();
-      if (result.errors) {
-        console.warn('[Log] [TariffPreview] Ошибка превью:', result.errors);
-        cachedPreviews[tariffCode] = { deliverySum: 0, periodMin: 0, periodMax: 0 };
-      } else {
-        cachedPreviews[tariffCode] = {
-          deliverySum: result.delivery_sum || result.total_sum || 0,
-          periodMin: result.period_min || 0,
-          periodMax: result.period_max || 0
-        };
-      }
-      console.log('[Log] [TariffPreview] Кешировано превью для тарифа', tariffCode, cachedPreviews[tariffCode]);
-    } catch (e) {
-      console.error('[Log] [TariffPreview] Ошибка загрузки превью:', e);
-      cachedPreviews[tariffCode] = { deliverySum: 0, periodMin: 0, periodMax: 0 };
-    }
-  });
-}
-
-
-// === Рендерим кнопки тарифов ===
-function renderTariffButtons(markerType, addressFull) {
-  let availableTariffs;
-  if (markerType === 'PVZ') {
-    availableTariffs = [
-      { code: 136, name: 'Стандарт' },
-      { code: 483, name: 'Экспресс' }
-    ];
-  } else {
-    availableTariffs = [
-      { code: 368, name: 'Стандарт' },
-      { code: 486, name: 'Экспресс' }
-    ];
-  }
-
-  let tariffsHtml = '<h3 style="margin-bottom:16px;font-size:1.3em;color:#007BFF;">Выберите тариф:</h3>';
-  availableTariffs.forEach(t => {
-    const prev = cachedPreviews[t.code] || { deliverySum: 0, periodMin: 0, periodMax: 0 };
-    const rawSum = prev.deliverySum;
-    const roundedSum = Math.ceil(rawSum / 10) * 10;
-    const costStr = roundedSum.toLocaleString('ru-RU');
-    const period = prev.periodMin === prev.periodMax
-        ? `${prev.periodMin} дн.`
-        : `${prev.periodMin}–${prev.periodMax} дн.`;
-    tariffsHtml += `
-      <button class="tariff-btn" data-code="${t.code}" data-sum="${roundedSum}">
-        ${t.name} — <strong>${costStr} ₽</strong>, срок: <em>${period}</em>
-      </button>
-    `;
-  });
-
-  tariffContainer.innerHTML = tariffsHtml;
-  showTariffs();
-
-  document.querySelectorAll('.tariff-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tariffCode = Number(btn.dataset.code);
-      const roundedCost = Number(btn.dataset.sum);
-      console.log('[Log] [TariffFetch] Пользователь выбрал тариф:', tariffCode, 'для', markerType, addressFull);
-      calculateForTariff(tariffCode, markerType, addressFull, roundedCost);
-    });
-  });
-}
-
-
-// === Рассчитываем доставку для выбранного тарифа ===
-async function calculateForTariff(tariffCode, markerType, addressFull, roundedCost) {
-  shipping = roundedCost;
-  updateUI();
-
-  alert(
-      `Выбран ${markerType === 'PVZ' ? 'ПВЗ' : 'Постамат'}: ${addressFull}\n` +
-      `Тариф: ${tariffCode}\nСтоимость: ${shipping.toLocaleString('ru-RU')} ₽`
-  );
-  console.log('[Log] [TariffFetch] Установлен shipping (округлённый) =', shipping);
-}
-
-
-// === Вспомогательные функции ===
-function clearClusters() {
-  if (cityClusterer) cityClusterer.removeAll();
-  if (postamatClusterer) postamatClusterer.removeAll();
-  console.log('[Log] [clearClusters] Кластеры очищены');
-}
-
-// Показать map-wrapper + инициализировать/установить центр
 function showMapWrapper(city, cb) {
   mapWrapper().style.display = 'flex';
   mapContainer().style.display = 'block';
-
   if (mapInstance) {
     ymaps.ready(() => {
       ymaps.geocode(city).then(r => {
         const c = r.geoObjects.get(0).geometry.getCoordinates();
-        console.log('[Log] [showMap] Панорамируем к:', c);
         mapInstance.setCenter(c, 10, { duration: 500 });
         cb && cb();
       });
     });
     return;
   }
-
   ymaps.ready(() => {
     ymaps.geocode(city).then(r => {
       const c = r.geoObjects.get(0).geometry.getCoordinates();
-      console.log('[Log] [showMap] Создаём карту с центром:', c);
-      mapInstance = new ymaps.Map('map', {
-        center: c,
-        zoom: 10,
-        controls: ['zoomControl']
-      });
-      console.log('[Log] [showMap] Инстанция карты создана');
+      mapInstance = new ymaps.Map('map', { center: c, zoom: 10, controls: ['zoomControl'] });
       cb && cb();
     });
   });
 }
-
 function hideMapWrapper() {
   mapWrapper().style.display = 'none';
-  if (mapContainer()) mapContainer().style.display = 'none';
-  console.log('[Log] [hideMap] Блок карты скрыт');
+  mapContainer().style.display = 'none';
 }
 
-function showElement(el) {
-  if (!el) return;
-  el.classList.add('visible');
+/* === Fetch & plot PVZ + кэш тарифов === */
+async function fetchAndPlotPvz() {
+  if (!cityCode || !mapInstance) return;
+  if (!cityClusterer) {
+    cityClusterer = new ymaps.Clusterer({ preset: 'islands#invertedDarkBlueClusterIcons', groupByCoordinates: false, clusterDisableClickZoom: false, clusterOpenBalloonOnClick: false });
+    postamatClusterer = new ymaps.Clusterer({ preset: 'islands#invertedLightBlueClusterIcons', groupByCoordinates: false, clusterDisableClickZoom: false, clusterOpenBalloonOnClick: false });
+  }
+  clearClusters();
+
+  let page = 0, totalPages = 1, all = [];
+  while (page < totalPages) {
+    const url = `/api/cdek/pvz?cityId=${encodeURIComponent(cityCode)}&type=ALL&size=1000&page=${page}`;
+    const resp = await fetch(url);
+    const arr = await resp.json();
+    all.push(...arr);
+    totalPages = parseInt(resp.headers.get('x-total-pages') || '1', 10);
+    page++;
+  }
+
+  all.forEach(pt => {
+    const loc = pt.location || {};
+    if (!loc.latitude || !loc.longitude) return;
+    const coords = [loc.latitude, loc.longitude];
+    const type = (pt.type || '').toUpperCase();  // PVZ | POSTAMAT
+    const icon = type === 'PVZ' ? '/assets/icons/pvz.png' : '/assets/icons/postamat.png';
+    const pm = new ymaps.Placemark(coords, {}, { iconLayout: 'default#image', iconImageHref: icon, iconImageSize: [32, 32], iconImageOffset: [-16, -32] });
+
+    pm.events.add('click', () => {
+      mapInstance.setCenter(coords, 14, { duration: 500 });
+      renderPvzInfoPanel(pt, type, loc);
+    });
+
+    (type === 'PVZ' ? cityClusterer : postamatClusterer).add(pm);
+  });
+
+  [cityClusterer, postamatClusterer].forEach(cl => cl.events.add('click', e => {
+    const clus = e.get('target');
+    mapInstance.setCenter(clus.geometry.getCoordinates(), mapInstance.getZoom() + 1, { duration: 500 });
+  }));
+
+  mapInstance.geoObjects.add(cityClusterer).add(postamatClusterer);
 }
-function hideElement(el) {
-  if (!el) return;
-  el.classList.remove('visible');
+function clearClusters() {
+  if (cityClusterer) cityClusterer.removeAll();
+  if (postamatClusterer) postamatClusterer.removeAll();
 }
 
-function showTariffs() {
-  tariffContainer.classList.add('visible');
-}
-function hideTariffs() {
-  tariffContainer.classList.remove('visible');
-  tariffContainer.innerHTML = '';
+/* === Инфо-панель PVZ/Postamat === */
+function renderPvzInfoPanel(pt, type, loc) {
+  let html = '';
+  const imgs = (pt.office_image_list || []).slice(0, 3);
+  if (imgs.length) {
+    html += '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;">';
+    imgs.forEach(i => html += `<img src="${i.url}" style="width:80px;height:80px;object-fit:cover;border-radius:4px;">`);
+    html += '</div>';
+  }
+  html += `<h3 style="margin-bottom:8px;color:#007BFF;">${type==='PVZ'?'Пункт выдачи':'Постамат'}</h3>`;
+  html += `<p><strong>Адрес:</strong> ${loc.address_full||'—'}</p>`;
+  html += `<p><strong>Время работы:</strong> ${pt.work_time||'—'}</p>`;
+  html += `<button id="selectPvzBtn" style="width:100%;margin-top:12px;padding:12px 0;background:#28a745;color:#fff;border:none;border-radius:6px;cursor:pointer;">Выбрать пункт</button>`;
+  infoPanel().innerHTML = html;
+  mapWrapper().classList.add('with-panel');
+  showElement(infoPanel());
+
+  preloadTariffPreviews(type==='PVZ'?[136,483]:[368,486]);
+
+  document.getElementById('selectPvzBtn').addEventListener('click', () => {
+    renderTariffButtons(type, loc.address_full || '—', pt.code);
+  });
 }
 
-// Сбрасываем «flow» выбора доставки
+/* === Кэш тарифов === */
+async function preloadTariffPreviews(codes) {
+  if (!cityCode) return;
+  codes.forEach(async code => {
+    if (cachedPreviews[code]) return;
+    const totalWeight = counts.camera*CAMERA_WEIGHT_KG + counts.memory*MEMORY_WEIGHT_KG;
+    const dims = counts.camera>0?CAMERA_DIMENSIONS:counts.memory>0?MEMORY_DIMENSIONS:{length:1,width:1,height:1};
+    const body = {
+      date: new Date().toISOString().replace(/\.\d{3}Z$/, '+0300'),
+      type: 1, currency:0, lang:'rus',
+      tariff_code: code,
+      from_location:{code:FROM_LOCATION},
+      to_location:{code:cityCode},
+      packages:[{weight:Number(totalWeight.toFixed(3)),...dims}],
+      additional_order_types:[]
+    };
+    try {
+      const resp = await fetch('/api/cdek/calculator/tariff',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const j = await resp.json();
+      cachedPreviews[code] = j.errors?{deliverySum:0,periodMin:0,periodMax:0}:{deliverySum:j.delivery_sum||j.total_sum||0,periodMin:j.period_min||0,periodMax:j.period_max||0};
+    } catch {
+      cachedPreviews[code] = {deliverySum:0,periodMin:0,periodMax:0};
+    }
+  });
+}
+
+/* === Рендер кнопок тарифов === */
+function renderTariffButtons(markerType, address, pvzCode) {
+  const arr = markerType==='PVZ'
+      ? [{code:136,name:'Стандарт'},{code:483,name:'Экспресс'}]
+      : [{code:368,name:'Стандарт'},{code:486,name:'Экспресс'}];
+  let html = '<h3 style="margin-bottom:16px;font-size:1.3em;color:#007BFF;">Выберите тариф:</h3>';
+  arr.forEach(t => {
+    const p = cachedPreviews[t.code]||{deliverySum:0,periodMin:0,periodMax:0};
+    const cost = Math.ceil((p.deliverySum||0)/10)*10;
+    const costStr = cost.toLocaleString('ru-RU')+' ₽';
+    const period = p.periodMin===p.periodMax?`${p.periodMin} дн.`:`${p.periodMin}–${p.periodMax} дн.`;
+    html += `
+      <button class="tariff-btn" data-code="${t.code}" data-sum="${cost}" data-pvz="${pvzCode||''}">
+        <span>${t.name}</span>
+        <span class="tariff-details"><strong>${costStr}</strong><br><em>${period}</em></span>
+      </button>
+    `;
+  });
+  tariffContainer.innerHTML = html;
+  showTariffs();
+
+  document.querySelectorAll('.tariff-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedTariff = {
+        code: Number(btn.dataset.code),
+        type: markerType,
+        pvzCode: btn.dataset.pvz || null,
+        address
+      };
+      shipping = Number(btn.dataset.sum);
+      updateUI();
+      deliveryInfoEl().textContent =
+          `Выбран ${markerType==='PVZ'?'ПВЗ':'Постамат'}: ${address}. Тариф ${selectedTariff.code}, стоимость ${shipping.toLocaleString('ru-RU')} ₽`;
+    });
+  });
+}
+
+/* === Помощники === */
+function showElement(el)  { if(el) el.classList.add('visible'); }
+function hideElement(el)  { if(el) el.classList.remove('visible'); }
+function showTariffs()    { tariffContainer.classList.add('visible'); }
+function hideTariffs()    { tariffContainer.classList.remove('visible'); tariffContainer.innerHTML = ''; }
 function resetDeliveryFlow() {
   hideElement(deliverySection());
   hideElement(streetWrapper());
   hideElement(infoPanel());
   hideMapWrapper();
   hideTariffs();
-  clearClusters();
+  selectedTariff = null;
+  shipping = 0;
+  updateUI();
 }
-
-// Простейший debounce
 function debounce(fn, ms = 300) {
   let t;
-  return (...args) => {
-    clearTimeout(t);
-    t = setTimeout(() => fn(...args), ms);
-  };
+  return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
 }

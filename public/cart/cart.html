@@ -1,4 +1,5 @@
-<!-- File: public/cart/cart.html -->
+<!-- === File: public/cart/cart.html === -->
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -8,10 +9,7 @@
 
   <!-- Montserrat -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
-  <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
-          rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet"/>
 
   <!-- Глобальные стили -->
   <link rel="stylesheet" href="/css/style.css" />
@@ -21,22 +19,21 @@
   <!-- Локальные стили корзины -->
   <link rel="stylesheet" href="/cart/cart.css" />
 
-  <!-- Конфигурация Яндекс.Карт (вытягиваем ключ) -->
+  <!-- Конфигурация Яндекс.Карт -->
   <script src="/config.js"></script>
   <script>
-    (function() {
+    (function () {
       if (window.__ENV && window.__ENV.YANDEX_JSAPI_KEY) {
         const s = document.createElement('script');
         s.src = `https://api-maps.yandex.ru/2.1/?apikey=${window.__ENV.YANDEX_JSAPI_KEY}&lang=ru_RU`;
         document.head.appendChild(s);
-      } else {
-        console.error('Yandex API key отсутствует в window.__ENV');
       }
     })();
   </script>
 </head>
+
 <body>
-<!-- Общий header (подгружается из /public/header.html) -->
+<!-- Общий header -->
 <div id="header-container"></div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -117,7 +114,7 @@
       <ul id="citySuggestions" class="suggestions"></ul>
     </div>
 
-    <!-- выбор способа доставки (скрыто до выбора города) -->
+    <!-- выбор способа доставки -->
     <div id="deliveryMethodSection" class="section-block">
       <label>Способ доставки:</label>
       <div class="delivery-options-container">
@@ -156,7 +153,7 @@
       </div>
     </div>
 
-    <!-- ввод улицы (скрыто до выбора «Курьер») -->
+    <!-- ввод улицы -->
     <div id="streetWrapper" class="section-block" style="margin-top:15px;">
       <label for="streetInput">Улица и дом:</label>
       <input
@@ -166,16 +163,43 @@
       />
     </div>
 
-    <!-- карта и панель с описанием (скрыты до выбора «ПВЗ») -->
+    <!-- карта и инфо-панель -->
     <div class="map-wrapper">
       <div id="map"></div>
       <div id="pvz-info-panel"></div>
     </div>
 
-    <!-- контейнер для вариантов тарифов (скрыт до «Выбрать пункт») -->
+    <!-- контейнер тарифов -->
     <div id="tariffOptions"></div>
   </section>
   <!-- === /Адрес и способ доставки === -->
+
+  <!-- === Данные получателя === -->
+  <section class="delivery-section" id="recipientSection">
+    <h2>Данные получателя</h2>
+
+    <label for="recipientName">ФИО получателя:</label>
+    <input
+            type="text"
+            id="recipientName"
+            placeholder="Иванов Иван Иванович"
+    />
+
+    <label for="recipientPhone">Телефон:</label>
+    <input
+            type="tel"
+            id="recipientPhone"
+            placeholder="+7 999 000 11 22"
+    />
+
+    <label for="recipientEmail">Email (по желанию):</label>
+    <input
+            type="email"
+            id="recipientEmail"
+            placeholder="user@example.com"
+    />
+  </section>
+  <!-- === /Данные получателя === -->
 
   <!-- === Итоговая сумма и кнопка оформления === -->
   <div class="cart-summary">
@@ -183,18 +207,16 @@
       Доставка: <strong><span id="shippingCostValue">0</span> ₽</strong>
     </p>
     <h2>Итоговая сумма: <span id="cartTotalValue">0</span> ₽</h2>
-    <button id="checkoutBtn">Оформить заказ</button>
+    <div id="deliveryInfo" style="margin-bottom:16px;font-size:1em;color:#005bb5;"></div>
+    <button id="checkoutBtn">Оформить заказ и оплатить</button>
   </div>
   <!-- === /Итоговая сумма === -->
-
 </main>
 
 <footer>
   <p>© 2025 clip & go. Все права защищены.</p>
   <p>
-    <a href="/Policy/privacy-cookie-policy.html"
-    >Политика cookies и конфиденциальности</a
-    >
+    <a href="/Policy/privacy-cookie-policy.html">Политика cookies и конфиденциальности</a>
   </p>
 </footer>
 
