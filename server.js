@@ -4,9 +4,6 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const { randomUUID } = require('crypto');
-const rateLimit = require('express-rate-limit');
-const helmet = require('helmet');
-const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,92 +15,24 @@ const Y_SUG_KEY = process.env.YANDEX_SUGGEST_KEY;
 const YOO_SHOP_ID = process.env.YOO_KASSA_SHOP_ID;
 const YOO_SECRET_KEY = process.env.YOO_KASSA_SECRET_KEY;
 
-// =========================================
-// ====  Middleware & Security           ====
-// =========================================
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
 
-// Базовая защита с helmet
-app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://api-maps.yandex.ru", "https://suggest-maps.yandex.ru"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "https:", "blob:"],
-            connectSrc: ["'self'", "https://api-maps.yandex.ru", "https://suggest-maps.yandex.ru"]
-        }
-    }
-}));
 
-// CORS настройки
-app.use(cors({
-    origin: process.env.NODE_ENV === 'production'
-        ? 'https://yourdomain.com'
-        : ['http://localhost:3000', 'http://127.0.0.1:3000'],
-    credentials: true
-}));
-
-// Rate limiting
-const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 минут
-    max: 100, // максимум 100 запросов
-    message: 'Слишком много запросов с вашего IP, попробуйте позже'
-});
-
-const strictLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10, // для критичных эндпоинтов
-    message: 'Превышен лимит запросов'
-});
-
-app.use('/api/', limiter);
-app.use('/api/yookassa/', strictLimiter);
-app.use('/api/cdek/orders', strictLimiter);
-
-// Парсинг JSON с лимитом размера
-app.use(express.json({ limit: '10mb' }));
-
-// Статические файлы с кешированием
-app.use(express.static(path.join(__dirname, 'public'), {
-    maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0,
-    etag: true
-}));
-
-// Логирование
-const logger = {
-    info: (msg, data) => console.log(`[INFO] ${new Date().toISOString()} ${msg}`, data || ''),
-    error: (msg, error) => console.error(`[ERROR] ${new Date().toISOString()} ${msg}`, error || ''),
-    warn: (msg, data) => console.warn(`[WARN] ${new Date().toISOString()} ${msg}`, data || '')
-};
-
-// =========================================
-// ====  Validation Helpers              ====
-// =========================================
-
-const validators = {
-    phone: (phone) => /^[\d\s\-\+\(\)]+$/.test(phone) && phone.length >= 10,
-    email: (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
-    text: (text, minLen = 2, maxLen = 100) => text && text.length >= minLen && text.length <= maxLen,
-    number: (num, min = 0, max = 1000000) => !isNaN(num) && num >= min && num <= max
-};
-
-// =========================================
-// ====  Config endpoint                 ====
-// =========================================
-
-app.get('/config.js', (req, res) => {
-    logger.info('Config.js requested');
+// Отдаём клиенту ключи для Яндекс.Карт / Suggest
+app.get('/config.js', (_, res) => {
+    console.log('[Server] Запрошен /config.js');
     res.type('application/javascript').send(`
     window.__ENV = {
-      YANDEX_JSAPI_KEY: "${process.env.YANDEX_JSAPI_KEY || ''}",
-      YANDEX_SUGGEST_KEY: "${Y_SUG_KEY || ''}"
+      YANDEX_JSAPI_KEY: "${process.env.YANDEX_JSAPI_KEY}",
+      YANDEX_SUGGEST_KEY: "${Y_SUG_KEY}"
     };
   `);
 });
 
+
 // =========================================
-// ====  CDEK OAuth with caching         ====
+// ====  CDEK OAuth: кешируем токен      ====
 // =========================================
 let cdekToken = null;
 let cdekExp = 0;
@@ -112,78 +41,65 @@ async function getCdekToken() {
     if (cdekToken && Date.now() < cdekExp) {
         return cdekToken;
     }
-
-    logger.info('Requesting new CDEK token');
-
-    try {
-        const resp = await fetch(`${CDEK_HOST}/v2/oauth/token`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: new URLSearchParams({
-                grant_type: 'client_credentials',
-                client_id: process.env.CDEK_CLIENT_ID,
-                client_secret: process.env.CDEK_CLIENT_SECRET
-            })
-        });
-
-        if (!resp.ok) {
-            throw new Error(`CDEK OAuth failed: ${resp.status}`);
-        }
-
-        const json = await resp.json();
-        cdekToken = json.access_token;
-        cdekExp = Date.now() + json.expires_in * 1000 - 5000;
-        logger.info('CDEK token obtained', { expires_in: json.expires_in });
-        return cdekToken;
-    } catch (error) {
-        logger.error('Failed to get CDEK token', error);
-        throw error;
+    console.log('[getCdekToken] Запрашиваем новый токен CDEK...');
+    const resp = await fetch(`${CDEK_HOST}/v2/oauth/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+            grant_type: 'client_credentials',
+            client_id: process.env.CDEK_CLIENT_ID,
+            client_secret: process.env.CDEK_CLIENT_SECRET
+        })
+    });
+    if (!resp.ok) {
+        console.error('[getCdekToken] Ошибка при получении токена:', resp.status, await resp.text());
+        throw new Error('CDEK OAuth failed');
     }
+    const json = await resp.json();
+    cdekToken = json.access_token;
+    cdekExp = Date.now() + json.expires_in * 1000 - 5000;
+    console.log('[getCdekToken] Токен получен, expires_in =', json.expires_in);
+    return cdekToken;
 }
 
-// =========================================
-// ====  Yandex Suggest proxy            ====
-// =========================================
+
+// ==================================================
+// ====  Прокси для Яндекс.Suggest (autocomplete) ====
+// ==================================================
 app.get('/api/yandex/suggest', async (req, res) => {
     const text = (req.query.text || '').trim();
-
-    if (!validators.text(text, 2, 50)) {
-        return res.status(400).json({ error: 'Invalid text parameter' });
-    }
+    if (!text) return res.status(400).json({ error: 'missing text' });
+    console.log('[API /api/yandex/suggest] Запрашиваем подсказки Yandex для:', text);
 
     if (!Y_SUG_KEY) {
-        logger.error('YANDEX_SUGGEST_KEY not configured');
-        return res.status(500).json({ error: 'Service unavailable' });
+        console.error('[API /api/yandex/suggest] YANDEX_SUGGEST_KEY не задан');
+        return res.status(500).json({ error: 'suggest failed' });
     }
 
     const url = `https://suggest-maps.yandex.ru/v1/suggest?apikey=${encodeURIComponent(Y_SUG_KEY)}` +
         `&text=${encodeURIComponent(text)}&lang=ru_RU&results=7`;
-
     try {
         const r = await fetch(url);
         const body = await r.text();
         let json;
-        try {
-            json = body ? JSON.parse(body) : { results: [] };
-        } catch {
-            json = { results: [] };
-        }
+        try { json = body ? JSON.parse(body) : { results: [] }; }
+        catch { json = { results: [] }; }
+        console.log('[API /api/yandex/suggest] Ответ от Яндекс:', json);
         return res.json(json);
     } catch (e) {
-        logger.error('Yandex suggest error', e);
-        return res.status(500).json({ error: 'Service error' });
+        console.error('[API /api/yandex/suggest] Ошибка fetch:', e);
+        return res.status(500).json({ error: 'suggest failed' });
     }
 });
 
-// =========================================
-// ====  CDEK Cities search              ====
-// =========================================
+
+// =======================================================
+// ====  Прокси для поиска городов через CDEK (v2)     ====
+// =======================================================
 app.get('/api/cdek/cities', async (req, res) => {
     const q = (req.query.search || '').trim();
-
-    if (!validators.text(q, 2, 50)) {
-        return res.status(400).json({ error: 'Invalid search parameter' });
-    }
+    if (!q) return res.status(400).json({ error: 'missing search' });
+    console.log('[API /api/cdek/cities] Поиск городов CDEK для:', q);
 
     try {
         const tok = await getCdekToken();
@@ -193,32 +109,25 @@ app.get('/api/cdek/cities', async (req, res) => {
         );
         const text = await r.text();
         let json;
-        try {
-            json = text ? JSON.parse(text) : [];
-        } catch {
-            json = [];
-        }
+        try { json = text ? JSON.parse(text) : []; }
+        catch { json = []; }
+        console.log('[API /api/cdek/cities] Ответ от CDEK:', json);
         return res.status(r.status).json(json);
     } catch (e) {
-        logger.error('CDEK cities error', e);
-        return res.status(500).json({ error: 'Service error' });
+        console.error('[API /api/cdek/cities] Ошибка:', e);
+        return res.status(500).json({ error: 'cdek cities failed' });
     }
 });
 
-// =========================================
-// ====  CDEK PVZ list                   ====
-// =========================================
+
+// =========================================================
+// ====  Прокси для получения ПВЗ/постаматов у CDEK (v2) ====
+// =========================================================
 app.get('/api/cdek/pvz', async (req, res) => {
     const cityCode = req.query.cityId;
-    const page = parseInt(req.query.page) || 0;
-
-    if (!cityCode || !validators.number(parseInt(cityCode), 1, 999999)) {
-        return res.status(400).json({ error: 'Invalid cityId' });
-    }
-
-    if (!validators.number(page, 0, 100)) {
-        return res.status(400).json({ error: 'Invalid page' });
-    }
+    const page = req.query.page || 0;
+    if (!cityCode) return res.status(400).json({ error: 'missing cityId' });
+    console.log(`[API /api/cdek/pvz] Запрос ПВЗ: cityId=${cityCode}, page=${page}`);
 
     try {
         const tok = await getCdekToken();
@@ -229,35 +138,24 @@ app.get('/api/cdek/pvz', async (req, res) => {
         });
         const text = await r.text();
         let json;
-        try {
-            json = text ? JSON.parse(text) : [];
-        } catch {
-            json = [];
-        }
+        try { json = text ? JSON.parse(text) : []; }
+        catch { json = []; }
         const totalPagesHeader = r.headers.get('x-total-pages') || '1';
         res.set('x-total-pages', totalPagesHeader);
+        console.log('[API /api/cdek/pvz] Ответ от CDEK (количество):', Array.isArray(json) ? json.length : 0);
         return res.status(200).json(json);
     } catch (e) {
-        logger.error('CDEK PVZ error', e);
-        return res.status(500).json({ error: 'Service error' });
+        console.error('[API /api/cdek/pvz] Ошибка:', e);
+        return res.status(500).json({ error: 'cdek pvz failed' });
     }
 });
 
-// =========================================
-// ====  CDEK Calculator                 ====
-// =========================================
+
+// =========================================================
+// ====  Прокси для калькулятора тарифов CDEK (v2)       ====
+// =========================================================
 app.post('/api/cdek/calculator/tariff', async (req, res) => {
-    // Валидация тела запроса
-    const { tariff_code, from_location, to_location, packages } = req.body;
-
-    if (!tariff_code || !from_location || !to_location || !packages) {
-        return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    if (!Array.isArray(packages) || packages.length === 0) {
-        return res.status(400).json({ error: 'Invalid packages array' });
-    }
-
+    console.log('[API /api/cdek/calculator/tariff] Тело запроса:', req.body);
     try {
         const tok = await getCdekToken();
         const r = await fetch(`${CDEK_BASE}/v2/calculator/tariff`, {
@@ -269,91 +167,192 @@ app.post('/api/cdek/calculator/tariff', async (req, res) => {
             body: JSON.stringify(req.body)
         });
         const json = await r.json();
+        console.log('[API /api/cdek/calculator/tariff] Ответ от CDEK:', json);
         return res.status(r.status).json(json);
     } catch (e) {
-        logger.error('CDEK calculator error', e);
-        return res.status(500).json({ error: 'Service error' });
+        console.error('[API /api/cdek/calculator/tariff] Ошибка:', e);
+        return res.status(500).json({ error: 'cdek tariff failed' });
     }
 });
 
-// =========================================
-// ====  CDEK Order Creation             ====
-// =========================================
+
+// =========================================================
+// ====  СОЗДАНИЕ ЗАКАЗА В CDEK (v2) - ПОЛНАЯ РЕАЛИЗАЦИЯ ====
+// =========================================================
 app.post('/api/cdek/orders', async (req, res) => {
-    const { type, tariff_code, recipient, packages } = req.body;
-
-    // Валидация
-    if (!type || !tariff_code || !recipient || !packages) {
-        return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    if (!recipient.name || !validators.text(recipient.name, 2, 100)) {
-        return res.status(400).json({ error: 'Invalid recipient name' });
-    }
-
-    if (!recipient.phones || !recipient.phones[0] || !validators.phone(recipient.phones[0].number)) {
-        return res.status(400).json({ error: 'Invalid recipient phone' });
-    }
-
-    if (recipient.email && !validators.email(recipient.email)) {
-        return res.status(400).json({ error: 'Invalid recipient email' });
-    }
+    console.log('[API /api/cdek/orders] Получен запрос на создание заказа');
+    console.log('[API /api/cdek/orders] Тело запроса:', JSON.stringify(req.body, null, 2));
 
     try {
-        const tok = await getCdekToken();
-        const orderData = {
-            ...req.body,
-            number: `CG-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            comment: 'Заказ с сайта clip & go'
-        };
+        // Получаем токен
+        const token = await getCdekToken();
 
-        const r = await fetch(`${CDEK_BASE}/v2/orders`, {
+        // Базовая структура заказа из запроса
+        const orderData = req.body;
+
+        // Добавляем обязательные поля для отправителя (магазина)
+        if (!orderData.sender) {
+            orderData.sender = {
+                company: 'ИП clip & go',  // Обязательное поле!
+                name: 'Менеджер магазина',
+                email: 'clip_and_go@outlook.com',
+                phones: [{ number: '+79999999999' }]
+            };
+        }
+
+        // Добавляем номер заказа если его нет
+        if (!orderData.number) {
+            orderData.number = `CG-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        }
+
+        // Добавляем комментарий к заказу
+        if (!orderData.comment) {
+            orderData.comment = 'Заказ с сайта clip & go';
+        }
+
+        // Указываем from_location (откуда отправляем) - Москва
+        if (!orderData.from_location) {
+            orderData.from_location = {
+                code: 44,  // код Москвы в CDEK
+                city: 'Москва',
+                address: 'Склад интернет-магазина'
+            };
+        }
+
+        // Проверяем и дополняем данные о посылках
+        if (orderData.packages && orderData.packages.length > 0) {
+            orderData.packages = orderData.packages.map((pkg, index) => ({
+                ...pkg,
+                number: pkg.number || `PKG-${index + 1}`,
+                comment: pkg.comment || 'Товары clip & go',
+                // Убеждаемся что размеры указаны
+                length: pkg.length || 20,
+                width: pkg.width || 15,
+                height: pkg.height || 10,
+                weight: pkg.weight || 500
+            }));
+        }
+
+        // Финальная проверка обязательных полей
+        const requiredFields = ['type', 'tariff_code', 'recipient', 'packages'];
+        for (const field of requiredFields) {
+            if (!orderData[field]) {
+                console.error(`[API /api/cdek/orders] Отсутствует обязательное поле: ${field}`);
+                return res.status(400).json({
+                    error: `Отсутствует обязательное поле: ${field}`,
+                    details: `Поле '${field}' является обязательным для создания заказа`
+                });
+            }
+        }
+
+        // Проверяем наличие адреса доставки
+        if (!orderData.delivery_point && !orderData.to_location) {
+            console.error('[API /api/cdek/orders] Не указан адрес доставки');
+            return res.status(400).json({
+                error: 'Не указан адрес доставки',
+                details: 'Необходимо указать либо delivery_point (для ПВЗ), либо to_location (для курьера)'
+            });
+        }
+
+        console.log('[API /api/cdek/orders] Отправляем заказ в CDEK:', JSON.stringify(orderData, null, 2));
+
+        // Отправляем запрос в CDEK
+        const response = await fetch(`${CDEK_BASE}/v2/orders`, {
             method: 'POST',
             headers: {
-                Authorization: `Bearer ${tok}`,
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(orderData)
         });
 
-        const json = await r.json();
+        const responseText = await response.text();
+        let result;
 
-        if (r.ok) {
-            logger.info('CDEK order created', { order_uuid: json.entity?.uuid });
-        } else {
-            logger.error('CDEK order creation failed', json);
+        try {
+            result = JSON.parse(responseText);
+        } catch (e) {
+            console.error('[API /api/cdek/orders] Не удалось распарсить ответ:', responseText);
+            return res.status(500).json({
+                error: 'Некорректный ответ от CDEK',
+                details: responseText
+            });
         }
 
-        return res.status(r.status).json(json);
-    } catch (e) {
-        logger.error('CDEK order error', e);
-        return res.status(500).json({ error: 'Service error' });
+        console.log('[API /api/cdek/orders] Ответ от CDEK:', JSON.stringify(result, null, 2));
+
+        // Обработка успешного создания заказа
+        if (response.ok && result.entity) {
+            console.log('[API /api/cdek/orders] Заказ успешно создан!');
+            console.log('[API /api/cdek/orders] UUID заказа:', result.entity.uuid);
+
+            return res.status(200).json({
+                success: true,
+                order_uuid: result.entity.uuid,
+                order_number: orderData.number,
+                message: 'Заказ успешно создан в системе CDEK',
+                cdek_response: result
+            });
+        }
+
+        // Обработка ошибок от CDEK
+        if (result.errors && result.errors.length > 0) {
+            console.error('[API /api/cdek/orders] Ошибки от CDEK:', result.errors);
+
+            // Формируем понятное сообщение об ошибке
+            const errorMessages = result.errors.map(err =>
+                `${err.message || err.code} (код: ${err.code})`
+            ).join('; ');
+
+            return res.status(400).json({
+                success: false,
+                error: 'Ошибка создания заказа в CDEK',
+                details: errorMessages,
+                cdek_errors: result.errors
+            });
+        }
+
+        // Если статус не OK, но и ошибок нет
+        return res.status(response.status).json({
+            success: false,
+            error: 'Неожиданный ответ от CDEK',
+            status: response.status,
+            cdek_response: result
+        });
+
+    } catch (error) {
+        console.error('[API /api/cdek/orders] Критическая ошибка:', error);
+        return res.status(500).json({
+            success: false,
+            error: 'Внутренняя ошибка сервера',
+            details: error.message
+        });
     }
 });
 
-// =========================================
-// ====  YooKassa Payment Creation       ====
-// =========================================
+
+// =============================================================
+// ====  Прокси для создания платежа в YooKassa (v3 API)       ====
+// =============================================================
 app.post('/api/yookassa/create-payment', async (req, res) => {
-    const { amount, currency, description, metadata } = req.body;
-
-    // Валидация
-    if (!validators.number(amount, 1, 1000000)) {
-        return res.status(400).json({ error: 'Invalid amount' });
+    const { amount, currency, description } = req.body;
+    if (typeof amount !== 'number' || !currency) {
+        return res.status(400).json({ error: 'Missing amount or currency' });
     }
-
-    if (!currency || currency !== 'RUB') {
-        return res.status(400).json({ error: 'Invalid currency' });
-    }
-
     if (!YOO_SHOP_ID || !YOO_SECRET_KEY) {
-        logger.error('YooKassa credentials not configured');
-        return res.status(500).json({ error: 'Payment service unavailable' });
+        console.error('[API /api/yookassa/create-payment] Параметры YOO_KASSA не заданы.');
+        return res.status(500).json({ error: 'yookassa credentials missing' });
     }
 
+    console.log('[API /api/yookassa/create-payment] amount=', amount, 'currency=', currency);
+
+    // Basic Auth (shopId:secretKey → base64)
     const auth = Buffer.from(`${YOO_SHOP_ID}:${YOO_SECRET_KEY}`).toString('base64');
+
+    // Генерируем уникальный ключ для Idempotence-Key
     const idemKey = randomUUID();
 
+    // Формируем тело запроса к YooKassa
     const paymentRequest = {
         amount: {
             value: amount.toFixed(2),
@@ -361,11 +360,11 @@ app.post('/api/yookassa/create-payment', async (req, res) => {
         },
         confirmation: {
             type: 'redirect',
-            return_url: `${req.protocol}://${req.get('host')}/payment/payment-result.html`
+            // После оплаты YooKassa сделает редирект на эту страницу:
+            return_url: `http://localhost:${PORT}/payment/payment-result.html`
         },
         capture: true,
-        description: description || 'Оплата заказа clip & go',
-        metadata: metadata || {}
+        description: description || 'Оплата заказа clip & go'
     };
 
     try {
@@ -378,70 +377,27 @@ app.post('/api/yookassa/create-payment', async (req, res) => {
             },
             body: JSON.stringify(paymentRequest)
         });
-
         const payment = await response.json();
-
         if (!response.ok) {
-            logger.error('YooKassa payment creation failed', payment);
+            console.error('[API /api/yookassa/create-payment] Ошибка от YooKassa:', payment);
             return res.status(response.status).json(payment);
         }
-
-        const confirmationUrl = payment.confirmation?.confirmation_url;
+        // В ответе YooKassa приходит confirmation: { confirmation_url: "..." }
+        const confirmationUrl = payment.confirmation && payment.confirmation.confirmation_url;
+        console.log('[API /api/yookassa/create-payment] confirmation_url =', confirmationUrl);
 
         if (!confirmationUrl) {
-            return res.status(500).json({ error: 'No confirmation URL received' });
+            return res.status(500).json({ error: 'confirmation_url missing in YooKassa response' });
         }
-
-        logger.info('YooKassa payment created', { payment_id: payment.id });
-        return res.json({ confirmation_url: confirmationUrl, payment_id: payment.id });
+        return res.json({ confirmation_url: confirmationUrl });
     } catch (err) {
-        logger.error('YooKassa payment error', err);
-        return res.status(500).json({ error: 'Payment service error' });
+        console.error('[API /api/yookassa/create-payment] Ошибка:', err);
+        return res.status(500).json({ error: 'yookassa create payment failed' });
     }
 });
 
-// =========================================
-// ====  Health check endpoint           ====
-// =========================================
-app.get('/api/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        services: {
-            cdek: !!cdekToken,
-            yookassa: !!YOO_SHOP_ID,
-            yandex: !!Y_SUG_KEY
-        }
-    });
-});
 
-// =========================================
-// ====  404 handler                     ====
-// =========================================
-app.use((req, res) => {
-    res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
-});
-
-// =========================================
-// ====  Error handler                   ====
-// =========================================
-app.use((err, req, res, next) => {
-    logger.error('Unhandled error', err);
-    res.status(500).json({
-        error: 'Internal server error',
-        message: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
-});
-
-// =========================================
-// ====  Start server                    ====
-// =========================================
+// Запускаем сервер
 app.listen(PORT, () => {
-    logger.info(`Server started on http://localhost:${PORT}`);
-    logger.info('Environment:', {
-        nodeEnv: process.env.NODE_ENV || 'development',
-        cdekConfigured: !!process.env.CDEK_CLIENT_ID,
-        yookassaConfigured: !!YOO_SHOP_ID,
-        yandexConfigured: !!Y_SUG_KEY
-    });
+    console.log(`🚀 Server запущен на http://localhost:${PORT}`);
 });

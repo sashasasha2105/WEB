@@ -3,154 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>clip & go</title>
 
-  <!-- SEO Meta Tags -->
-  <title>clip & go - Компактная 4K экшн-камера | Официальный сайт</title>
-  <meta name="description" content="clip & go - ультракомпактная 4K экшн-камера размером с большой палец. Мгновенная съёмка, 120° широкий угол, Wi-Fi. Доставка по России через СДЭК. Цена от 8900₽">
-  <meta name="keywords" content="clip and go, экшн камера, 4K камера, компактная камера, спортивная камера, купить экшн камеру">
-  <meta name="author" content="clip & go">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://yourdomain.com/">
-
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://yourdomain.com/">
-  <meta property="og:title" content="clip & go - Компактная 4K экшн-камера">
-  <meta property="og:description" content="Ультракомпактная экшн-камера для съёмки в любых условиях. 4K видео, 120° угол обзора, вес всего 35г.">
-  <meta property="og:image" content="https://yourdomain.com/assets/images/cam1.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:locale" content="ru_RU">
-  <meta property="og:site_name" content="clip & go">
-
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://yourdomain.com/">
-  <meta property="twitter:title" content="clip & go - Компактная 4K экшн-камера">
-  <meta property="twitter:description" content="Ультракомпактная экшн-камера для съёмки в любых условиях. 4K видео, 120° угол обзора.">
-  <meta property="twitter:image" content="https://yourdomain.com/assets/images/cam1.jpg">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-
-  <!-- Preconnect для ускорения загрузки -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://api-maps.yandex.ru">
-
-  <!-- Fonts -->
+  <!-- Google Fonts Montserrat -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet" />
 
-  <!-- Critical CSS (inline для скорости) -->
-  <style>
-    /* Critical above-the-fold styles */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Montserrat', sans-serif; background: linear-gradient(135deg, #f4f7f6, #e8ecf1); color: #333; }
-    .hero-gif { position: relative; width: 100%; max-height: 800px; overflow: hidden; }
-    .hero-gif img { width: 100%; height: auto; object-fit: cover; }
-    header { position: fixed; top: 0; left: 0; width: 100%; padding: 20px 40px; background: transparent; z-index: 1000; transition: background 0.5s ease; }
-    .cookie-banner { position: fixed; bottom: 20px; right: 20px; max-width: 300px; background: rgba(0,0,0,0.8); color: #fff; padding: 12px 16px; border-radius: 8px; display: none; z-index: 2000; }
-  </style>
-
-  <!-- Async loading of non-critical CSS -->
-  <link rel="preload" href="/css/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
-  <link rel="stylesheet" href="/css/mobile-header.css" media="(max-width: 767px)" />
-
-  <!-- Structured Data / JSON-LD -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      "name": "clip & go экшн-камера",
-      "image": [
-        "https://yourdomain.com/assets/images/cam1.jpg",
-        "https://yourdomain.com/assets/images/cam2.jpg",
-        "https://yourdomain.com/assets/images/cam3.jpg"
-      ],
-      "description": "Компактная 4K экшн-камера размером с большой палец. Мгновенный отклик, широкий угол обзора 120°, поддержка Wi-Fi.",
-      "sku": "CLIPGO-1ST",
-      "mpn": "CG001",
-      "brand": {
-        "@type": "Brand",
-        "name": "clip & go"
-      },
-      "offers": {
-        "@type": "Offer",
-        "url": "https://yourdomain.com",
-        "priceCurrency": "RUB",
-        "price": "8900",
-        "priceValidUntil": "2025-12-31",
-        "availability": "https://schema.org/InStock",
-        "seller": {
-          "@type": "Organization",
-          "name": "clip & go"
-        },
-        "shippingDetails": {
-          "@type": "OfferShippingDetails",
-          "shippingRate": {
-            "@type": "MonetaryAmount",
-            "value": "0",
-            "currency": "RUB"
-          },
-          "deliveryTime": {
-            "@type": "ShippingDeliveryTime",
-            "businessDays": {
-              "@type": "QuantitativeValue",
-              "minValue": 1,
-              "maxValue": 5
-            }
-          }
-        }
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "127"
-      },
-      "review": [{
-        "@type": "Review",
-        "reviewRating": {
-          "@type": "Rating",
-          "ratingValue": "5"
-        },
-        "author": {
-          "@type": "Person",
-          "name": "Александр М."
-        },
-        "reviewBody": "Отличная камера! Компактная, снимает в 4K, легко крепится на одежду."
-      }]
-    }
-  </script>
-
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "clip & go",
-      "url": "https://yourdomain.com",
-      "logo": "https://yourdomain.com/logo.png",
-      "contactPoint": {
-        "@type": "ContactPoint",
-        "telephone": "+1-234-567-8900",
-        "contactType": "customer service",
-        "email": "clip_and_go@outlook.com",
-        "availableLanguage": ["Russian", "English"]
-      },
-      "sameAs": [
-        "https://t.me/clipandgomanager"
-      ]
-    }
-  </script>
+  <!-- Стили подключаем как в оригинале - простым способом -->
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/responsive.css" media="(max-width:768px)" />
+  <link rel="stylesheet" href="/css/header.css" />
 </head>
 <body>
 
-<!-- Async header loading -->
+<!-- Шапка будет загружаться через JS из /header.html -->
 <div id="header-container"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch('/header.html')
+            .then(r => r.text())
+            .then(html => {
+              document.getElementById('header-container').innerHTML = html;
+              const hdr = document.getElementById('site-header');
+              hdr.classList.remove('scrolled');
+              const TH = 50;
+              const onScroll = () =>
+                      window.scrollY > TH
+                              ? hdr.classList.add('scrolled')
+                              : hdr.classList.remove('scrolled');
+              onScroll();
+              window.addEventListener('scroll', onScroll);
+            })
+            .catch(console.error);
+  });
+</script>
 
-<!-- Cookie Banner with lazy loading -->
+<!-- Баннер cookies -->
 <div class="cookie-banner" style="display: flex;">
     <span>
       Пользуясь сайтом, вы соглашаетесь с тем, что мы используем
@@ -159,68 +47,28 @@
   <button id="accept-cookies">Окей</button>
 </div>
 
-<!-- HERO Section -->
+<!-- HERO -->
 <section id="hero" class="hero-gif fade-in-on-scroll">
-  <img
-          src="/assets/images/main_page.GIF"
-          alt="clip & go - презентация компактной экшн-камеры"
-          loading="eager"
-          fetchpriority="high"
-  />
+  <img src="/assets/images/main_page.GIF" alt="Презентация продукта" />
   <div class="hero-overlay">
     <h1>UNLOCK YOUR POTENTIAL<br />clip & go</h1>
     <p>Уже в продаже • Уже в России</p>
   </div>
 </section>
 
-<!-- Main Content -->
+<!-- Основной контейнер -->
 <section id="main" class="main-container fade-in-on-scroll">
   <div class="left-column">
     <section class="slider-container">
       <div class="slider-wrapper">
-        <img
-                src="/assets/images/cam1.jpg"
-                class="slider-img active"
-                alt="clip & go камера - вид спереди"
-                loading="lazy"
-                width="700"
-                height="700"
-        />
-        <img
-                src="/assets/images/cam2.jpg"
-                class="slider-img"
-                alt="clip & go камера - вид сбоку"
-                loading="lazy"
-                width="700"
-                height="700"
-        />
-        <img
-                src="/assets/images/cam3.jpg"
-                class="slider-img"
-                alt="clip & go камера - в руке"
-                loading="lazy"
-                width="700"
-                height="700"
-        />
-        <img
-                src="/assets/images/cam4.jpg"
-                class="slider-img"
-                alt="clip & go камера - крепление"
-                loading="lazy"
-                width="700"
-                height="700"
-        />
-        <img
-                src="/assets/images/cam5.jpg"
-                class="slider-img"
-                alt="clip & go камера - в действии"
-                loading="lazy"
-                width="700"
-                height="700"
-        />
+        <img src="/assets/images/cam1.jpg" class="slider-img active" alt="Cam1" />
+        <img src="/assets/images/cam2.jpg" class="slider-img" alt="Cam2" />
+        <img src="/assets/images/cam3.jpg" class="slider-img" alt="Cam3" />
+        <img src="/assets/images/cam4.jpg" class="slider-img" alt="Cam4" />
+        <img src="/assets/images/cam5.jpg" class="slider-img" alt="Cam5" />
       </div>
-      <button class="slider-arrow slider-arrow-left" onclick="prevSlide()" aria-label="Предыдущее фото">&#10094;</button>
-      <button class="slider-arrow slider-arrow-right" onclick="nextSlide()" aria-label="Следующее фото">&#10095;</button>
+      <button class="slider-arrow slider-arrow-left" onclick="prevSlide()">&#10094;</button>
+      <button class="slider-arrow slider-arrow-right" onclick="nextSlide()">&#10095;</button>
     </section>
   </div>
 
@@ -231,27 +79,27 @@
         <div class="option-group">
           <span class="option-label">Цвет камеры</span>
           <div id="colorOptions" class="option-buttons">
-            <button class="option-btn selected" data-color="black" aria-label="Чёрный цвет">Чёрный</button>
-            <button class="option-btn" data-color="white" aria-label="Белый цвет">Белый</button>
+            <button class="option-btn selected" data-color="black" aria-label="Чёрный"></button>
+            <button class="option-btn" data-color="white" aria-label="Белый"></button>
           </div>
         </div>
         <div class="option-group">
           <span class="option-label">Размер карты памяти</span>
           <div id="memoryOptions" class="option-buttons">
             <button class="memory-btn selected" data-memory="none">Без накопителя</button>
-            <button class="memory-btn" data-memory="8gb">8 ГБ (+500₽)</button>
+            <button class="memory-btn" data-memory="8gb">8 ГБ</button>
           </div>
         </div>
       </div>
-      <div id="priceDisplay" class="price-display" aria-live="polite"></div>
+      <div id="priceDisplay" class="price-display"></div>
       <div class="purchase-buttons">
-        <button id="addToCartBtn" aria-label="Добавить товар в корзину">Добавить в корзину</button>
+        <button id="addToCartBtn">Добавить в корзину</button>
       </div>
     </section>
   </div>
 </section>
 
-<!-- Product Description -->
+<!-- Описание продукта -->
 <section class="camera-description fade-in-on-scroll">
   <div class="description-container">
     <h2>clip & go – компактная экшн-камера для любых задач</h2>
@@ -267,10 +115,10 @@
   </div>
 </section>
 
-<!-- Tabs Section -->
+<!-- Вкладки (характеристики, FAQ, доставка) -->
 <section id="tabsBlock" class="tabs-block fade-in-on-scroll">
   <div class="tab-item">
-    <div class="tab-header" onclick="toggleCharacteristics()" tabindex="0" role="button" aria-expanded="false">
+    <div class="tab-header" onclick="toggleCharacteristics()">
       <span>Характеристики</span><span class="arrow">▼</span>
     </div>
     <div id="charTableContainer" class="tab-content">
@@ -278,101 +126,100 @@
         <tbody>
         <tr><th>Модель</th><td>clip & go 1st edition</td></tr>
         <tr><th>Размер</th><td>65 × 28 × 21 мм</td></tr>
-        <tr><th>Вес</th><td>35 г</td></tr>
-        <tr><th>Тип</th><td>4K Wi-Fi камера</td></tr>
+        <tr><th>Тип</th><td>4K Wi-Fi камера большого пальца</td></tr>
         <tr><th>Объектив/угол</th><td>120° широкоугольный</td></tr>
-        <tr><th>Wi-Fi</th><td>Поддержка Wi-Fi 802.11b/g/n</td></tr>
+        <tr><th>Wi-Fi</th><td>Поддержка Wi-Fi</td></tr>
         <tr><th>Хранение</th><td>MicroSD до 256 GB (не входит)</td></tr>
         <tr><th>Батарея</th><td>800 мА·ч, Li-Po</td></tr>
-        <tr><th>Видео</th><td>3840 × 2160 (4K) @ 30fps</td></tr>
+        <tr><th>Видео</th><td>3840 × 2160 (4K)</td></tr>
         <tr><th>Сертификация</th><td>CE, RoHS</td></tr>
         <tr><th>Зарядка</th><td>5 В/2 А (120 мин)</td></tr>
-        <tr><th>Водонепроницаемость</th><td>30 м в специальном кейсе</td></tr>
+        <tr><th>Водонепр.</th><td>30 м в кейсе</td></tr>
         </tbody>
       </table>
     </div>
   </div>
   <div class="tab-item">
-    <div class="tab-header" onclick="toggleFAQ()" tabindex="0" role="button" aria-expanded="false">
+    <div class="tab-header" onclick="toggleFAQ()">
       <span>Частые вопросы</span><span class="arrow">▼</span>
     </div>
     <div id="faqContainer" class="tab-content">
       <div class="faq-item">
         <strong>Может ли clip & go делать фотографии?</strong>
-        <p>Да, камера поддерживает фотосъёмку высокого разрешения помимо видео.</p>
+        <p>Да, камера поддерживает фотосъёмку мгновенных снимков.</p>
       </div>
       <div class="faq-item">
         <strong>Как долго работает аккумулятор?</strong>
-        <p>При полной зарядке батареи 800 мА·ч хватает на 90 минут непрерывной записи в 4K.</p>
+        <p>800 мА·ч — до 90 мин видео в 4K.</p>
       </div>
       <div class="faq-item">
-        <strong>Какие аксессуары входят в комплект?</strong>
-        <p>В комплект входят: USB-кабель для зарядки, крепление на одежду, инструкция на русском языке.</p>
+        <strong>Поставляется ли она с аксессуарами?</strong>
+        <p>В комплект входят все необходимые крепления и кабели.</p>
       </div>
       <div class="faq-item">
-        <strong>Какое максимальное разрешение видео?</strong>
-        <p>Камера записывает видео в разрешении до 4K (3840 × 2160) при 30 кадрах в секунду.</p>
+        <strong>Разрешение?</strong>
+        <p>До 4K (3840 × 2160) для максимальной чёткости.</p>
       </div>
       <div class="faq-item">
         <strong>Записывает ли камера звук?</strong>
-        <p>Да, встроенный микрофон обеспечивает качественную запись звука.</p>
+        <p>Да, встроенный микрофон хорошего качества.</p>
       </div>
       <div class="faq-item">
-        <strong>Как перенести видео на компьютер?</strong>
-        <p>Через приложение Viidure по Wi-Fi или извлеките MicroSD карту и скопируйте файлы через картридер.</p>
+        <strong>Как выгрузить видео?</strong>
+        <p>Через приложение по Wi-Fi или извлеките MicroSD и скопируйте на ПК.</p>
       </div>
+    </div>
+  </div>
+  <div class="tab-item">
+    <div class="tab-header" onclick="toggleShipping()">
+      <span>Доставка и оплата</span><span class="arrow">▼</span>
+    </div>
+    <div id="shippingContainer" class="tab-content">
+      <p><strong>Доставка осуществляется через СДЭК:</strong></p>
+      <ul>
+        <li>Курьером до двери</li>
+        <li>В пункт выдачи заказов</li>
+        <li>В постамат</li>
+      </ul>
+      <p><strong>Сроки доставки:</strong> от 1 до 5 дней в зависимости от региона</p>
+      <p><strong>Оплата:</strong> Онлайн через YooKassa (карты, СБП)</p>
     </div>
   </div>
 </section>
 
-<!-- Product Features -->
+<!-- О продукте -->
 <section id="product" class="product-section fade-in-on-scroll">
   <h2>О продукте</h2>
   <div class="product-item">
     <div class="product-img">
-      <img
-              src="/assets/images/description1.GIF"
-              alt="Мгновенная съёмка на clip & go"
-              loading="lazy"
-              width="500"
-              height="500"
-      />
+      <img src="/assets/images/description1.GIF" alt="Мгновенная съёмка" />
     </div>
     <div class="product-text">
       <h3>Мгновенная съёмка</h3>
       <p>
-        Компактная экшн-камера размером с большой палец и весом всего 35 г.
-        Мгновенный отклик на нажатие кнопки и широкий угол обзора 120°
-        позволяют не упустить ни одного важного момента.
+        Компактная экшн-камера размером с большой палец и весом 35 г,
+        мгновенный отклик и широкий угол обзора.
       </p>
     </div>
   </div>
   <div class="product-item reverse">
     <div class="product-img">
-      <img
-              src="/assets/images/description2.GIF"
-              alt="clip & go в действии"
-              loading="lazy"
-              width="500"
-              height="500"
-      />
+      <img src="/assets/images/description2.GIF" alt="Экшн-камера GH88" />
     </div>
     <div class="product-text">
-      <h3>Профессиональное качество</h3>
+      <h3>Экшн-камера GH88</h3>
       <p>
-        До 180 минут записи 4K-видео на одной карте памяти. Компактная и лёгкая камера
-        идеальна для экстремального спорта, путешествий и повседневной съёмки.
+        До 180 мин 4K-видео, компактная и лёгкая — идеальна для спорта и путешествий.
       </p>
     </div>
   </div>
 </section>
 
-<!-- Contact Section -->
+<!-- Контакты -->
 <section id="contact" class="fade-in-on-scroll">
   <h2>Контакты</h2>
-  <p>Email: <strong><a href="mailto:clip_and_go@outlook.com">clip_and_go@outlook.com</a></strong></p>
-  <p>Telegram: <strong><a href="https://t.me/clipandgomanager" target="_blank" rel="noopener">@clipandgomanager</a></strong></p>
-  <p>Телефон: <strong><a href="tel:+12345678900">+1 (234) 567-89-00</a></strong></p>
+  <p>По всем вопросам: <strong>email@example.com</strong></p>
+  <p>Телефон: <strong>+1 (234) 567-89-00</strong></p>
 </section>
 
 <footer class="fade-in-on-scroll">
@@ -384,45 +231,8 @@
   </p>
 </footer>
 
-<!-- Deferred Scripts -->
-<script>
-  // Inline critical JS for header loading
-  document.addEventListener('DOMContentLoaded', () => {
-    fetch('/header.html')
-            .then(r => r.text())
-            .then(html => {
-              document.getElementById('header-container').innerHTML = html;
-              const hdr = document.getElementById('site-header');
-              if (hdr) {
-                hdr.classList.remove('scrolled');
-                const TH = 50;
-                const onScroll = () => window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
-                onScroll();
-                window.addEventListener('scroll', onScroll, { passive: true });
-              }
-            })
-            .catch(console.error);
-  });
-</script>
-
-<!-- Main scripts with defer -->
-<script src="/js/script.js" defer></script>
-<script src="/js/mobile-header.js" defer></script>
-
-<!-- Performance monitoring -->
-<script>
-  // Web Vitals monitoring
-  if ('PerformanceObserver' in window) {
-    try {
-      const po = new PerformanceObserver((list) => {
-        for (const entry of list.getEntries()) {
-          console.log(`${entry.name}: ${entry.startTime.toFixed(2)}ms`);
-        }
-      });
-      po.observe({ entryTypes: ['paint', 'largest-contentful-paint'] });
-    } catch (e) {}
-  }
-</script>
-
+<!-- Скрипты -->
+<script src="/js/script.js"></script>
+<script src="/js/mobile-header.js"></script>
 </body>
 </html>
