@@ -1,4 +1,4 @@
-/* File: public/cart/cart.js */
+// File: public/cart/cart.js
 
 /* === Цены и параметры === */
 const prices = { camera: 8900, memory: 500 };
@@ -6,7 +6,7 @@ const CAMERA_WEIGHT_KG   = 0.327;
 const MEMORY_WEIGHT_KG   = 0.008;
 const CAMERA_DIMENSIONS  = { length: 20, width: 12, height: 6 };
 const MEMORY_DIMENSIONS  = { length: 13, width: 8, height: 1 };
-const FROM_LOCATION      = 44;  // код Москвы в CDEK
+const FROM_LOCATION      = 44;  // код склада СДЕК
 
 /* === Состояние === */
 let counts = { camera: 0, memory: 0 };
@@ -136,18 +136,28 @@ function initCartControls() {
       return alert('Ошибка при создании платежа');
     }
 
-    // 2. Регистрация заказа в СДЕК (fire-and-forget)
+    // 2. Регистрация заказа в СДЕК
     try {
-      fetch('/api/cdek/orders', {
+      const resp = await fetch('/api/cdek/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(buildCdekOrderRequest(amount))
-      })
-          .then(r => r.json())
-          .then(j => console.log('[CDEK order]', j))
-          .catch(e => console.error('[CDEK order error]', e));
+      });
+      const text = await resp.text();
+      let json;
+      try { json = JSON.parse(text); }
+      catch { json = null; }
+      console.log('[CDEK order response]:', json || text);
+
+      if (json && json.requests && json.requests[0].errors?.length) {
+        const errs = json.requests[0].errors
+            .map(e => `${e.code}: ${e.message}`)
+            .join('\n');
+        alert(`Ошибка при регистрации заказа СДЕК:\n${errs}`);
+      }
     } catch (e) {
-      console.error('[CDEK build]', e);
+      console.error('[CDEK order error]', e);
+      alert('Произошла ошибка при отправке заказа в СДЕК');
     }
 
     // 3. Редирект на оплату
@@ -155,21 +165,27 @@ function initCartControls() {
   });
 }
 
-/* === Сбор тела запроса для CDEK === */
+/* === Сбор тела запроса для CDEК === */
 function buildCdekOrderRequest(amount) {
   const totalWeight = counts.camera * CAMERA_WEIGHT_KG + counts.memory * MEMORY_WEIGHT_KG;
   const dims = counts.camera > 0
       ? CAMERA_DIMENSIONS
-      : counts.memory > 0
-          ? MEMORY_DIMENSIONS
-          : { length: 1, width: 1, height: 1 };
+      : MEMORY_DIMENSIONS;
 
   const packages = [{
     number: '1',
     weight: Number(totalWeight.toFixed(3)),
     ...dims,
+    comment: 'Заказ clip & go',
     items: [{ name: 'clip & go order', ware_key: 'cg1', cost: amount }]
   }];
+
+  const sender = {
+    company: 'clip & go',    // добавлено для CDEK
+    name: 'clip & go',
+    phones: [{ number: '+70000000000' }],
+    email: 'support@clipandgo.ru'
+  };
 
   const recipient = {
     name: recNameIn().value.trim(),
@@ -177,27 +193,26 @@ function buildCdekOrderRequest(amount) {
     email: recEmailIn().value.trim() || undefined
   };
 
-  if (selectedTariff.type === 'PVZ' || selectedTariff.type === 'POSTAMAT') {
-    return {
-      type: 2,
-      tariff_code: selectedTariff.code,
-      delivery_point: selectedTariff.pvzCode,
-      recipient,
-      packages
-    };
-  }
-
-  return {
+  const request = {
     type: 2,
     tariff_code: selectedTariff.code,
-    to_location: {
+    sender,
+    recipient,
+    packages,
+    from_location: { code: FROM_LOCATION }
+  };
+
+  if (selectedTariff.type === 'PVZ' || selectedTariff.type === 'POSTAMAT') {
+    request.delivery_point = selectedTariff.pvzCode;
+  } else {
+    request.to_location = {
       code: cityCode,
       address: streetIn().value.trim(),
       city: currentCity
-    },
-    recipient,
-    packages
-  };
+    };
+  }
+
+  return request;
 }
 
 /* === Яндекс-подсказки городов === */
@@ -205,11 +220,13 @@ function initCitySuggest() {
   cityIn().addEventListener('input', debounce(async e => {
     if (justSelectedCity) { justSelectedCity = false; return; }
     const q = e.target.value.trim();
-    currentCity = ''; cityCode = null;
+    currentCity = '';
+    cityCode = null;
     resetDeliveryFlow();
 
     const ul = citySug();
-    ul.innerHTML = ''; ul.classList.remove('visible');
+    ul.innerHTML = '';
+    ul.classList.remove('visible');
     if (q.length < 2) return;
 
     try {
@@ -219,6 +236,7 @@ function initCitySuggest() {
     } catch (e) { console.error(e); }
   }, 300));
 }
+
 function renderCitySuggestions(items) {
   const ul = citySug();
   ul.innerHTML = '';
@@ -229,8 +247,10 @@ function renderCitySuggestions(items) {
     li.textContent = txt;
     li.addEventListener('click', async () => {
       justSelectedCity = true;
-      cityIn().value = txt; currentCity = txt;
-      ul.innerHTML = ''; ul.classList.remove('visible');
+      cityIn().value = txt;
+      currentCity = txt;
+      ul.innerHTML = '';
+      ul.classList.remove('visible');
       await fetchCdekCityCode(txt);
       showElement(deliverySection());
     });
@@ -238,6 +258,7 @@ function renderCitySuggestions(items) {
   });
   ul.classList.add('visible');
 }
+
 async function fetchCdekCityCode(cityName) {
   try {
     const q = cityName.split(',')[0].trim();
@@ -248,7 +269,7 @@ async function fetchCdekCityCode(cityName) {
   } catch (e) { console.error(e); }
 }
 
-/* === Ввод улицы и карта (карта без изменений) === */
+/* === Работа с картой и ПВЗ === */
 function initStreetInput() {
   streetIn().addEventListener('change', async () => {
     const addr = streetIn().value.trim();
@@ -267,20 +288,29 @@ function initStreetInput() {
   });
 }
 
-/* === Delivery toggle и показ карты === */
 function initDeliveryToggle() {
   document.getElementById('deliveryCourier').addEventListener('change', () => {
     if (!cityCode) return;
-    hideElement(streetWrapper()); hideMapWrapper(); hideTariffs();
-    selectedTariff = null; shipping = 0; deliveryInfoEl().textContent = ''; updateUI();
+    hideElement(streetWrapper());
+    hideMapWrapper();
+    hideTariffs();
+    selectedTariff = null;
+    shipping = 0;
+    deliveryInfoEl().textContent = '';
+    updateUI();
   });
   document.getElementById('deliveryPvz').addEventListener('change', () => {
     if (!cityCode) return;
-    showElement(streetWrapper()); hideTariffs();
-    selectedTariff = null; shipping = 0; deliveryInfoEl().textContent = ''; updateUI();
+    showElement(streetWrapper());
+    hideTariffs();
+    selectedTariff = null;
+    shipping = 0;
+    deliveryInfoEl().textContent = '';
+    updateUI();
     showMapWrapper(currentCity, fetchAndPlotPvz);
   });
 }
+
 function showMapWrapper(city, cb) {
   mapWrapper().style.display = 'flex';
   mapContainer().style.display = 'block';
@@ -302,19 +332,30 @@ function showMapWrapper(city, cb) {
     });
   });
 }
+
 function hideMapWrapper() {
   mapWrapper().style.display = 'none';
   mapContainer().style.display = 'none';
 }
 
-/* === Fetch & plot PVZ + кэш тарифов === */
 async function fetchAndPlotPvz() {
   if (!cityCode || !mapInstance) return;
   if (!cityClusterer) {
-    cityClusterer = new ymaps.Clusterer({ preset: 'islands#invertedDarkBlueClusterIcons', groupByCoordinates: false, clusterDisableClickZoom: false, clusterOpenBalloonOnClick: false });
-    postamatClusterer = new ymaps.Clusterer({ preset: 'islands#invertedLightBlueClusterIcons', groupByCoordinates: false, clusterDisableClickZoom: false, clusterOpenBalloonOnClick: false });
+    cityClusterer = new ymaps.Clusterer({
+      preset: 'islands#invertedDarkBlueClusterIcons',
+      groupByCoordinates: false,
+      clusterDisableClickZoom: false,
+      clusterOpenBalloonOnClick: false
+    });
+    postamatClusterer = new ymaps.Clusterer({
+      preset: 'islands#invertedLightBlueClusterIcons',
+      groupByCoordinates: false,
+      clusterDisableClickZoom: false,
+      clusterOpenBalloonOnClick: false
+    });
   }
-  clearClusters();
+  cityClusterer.removeAll();
+  postamatClusterer.removeAll();
 
   let page = 0, totalPages = 1, all = [];
   while (page < totalPages) {
@@ -330,31 +371,24 @@ async function fetchAndPlotPvz() {
     const loc = pt.location || {};
     if (!loc.latitude || !loc.longitude) return;
     const coords = [loc.latitude, loc.longitude];
-    const type = (pt.type || '').toUpperCase();  // PVZ | POSTAMAT
+    const type = (pt.type || '').toUpperCase();
     const icon = type === 'PVZ' ? '/assets/icons/pvz.png' : '/assets/icons/postamat.png';
-    const pm = new ymaps.Placemark(coords, {}, { iconLayout: 'default#image', iconImageHref: icon, iconImageSize: [32, 32], iconImageOffset: [-16, -32] });
-
+    const pm = new ymaps.Placemark(coords, {}, {
+      iconLayout: 'default#image',
+      iconImageHref: icon,
+      iconImageSize: [32, 32],
+      iconImageOffset: [-16, -32]
+    });
     pm.events.add('click', () => {
       mapInstance.setCenter(coords, 14, { duration: 500 });
       renderPvzInfoPanel(pt, type, loc);
     });
-
     (type === 'PVZ' ? cityClusterer : postamatClusterer).add(pm);
   });
 
-  [cityClusterer, postamatClusterer].forEach(cl => cl.events.add('click', e => {
-    const clus = e.get('target');
-    mapInstance.setCenter(clus.geometry.getCoordinates(), mapInstance.getZoom() + 1, { duration: 500 });
-  }));
-
   mapInstance.geoObjects.add(cityClusterer).add(postamatClusterer);
 }
-function clearClusters() {
-  if (cityClusterer) cityClusterer.removeAll();
-  if (postamatClusterer) postamatClusterer.removeAll();
-}
 
-/* === Инфо-панель PVZ/Postamat === */
 function renderPvzInfoPanel(pt, type, loc) {
   let html = '';
   const imgs = (pt.office_image_list || []).slice(0, 3);
@@ -372,49 +406,54 @@ function renderPvzInfoPanel(pt, type, loc) {
   showElement(infoPanel());
 
   preloadTariffPreviews(type==='PVZ'?[136,483]:[368,486]);
-
   document.getElementById('selectPvzBtn').addEventListener('click', () => {
     renderTariffButtons(type, loc.address_full || '—', pt.code);
   });
 }
 
-/* === Кэш тарифов === */
 async function preloadTariffPreviews(codes) {
   if (!cityCode) return;
   codes.forEach(async code => {
     if (cachedPreviews[code]) return;
-    const totalWeight = counts.camera*CAMERA_WEIGHT_KG + counts.memory*MEMORY_WEIGHT_KG;
-    const dims = counts.camera>0?CAMERA_DIMENSIONS:counts.memory>0?MEMORY_DIMENSIONS:{length:1,width:1,height:1};
+    const totalWeight = counts.camera * CAMERA_WEIGHT_KG + counts.memory * MEMORY_WEIGHT_KG;
+    const dims = counts.camera > 0 ? CAMERA_DIMENSIONS : MEMORY_DIMENSIONS;
     const body = {
       date: new Date().toISOString().replace(/\.\d{3}Z$/, '+0300'),
-      type: 1, currency:0, lang:'rus',
+      type: 1,
+      currency: 0,
+      lang: 'rus',
       tariff_code: code,
-      from_location:{code:FROM_LOCATION},
-      to_location:{code:cityCode},
-      packages:[{weight:Number(totalWeight.toFixed(3)),...dims}],
-      additional_order_types:[]
+      from_location: { code: FROM_LOCATION },
+      to_location: { code: cityCode },
+      packages: [{ weight: Number(totalWeight.toFixed(3)), ...dims }],
+      additional_order_types: []
     };
     try {
-      const resp = await fetch('/api/cdek/calculator/tariff',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      const resp = await fetch('/api/cdek/calculator/tariff', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
       const j = await resp.json();
-      cachedPreviews[code] = j.errors?{deliverySum:0,periodMin:0,periodMax:0}:{deliverySum:j.delivery_sum||j.total_sum||0,periodMin:j.period_min||0,periodMax:j.period_max||0};
+      cachedPreviews[code] = j.errors
+          ? { deliverySum: 0, periodMin: 0, periodMax: 0 }
+          : { deliverySum: j.delivery_sum || j.total_sum || 0, periodMin: j.period_min || 0, periodMax: j.period_max || 0 };
     } catch {
-      cachedPreviews[code] = {deliverySum:0,periodMin:0,periodMax:0};
+      cachedPreviews[code] = { deliverySum: 0, periodMin: 0, periodMax: 0 };
     }
   });
 }
 
-/* === Рендер кнопок тарифов === */
 function renderTariffButtons(markerType, address, pvzCode) {
   const arr = markerType==='PVZ'
       ? [{code:136,name:'Стандарт'},{code:483,name:'Экспресс'}]
       : [{code:368,name:'Стандарт'},{code:486,name:'Экспресс'}];
   let html = '<h3 style="margin-bottom:16px;font-size:1.3em;color:#007BFF;">Выберите тариф:</h3>';
   arr.forEach(t => {
-    const p = cachedPreviews[t.code]||{deliverySum:0,periodMin:0,periodMax:0};
+    const p = cachedPreviews[t.code] || {deliverySum:0,periodMin:0,periodMax:0};
     const cost = Math.ceil((p.deliverySum||0)/10)*10;
-    const costStr = cost.toLocaleString('ru-RU')+' ₽';
-    const period = p.periodMin===p.periodMax?`${p.periodMin} дн.`:`${p.periodMin}–${p.periodMax} дн.`;
+    const costStr = cost.toLocaleString('ru-RU') + ' ₽';
+    const period = p.periodMin===p.periodMax ? `${p.periodMin} дн.` : `${p.periodMin}–${p.periodMax} дн.`;
     html += `
       <button class="tariff-btn" data-code="${t.code}" data-sum="${cost}" data-pvz="${pvzCode||''}">
         <span>${t.name}</span>
@@ -441,22 +480,9 @@ function renderTariffButtons(markerType, address, pvzCode) {
   });
 }
 
-/* === Помощники === */
-function showElement(el)  { if(el) el.classList.add('visible'); }
-function hideElement(el)  { if(el) el.classList.remove('visible'); }
-function showTariffs()    { tariffContainer.classList.add('visible'); }
-function hideTariffs()    { tariffContainer.classList.remove('visible'); tariffContainer.innerHTML = ''; }
-function resetDeliveryFlow() {
-  hideElement(deliverySection());
-  hideElement(streetWrapper());
-  hideElement(infoPanel());
-  hideMapWrapper();
-  hideTariffs();
-  selectedTariff = null;
-  shipping = 0;
-  updateUI();
-}
-function debounce(fn, ms = 300) {
-  let t;
-  return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
-}
+function showElement(el)    { if (el) el.classList.add('visible'); }
+function hideElement(el)    { if (el) el.classList.remove('visible'); }
+function showTariffs()      { tariffContainer.classList.add('visible'); }
+function hideTariffs()      { tariffContainer.classList.remove('visible'); tariffContainer.innerHTML = ''; }
+function resetDeliveryFlow(){ hideElement(deliverySection()); hideElement(streetWrapper()); hideElement(infoPanel()); hideMapWrapper(); hideTariffs(); selectedTariff = null; shipping = 0; updateUI(); }
+function debounce(fn, ms=300){ let t; return (...args)=>(clearTimeout(t), t=setTimeout(()=>fn(...args), ms)); }

@@ -4,6 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const path    = require('path');
 const { randomUUID } = require('crypto');  // для генерации Idempotence-Key
+const fetch   = global.fetch || require('node-fetch'); // если Node.js <18
 
 const app       = express();
 const PORT      = process.env.PORT || 3000;
@@ -18,7 +19,6 @@ const YOO_SECRET_KEY = process.env.YOO_KASSA_SECRET_KEY;
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
-
 // Отдаём клиенту ключи для Яндекс.Карт / Suggest
 app.get('/config.js', (_, res) => {
     console.log('[Server] Запрошен /config.js');
@@ -30,7 +30,6 @@ app.get('/config.js', (_, res) => {
   `);
 });
 
-
 // =========================================
 // ====  CDEK OAuth: кешируем токен      ====
 // =========================================
@@ -41,7 +40,7 @@ async function getCdekToken() {
     if (cdekToken && Date.now() < cdekExp) {
         return cdekToken;
     }
-    console.log('[getCdekToken] Запрашиваем новый токен CDEK...');
+    console.log('[getCdekToken] Запрашиваем новый токен CDEК...');
     const resp = await fetch(`${CDEK_HOST}/v2/oauth/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -61,7 +60,6 @@ async function getCdekToken() {
     console.log('[getCdekToken] Токен получен, expires_in =', json.expires_in);
     return cdekToken;
 }
-
 
 // ==================================================
 // ====  Прокси для Яндекс.Suggest (autocomplete) ====
@@ -92,14 +90,13 @@ app.get('/api/yandex/suggest', async (req, res) => {
     }
 });
 
-
 // =======================================================
 // ====  Прокси для поиска городов через CDEK (v2)     ====
 // =======================================================
 app.get('/api/cdek/cities', async (req, res) => {
     const q = (req.query.search || '').trim();
     if (!q) return res.status(400).json({ error: 'missing search' });
-    console.log('[API /api/cdek/cities] Поиск городов CDEK для:', q);
+    console.log('[API /api/cdek/cities] Поиск городов CDEК для:', q);
 
     try {
         const tok = await getCdekToken();
@@ -111,14 +108,13 @@ app.get('/api/cdek/cities', async (req, res) => {
         let json;
         try { json = text ? JSON.parse(text) : []; }
         catch { json = []; }
-        console.log('[API /api/cdek/cities] Ответ от CDEK:', json);
+        console.log('[API /api/cdek/cities] Ответ от CDEК:', json);
         return res.status(r.status).json(json);
     } catch (e) {
         console.error('[API /api/cdek/cities] Ошибка:', e);
         return res.status(500).json({ error: 'cdek cities failed' });
     }
 });
-
 
 // =========================================================
 // ====  Прокси для получения ПВЗ/постаматов у CDEK (v2) ====
@@ -142,14 +138,13 @@ app.get('/api/cdek/pvz', async (req, res) => {
         catch { json = []; }
         const totalPagesHeader = r.headers.get('x-total-pages') || '1';
         res.set('x-total-pages', totalPagesHeader);
-        console.log('[API /api/cdek/pvz] Ответ от CDEK (количество):', Array.isArray(json) ? json.length : 0);
+        console.log('[API /api/cdek/pvz] Ответ от CDEК (количество):', Array.isArray(json) ? json.length : 0);
         return res.status(200).json(json);
     } catch (e) {
         console.error('[API /api/cdek/pvz] Ошибка:', e);
         return res.status(500).json({ error: 'cdek pvz failed' });
     }
 });
-
 
 // =========================================================
 // ====  Прокси для калькулятора тарифов CDEK (v2)       ====
@@ -167,7 +162,7 @@ app.post('/api/cdek/calculator/tariff', async (req, res) => {
             body: JSON.stringify(req.body)
         });
         const json = await r.json();
-        console.log('[API /api/cdek/calculator/tariff] Ответ от CDEK:', json);
+        console.log('[API /api/cdek/calculator/tariff] Ответ от CDEК:', json);
         return res.status(r.status).json(json);
     } catch (e) {
         console.error('[API /api/cdek/calculator/tariff] Ошибка:', e);
@@ -175,13 +170,42 @@ app.post('/api/cdek/calculator/tariff', async (req, res) => {
     }
 });
 
+// =============================================================
+// ====  НОВЫЙ МАРШРУТ: создание заказа в CDEК (/v2/orders) ====
+// =============================================================
+app.post('/api/cdek/orders', async (req, res) => {
+    console.log('[API /api/cdek/orders] Создаём заказ CDEК, тело запроса:', req.body);
+    try {
+        const token = await getCdekToken();
+        const apiUrl = `${CDEK_BASE}/v2/orders`;  // обновлённый путь
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(req.body)
+        });
+        const text = await response.text();
+        // Попытка распарсить JSON, иначе вернуть как есть
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch {
+            console.warn('[API /api/cdek/orders] Ответ не в формате JSON, возвращаем текст');
+            return res.status(response.status).send(text);
+        }
+        console.log('[API /api/cdek/orders] Ответ CDEК:', data);
+        return res.status(response.status).json(data);
+    } catch (err) {
+        console.error('[API /api/cdek/orders] Ошибка при создании заказа:', err);
+        return res.status(500).json({ error: 'cdek order creation failed' });
+    }
+});
 
 // =============================================================
 // ====  Прокси для создания платежа в YooKassa (v3 API)       ====
 // =============================================================
-//
-// Теперь добавляем заголовок "Idempotence-Key" со случайным UUID
-//
 app.post('/api/yookassa/create-payment', async (req, res) => {
     const { amount, currency, description } = req.body;
     if (typeof amount !== 'number' || !currency) {
@@ -194,13 +218,9 @@ app.post('/api/yookassa/create-payment', async (req, res) => {
 
     console.log('[API /api/yookassa/create-payment] amount=', amount, 'currency=', currency);
 
-    // Basic Auth (shopId:secretKey → base64)
     const auth = Buffer.from(`${YOO_SHOP_ID}:${YOO_SECRET_KEY}`).toString('base64');
-
-    // Генерируем уникальный ключ для Idempotence-Key
     const idemKey = randomUUID();
 
-    // Формируем тело запроса к YooKassa
     const paymentRequest = {
         amount: {
             value: amount.toFixed(2),
@@ -208,7 +228,6 @@ app.post('/api/yookassa/create-payment', async (req, res) => {
         },
         confirmation: {
             type: 'redirect',
-            // После оплаты YooKassa сделает редирект на эту страницу:
             return_url: `http://localhost:${PORT}/payment/payment-result.html`
         },
         capture: true,
@@ -230,10 +249,8 @@ app.post('/api/yookassa/create-payment', async (req, res) => {
             console.error('[API /api/yookassa/create-payment] Ошибка от YooKassa:', payment);
             return res.status(response.status).json(payment);
         }
-        // В ответе YooKassa приходит confirmation: { confirmation_url: "..." }
         const confirmationUrl = payment.confirmation && payment.confirmation.confirmation_url;
         console.log('[API /api/yookassa/create-payment] confirmation_url =', confirmationUrl);
-
         if (!confirmationUrl) {
             return res.status(500).json({ error: 'confirmation_url missing in YooKassa response' });
         }
@@ -243,7 +260,6 @@ app.post('/api/yookassa/create-payment', async (req, res) => {
         return res.status(500).json({ error: 'yookassa create payment failed' });
     }
 });
-
 
 // Запускаем сервер
 app.listen(PORT, () => {
