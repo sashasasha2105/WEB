@@ -1,4 +1,4 @@
-/* === File: public/payment/payment-result.css === */
+/* === File: public/payment/payment-result.css - ОПТИМИЗИРОВАННАЯ ВЕРСИЯ === */
 
 /* Сброс и базовые стили */
 * {
@@ -36,6 +36,7 @@ body {
     border-radius: 50%;
     animation: float 20s infinite linear;
     backdrop-filter: blur(10px);
+    will-change: transform; /* Оптимизация для анимаций */
 }
 
 @keyframes float {
@@ -99,12 +100,13 @@ body {
     margin: 0 auto;
 }
 
-/* Простая и чистая анимированная галочка - БЕЗ СЕРЫХ ЭЛЕМЕНТОВ */
+/* 🎯 ИДЕАЛЬНО ПЛАВНАЯ анимация галочки */
 .simple-checkmark {
     width: 80px;
     height: 80px;
     margin: 0 auto;
     position: relative;
+    will-change: transform; /* Оптимизация */
 }
 
 .checkmark-circle-bg {
@@ -116,8 +118,9 @@ body {
     top: 0;
     left: 0;
     transform: scale(0);
-    animation: circle-scale-in 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
-    box-shadow: 0 0 25px rgba(76, 175, 80, 0.4);
+    animation: circle-appear 0.4s ease-out 0.1s forwards;
+    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+    will-change: transform, opacity;
 }
 
 .checkmark-svg {
@@ -130,9 +133,9 @@ body {
 .checkmark-circle {
     stroke: #4CAF50;
     stroke-width: 3;
-    stroke-dasharray: 140;
-    stroke-dashoffset: 140;
-    animation: circle-draw 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s forwards;
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    animation: circle-draw 0.6s ease-out 0.3s forwards;
 }
 
 .checkmark-check {
@@ -140,18 +143,20 @@ body {
     stroke-width: 4;
     stroke-linecap: round;
     stroke-linejoin: round;
-    stroke-dasharray: 24;
-    stroke-dashoffset: 24;
-    animation: check-draw 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1.2s forwards;
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation: check-draw 0.5s ease-out 0.7s forwards;
+    opacity: 0;
 }
 
-@keyframes circle-scale-in {
+/* ✨ Оптимизированные анимации галочки */
+@keyframes circle-appear {
     0% {
         transform: scale(0);
         opacity: 0;
     }
-    50% {
-        transform: scale(1.1);
+    80% {
+        transform: scale(1.05);
         opacity: 1;
     }
     100% {
@@ -162,10 +167,10 @@ body {
 
 @keyframes circle-draw {
     0% {
-        stroke-dashoffset: 140;
+        stroke-dashoffset: 166;
         opacity: 0;
     }
-    20% {
+    10% {
         opacity: 1;
     }
     100% {
@@ -176,7 +181,7 @@ body {
 
 @keyframes check-draw {
     0% {
-        stroke-dashoffset: 24;
+        stroke-dashoffset: 30;
         opacity: 0;
     }
     20% {
@@ -184,116 +189,6 @@ body {
     }
     100% {
         stroke-dashoffset: 0;
-        opacity: 1;
-    }
-}
-
-@keyframes success-pulse {
-    0% {
-        transform: scale(0);
-        opacity: 0;
-        box-shadow: 0 0 20px rgba(76, 175, 80, 0);
-    }
-    50% {
-        transform: scale(1.1);
-        opacity: 1;
-        box-shadow: 0 0 30px rgba(76, 175, 80, 0.5);
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-        box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
-    }
-}
-
-@keyframes rotate-circle {
-    0% {
-        transform: rotate(-45deg);
-    }
-    5% {
-        transform: rotate(-45deg);
-    }
-    25% {
-        transform: rotate(-225deg);
-    }
-    50% {
-        transform: rotate(-315deg);
-    }
-    100% {
-        transform: rotate(-405deg);
-    }
-}
-
-@keyframes circle-fade-in {
-    0% {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes icon-line-tip {
-    0% {
-        width: 0;
-        left: 1px;
-        top: 19px;
-        opacity: 0;
-    }
-    15% {
-        width: 0;
-        left: 1px;
-        top: 19px;
-        opacity: 0;
-    }
-    25% {
-        opacity: 1;
-    }
-    50% {
-        width: 35px;
-        left: -5px;
-        top: 35px;
-    }
-    75% {
-        width: 20px;
-        left: 18px;
-        top: 47px;
-    }
-    100% {
-        width: 25px;
-        left: 14px;
-        top: 46px;
-        opacity: 1;
-    }
-}
-
-@keyframes icon-line-long {
-    0% {
-        width: 0;
-        right: 46px;
-        top: 54px;
-        opacity: 0;
-    }
-    40% {
-        width: 0;
-        right: 46px;
-        top: 54px;
-        opacity: 0;
-    }
-    50% {
-        opacity: 1;
-    }
-    75% {
-        width: 60px;
-        right: -5px;
-        top: 32px;
-    }
-    100% {
-        width: 47px;
-        right: 8px;
-        top: 38px;
         opacity: 1;
     }
 }
@@ -346,6 +241,7 @@ body {
     height: 2px;
     background: #e0e0e0;
     transform: translateY(-50%);
+    transition: background 0.3s ease;
 }
 
 .status-step.completed::after {
@@ -367,6 +263,7 @@ body {
     font-size: 18px;
     transition: all 0.3s ease;
     border: 2px solid transparent;
+    will-change: transform; /* Оптимизация анимаций */
 }
 
 .status-step.completed .status-icon {
@@ -465,7 +362,7 @@ body {
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 20px;
+    padding: 24px; /* Увеличенный padding для кружочка */
     background: #f8f9fa;
     border-radius: 16px;
     border: 1px solid #e9ecef;
@@ -482,32 +379,53 @@ body {
     width: 80px;
     height: 80px;
     border-radius: 12px;
-    overflow: hidden;
+    overflow: visible; /* Не обрезаем кружочек */
+    margin: 8px; /* Место для кружочка */
 }
 
 .item-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 12px;
 }
 
-/* Количество товара - ИСПРАВЛЕНО */
+/* Количество товара - ИСПРАВЛЕННАЯ ВЕРСИЯ */
 .item-quantity {
     position: absolute;
-    top: -8px;
-    right: -8px;
+    top: -12px;
+    right: -12px;
     background: #667eea;
     color: white;
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.85em;
-    font-weight: 600;
-    border: 2px solid white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-size: 0.9em;
+    font-weight: 700;
+    border: 3px solid white;
+    box-shadow: 0 3px 12px rgba(102, 126, 234, 0.4);
+    z-index: 10;
+    animation: quantity-bounce 0.6s ease-out 1.5s;
+    will-change: transform;
+}
+
+/* Анимация кружочка количества */
+@keyframes quantity-bounce {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .item-details {
@@ -663,7 +581,7 @@ body {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
-/* Основная карточка действий - ИСПРАВЛЕНО */
+/* Основная карточка действий */
 .primary-action {
     background: linear-gradient(135deg, #4CAF50, #45a049);
     color: white;
@@ -779,59 +697,6 @@ body {
     color: #666;
     font-size: 0.9em;
     line-height: 1.5;
-}
-
-/* Способы оплаты */
-.payment-methods {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-radius: 16px;
-    padding: 30px;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: slideUp 0.8s ease-out 0.8s both;
-}
-
-.payment-methods h3 {
-    font-size: 1.3em;
-    color: #2c3e50;
-    margin-bottom: 25px;
-    font-weight: 600;
-}
-
-.methods-grid {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    flex-wrap: wrap;
-}
-
-.method-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    padding: 15px;
-    border-radius: 12px;
-    transition: transform 0.3s ease;
-}
-
-.method-item:hover {
-    transform: scale(1.05);
-}
-
-.method-item img {
-    width: 50px;
-    height: 35px;
-    object-fit: contain;
-    border-radius: 4px;
-}
-
-.method-item span {
-    font-size: 0.85em;
-    color: #666;
-    font-weight: 500;
 }
 
 /* Уведомления */
@@ -1044,6 +909,11 @@ body {
         flex-direction: column;
         text-align: center;
         gap: 15px;
+        padding: 20px;
+    }
+
+    .item-image {
+        margin: 0 auto;
     }
 
     .item-price {
@@ -1062,10 +932,6 @@ body {
 
     .info-cards {
         grid-template-columns: 1fr;
-    }
-
-    .methods-grid {
-        gap: 20px;
     }
 
     .notification-container {
@@ -1108,12 +974,24 @@ body {
         font-size: 1.1em;
     }
 
-    .methods-grid {
-        gap: 15px;
+    .item-quantity {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8em;
+        top: -10px;
+        right: -10px;
+    }
+}
+
+/* Производительность - отключаем анимации для слабых устройств */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 
-    .method-item img {
-        width: 40px;
-        height: 28px;
+    .floating-element {
+        animation: none;
     }
 }

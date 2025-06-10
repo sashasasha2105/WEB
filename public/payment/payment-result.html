@@ -171,126 +171,209 @@
 </div>
 
 <script>
-    // Данные заказа и отображение
+    // ===== ОПТИМИЗИРОВАННЫЙ КОД СТРАНИЦЫ РЕЗУЛЬТАТА ОПЛАТЫ =====
+
+    // Конфигурация
+    const CONFIG = {
+        CAMERA_PRICE: 8900,
+        MEMORY_PRICE: 500,
+        ANIMATION_DELAYS: {
+            confetti: 1000,
+            notifications: {
+                first: 3000,
+                second: 6000
+            },
+            cartClear: 5000,
+            statusUpdate: 8000
+        }
+    };
+
+    // Кеш DOM элементов для производительности
+    const DOM = {
+        orderNumber: null,
+        itemsList: null,
+        itemsTotal: null,
+        deliveryTotal: null,
+        finalTotal: null,
+        deliveryMethod: null,
+        deliveryAddress: null,
+        deliveryTime: null,
+        notificationContainer: null,
+        modal: null,
+        modalClose: null
+    };
+
+    // Инициализация при загрузке DOM
     document.addEventListener('DOMContentLoaded', () => {
+        console.log('🎉 Страница результата оплаты загружена');
+
+        // Кешируем DOM элементы
+        cacheDOMElements();
+
+        // Запускаем основные функции
         loadOrderData();
         initializeAnimations();
         setupEventListeners();
-        showWelcomeMessage();
+        scheduleNotifications();
+        scheduleMaintenance();
 
-        // Очищаем корзину после небольшой задержки
-        setTimeout(() => {
-            if (window.CartManager) {
-                window.CartManager.clearCart();
-            } else {
-                localStorage.removeItem('cartData');
-            }
-        }, 5000);
+        console.log('✅ Инициализация завершена');
     });
 
+    // Кеширование DOM элементов для производительности
+    function cacheDOMElements() {
+        DOM.orderNumber = document.getElementById('orderNumber');
+        DOM.itemsList = document.getElementById('itemsList');
+        DOM.itemsTotal = document.getElementById('itemsTotal');
+        DOM.deliveryTotal = document.getElementById('deliveryTotal');
+        DOM.finalTotal = document.getElementById('finalTotal');
+        DOM.deliveryMethod = document.getElementById('deliveryMethod');
+        DOM.deliveryAddress = document.getElementById('deliveryAddress');
+        DOM.deliveryTime = document.getElementById('deliveryTime');
+        DOM.notificationContainer = document.getElementById('notificationContainer');
+        DOM.modal = document.getElementById('trackingModal');
+        DOM.modalClose = document.querySelector('.modal-close');
+
+        console.log('📦 DOM элементы закешированы');
+    }
+
+    // Загрузка и отображение данных заказа
     function loadOrderData() {
-        const cartData = JSON.parse(localStorage.getItem('cartData') || '{}');
-        const cameraCount = cartData.cameraCount || 0;
-        const memoryCount = cartData.memoryCount || 0;
-        const cameraColor = cartData.cartColor || 'Чёрный';
+        console.log('📊 Загрузка данных заказа...');
 
-        // Цены
-        const CAMERA_PRICE = 8900;
-        const MEMORY_PRICE = 500;
-        const DELIVERY_PRICE = parseInt(localStorage.getItem('lastShippingCost') || '0');
+        const cartData = getCartData();
+        const { cameraCount, memoryCount, cameraColor } = cartData;
+        const deliveryPrice = getDeliveryPrice();
 
+        // Генерация номера заказа
+        const orderNumber = generateOrderNumber();
+        DOM.orderNumber.textContent = orderNumber;
+
+        // Расчет суммы и отображение товаров
         let itemsTotal = 0;
-        const itemsContainer = document.getElementById('itemsList');
-        itemsContainer.innerHTML = '';
+        DOM.itemsList.innerHTML = '';
 
-        // Генерируем номер заказа
-        const orderNumber = localStorage.getItem('lastOrderNumber') ||
-            `CG-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 100)}`;
-        document.getElementById('orderNumber').textContent = orderNumber;
-        localStorage.setItem('lastOrderNumber', orderNumber);
-
-        // Отображаем товары
         if (cameraCount > 0) {
-            itemsTotal += CAMERA_PRICE * cameraCount;
-            itemsContainer.innerHTML += createItemCard(
+            itemsTotal += CONFIG.CAMERA_PRICE * cameraCount;
+            DOM.itemsList.innerHTML += createItemCard(
                 '/assets/images/cam3.jpg',
                 'clip & go камера',
                 `Цвет: ${cameraColor}`,
                 cameraCount,
-                CAMERA_PRICE
+                CONFIG.CAMERA_PRICE
             );
         }
 
         if (memoryCount > 0) {
-            itemsTotal += MEMORY_PRICE * memoryCount;
-            itemsContainer.innerHTML += createItemCard(
+            itemsTotal += CONFIG.MEMORY_PRICE * memoryCount;
+            DOM.itemsList.innerHTML += createItemCard(
                 '/assets/images/CardPhoto.png',
                 'Карта памяти 8 ГБ',
                 'MicroSD класса 10',
                 memoryCount,
-                MEMORY_PRICE
+                CONFIG.MEMORY_PRICE
             );
         }
 
-        // Обновляем финансовую сводку
-        document.getElementById('itemsTotal').textContent = itemsTotal.toLocaleString('ru-RU') + ' ₽';
-        document.getElementById('deliveryTotal').textContent = DELIVERY_PRICE.toLocaleString('ru-RU') + ' ₽';
-        document.getElementById('finalTotal').textContent = (itemsTotal + DELIVERY_PRICE).toLocaleString('ru-RU') + ' ₽';
+        // Обновление финансовой сводки
+        updateFinancialSummary(itemsTotal, deliveryPrice);
 
         // Информация о доставке
-        const deliveryMethod = localStorage.getItem('lastDeliveryMethod') || 'СДЭК';
-        const deliveryAddress = localStorage.getItem('lastDeliveryAddress') || 'Будет указан после обработки';
+        updateDeliveryInfo();
 
-        // Рассчитываем время доставки на основе выбранного тарифа
-        let deliveryTime = '2-5 дней';
-        const lastTariff = localStorage.getItem('lastSelectedTariff');
-        if (lastTariff) {
-            if (lastTariff.includes('Экспресс')) {
-                deliveryTime = '1-2 дня';
-            } else if (lastTariff.includes('Стандарт')) {
-                deliveryTime = '2-4 дня';
-            }
-        }
-
-        document.getElementById('deliveryMethod').textContent = `Доставка ${deliveryMethod}`;
-        document.getElementById('deliveryAddress').textContent = deliveryAddress;
-        document.getElementById('deliveryTime').textContent = `Ожидаемое время доставки: ${deliveryTime}`;
+        console.log('✅ Данные заказа загружены:', { itemsTotal, deliveryPrice });
     }
 
+    // Вспомогательные функции для данных
+    function getCartData() {
+        try {
+            const data = JSON.parse(localStorage.getItem('cartData') || '{}');
+            return {
+                cameraCount: data.cameraCount || 0,
+                memoryCount: data.memoryCount || 0,
+                cameraColor: data.cartColor || 'Чёрный'
+            };
+        } catch (error) {
+            console.error('Ошибка чтения cartData:', error);
+            return { cameraCount: 0, memoryCount: 0, cameraColor: 'Чёрный' };
+        }
+    }
+
+    function getDeliveryPrice() {
+        return parseInt(localStorage.getItem('lastShippingCost') || '0');
+    }
+
+    function generateOrderNumber() {
+        const existing = localStorage.getItem('lastOrderNumber');
+        if (existing) return existing;
+
+        const newNumber = `CG-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 100)}`;
+        localStorage.setItem('lastOrderNumber', newNumber);
+        return newNumber;
+    }
+
+    // Создание карточки товара
     function createItemCard(image, name, description, quantity, price) {
         const total = price * quantity;
         return `
-                <div class="item-card">
-                    <div class="item-image">
-                        <img src="${image}" alt="${name}" />
-                        <div class="item-quantity">${quantity}</div>
-                    </div>
-                    <div class="item-details">
-                        <h4>${name}</h4>
-                        <p>${description}</p>
-                        <div class="item-price">
-                            <span class="unit-price">${price.toLocaleString('ru-RU')} ₽ × ${quantity}</span>
-                            <span class="total-price">${total.toLocaleString('ru-RU')} ₽</span>
-                        </div>
+            <div class="item-card">
+                <div class="item-image">
+                    <img src="${image}" alt="${name}" loading="lazy" />
+                    <div class="item-quantity">${quantity}</div>
+                </div>
+                <div class="item-details">
+                    <h4>${name}</h4>
+                    <p>${description}</p>
+                    <div class="item-price">
+                        <span class="unit-price">${formatPrice(price)} × ${quantity}</span>
+                        <span class="total-price">${formatPrice(total)}</span>
                     </div>
                 </div>
-            `;
+            </div>
+        `;
     }
 
+    // Обновление финансовой сводки
+    function updateFinancialSummary(itemsTotal, deliveryPrice) {
+        DOM.itemsTotal.textContent = formatPrice(itemsTotal);
+        DOM.deliveryTotal.textContent = formatPrice(deliveryPrice);
+        DOM.finalTotal.textContent = formatPrice(itemsTotal + deliveryPrice);
+    }
+
+    // Обновление информации о доставке
+    function updateDeliveryInfo() {
+        const deliveryMethod = localStorage.getItem('lastDeliveryMethod') || 'СДЭК';
+        const deliveryAddress = localStorage.getItem('lastDeliveryAddress') || 'Будет указан после обработки';
+
+        // Расчет времени доставки
+        let deliveryTime = '2-5 дней';
+        const lastTariff = localStorage.getItem('lastSelectedTariff');
+        if (lastTariff?.includes('Экспресс')) {
+            deliveryTime = '1-2 дня';
+        } else if (lastTariff?.includes('Стандарт')) {
+            deliveryTime = '2-4 дня';
+        }
+
+        DOM.deliveryMethod.textContent = `Доставка ${deliveryMethod}`;
+        DOM.deliveryAddress.textContent = deliveryAddress;
+        DOM.deliveryTime.textContent = `Ожидаемое время доставки: ${deliveryTime}`;
+    }
+
+    // Инициализация анимаций
     function initializeAnimations() {
-        // Запускаем звук успешной покупки и вибрацию
-        playSuccessSound();
+        console.log('🎨 Запуск анимаций...');
+
+        // Вибрация для мобильных устройств
         triggerSuccessVibration();
 
-        // Анимация галочки запускается автоматически через CSS
-        // Дополнительные эффекты при завершении
+        // Дополнительные эффекты галочки
         setTimeout(() => {
-            const checkIcon = document.querySelector('.check-icon');
-            if (checkIcon) {
-                checkIcon.style.transform = 'scale(1.05)';
+            const checkmark = document.querySelector('.simple-checkmark');
+            if (checkmark) {
+                checkmark.style.transform = 'scale(1.05)';
                 setTimeout(() => {
-                    checkIcon.style.transform = 'scale(1)';
-                    checkIcon.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                    checkmark.style.transform = 'scale(1)';
+                    checkmark.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
                 }, 300);
             }
         }, 2000);
@@ -305,168 +388,47 @@
                 }, 500);
             }
         }, 2500);
+
+        console.log('✅ Анимации запущены');
     }
 
-    // Функция вибрации для мобильных устройств
+    // Вибрация для мобильных устройств
     function triggerSuccessVibration() {
         if ('vibrate' in navigator) {
-            // Паттерн вибрации: короткая-пауза-короткая (как Apple Pay)
             navigator.vibrate([100, 50, 100]);
-            console.log('📳 Успешная вибрация');
+            console.log('📳 Вибрация выполнена');
         }
     }
 
-    // Функция воспроизведения звука успешной покупки
-    function playSuccessSound() {
-        try {
-            // Проверяем, разрешено ли автовоспроизведение
-            if (navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome')) {
-                // Для Safari показываем кнопку для воспроизведения звука
-                showSoundButton();
-                return;
-            }
-
-            // Создаем аудио контекст для синтеза звука Apple Pay
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-            // Проверяем состояние контекста
-            if (audioContext.state === 'suspended') {
-                audioContext.resume().then(() => {
-                    playSoundSequence(audioContext);
-                });
-            } else {
-                playSoundSequence(audioContext);
-            }
-
-        } catch (error) {
-            console.log('🔇 Аудио не поддерживается:', error.message);
-
-            // Fallback: показываем визуальное уведомление о звуке
-            setTimeout(() => {
-                showNotification('🎉 Покупка успешно завершена!', 'success', 3000);
-            }, 500);
-        }
-    }
-
-    function playSoundSequence(audioContext) {
-        try {
-            // Первый тон (высокий)
-            const oscillator1 = audioContext.createOscillator();
-            const gainNode1 = audioContext.createGain();
-
-            oscillator1.connect(gainNode1);
-            gainNode1.connect(audioContext.destination);
-
-            oscillator1.frequency.setValueAtTime(800, audioContext.currentTime);
-            oscillator1.frequency.exponentialRampToValueAtTime(1000, audioContext.currentTime + 0.1);
-
-            gainNode1.gain.setValueAtTime(0, audioContext.currentTime);
-            gainNode1.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.05);
-            gainNode1.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-
-            oscillator1.start(audioContext.currentTime);
-            oscillator1.stop(audioContext.currentTime + 0.3);
-
-            // Второй тон (средний) - через небольшую задержку
-            setTimeout(() => {
-                const oscillator2 = audioContext.createOscillator();
-                const gainNode2 = audioContext.createGain();
-
-                oscillator2.connect(gainNode2);
-                gainNode2.connect(audioContext.destination);
-
-                oscillator2.frequency.setValueAtTime(600, audioContext.currentTime);
-                oscillator2.frequency.exponentialRampToValueAtTime(750, audioContext.currentTime + 0.15);
-
-                gainNode2.gain.setValueAtTime(0, audioContext.currentTime);
-                gainNode2.gain.linearRampToValueAtTime(0.25, audioContext.currentTime + 0.05);
-                gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
-
-                oscillator2.start(audioContext.currentTime);
-                oscillator2.stop(audioContext.currentTime + 0.4);
-            }, 150);
-
-            console.log('🔊 Звук успешной покупки воспроизведен');
-
-        } catch (error) {
-            console.log('🔇 Ошибка воспроизведения звука:', error.message);
-        }
-    }
-
-    function showSoundButton() {
-        const soundButton = document.createElement('button');
-        soundButton.innerHTML = '🔊 Нажмите для воспроизведения звука успеха';
-        soundButton.style.cssText = `
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                padding: 12px 20px;
-                background: linear-gradient(135deg, #4CAF50, #45a049);
-                color: white;
-                border: none;
-                border-radius: 25px;
-                font-size: 0.9em;
-                cursor: pointer;
-                z-index: 10000;
-                box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
-                animation: pulse 2s infinite;
-            `;
-
-        // Добавляем CSS анимацию для кнопки
-        if (!document.querySelector('#sound-button-style')) {
-            const style = document.createElement('style');
-            style.id = 'sound-button-style';
-            style.textContent = `
-                    @keyframes pulse {
-                        0% { transform: translateX(-50%) scale(1); }
-                        50% { transform: translateX(-50%) scale(1.05); }
-                        100% { transform: translateX(-50%) scale(1); }
-                    }
-                `;
-            document.head.appendChild(style);
-        }
-
-        soundButton.onclick = () => {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            playSoundSequence(audioContext);
-            soundButton.remove();
-        };
-
-        document.body.appendChild(soundButton);
-
-        // Убираем кнопку через 10 секунд
-        setTimeout(() => {
-            if (soundButton.parentNode) {
-                soundButton.remove();
-            }
-        }, 10000);
-    }
-
+    // Настройка обработчиков событий
     function setupEventListeners() {
         // Модальное окно
-        const modal = document.getElementById('trackingModal');
-        const closeBtn = document.querySelector('.modal-close');
+        if (DOM.modalClose) {
+            DOM.modalClose.onclick = () => DOM.modal.style.display = 'none';
+        }
 
-        closeBtn.onclick = () => modal.style.display = 'none';
         window.onclick = (event) => {
-            if (event.target === modal) modal.style.display = 'none';
+            if (event.target === DOM.modal) {
+                DOM.modal.style.display = 'none';
+            }
         };
+
+        console.log('🔗 Обработчики событий настроены');
     }
 
-    function showWelcomeMessage() {
-        // Запускаем конфетти через 1 секунду после загрузки
-        setTimeout(() => {
-            createConfetti();
-        }, 1000);
+    // Планирование уведомлений
+    function scheduleNotifications() {
+        // Конфетти
+        setTimeout(createConfetti, CONFIG.ANIMATION_DELAYS.confetti);
 
+        // Уведомления
         setTimeout(() => {
             showNotification(
                 'Спасибо за покупку! Ваш заказ автоматически передается в систему доставки СДЭК.',
                 'success',
                 8000
             );
-        }, 3000);
+        }, CONFIG.ANIMATION_DELAYS.notifications.first);
 
         setTimeout(() => {
             showNotification(
@@ -474,22 +436,54 @@
                 'info',
                 6000
             );
-        }, 6000);
+        }, CONFIG.ANIMATION_DELAYS.notifications.second);
+
+        console.log('📅 Уведомления запланированы');
     }
 
-    // Функция создания конфетти
+    // Планирование обслуживания
+    function scheduleMaintenance() {
+        // Очистка корзины
+        setTimeout(() => {
+            if (window.CartManager) {
+                window.CartManager.clearCart();
+            } else {
+                localStorage.removeItem('cartData');
+            }
+            console.log('🧹 Корзина очищена');
+        }, CONFIG.ANIMATION_DELAYS.cartClear);
+
+        // Обновление статуса заказа
+        setTimeout(() => {
+            const activeStep = document.querySelector('.status-step.active');
+            if (activeStep) {
+                activeStep.classList.remove('active');
+                activeStep.classList.add('completed');
+
+                const nextStep = activeStep.nextElementSibling;
+                if (nextStep) {
+                    nextStep.classList.add('active');
+                }
+                console.log('📦 Статус заказа обновлен');
+            }
+        }, CONFIG.ANIMATION_DELAYS.statusUpdate);
+    }
+
+    // Создание конфетти
     function createConfetti() {
+        console.log('🎊 Создание конфетти...');
+
         const colors = ['#4CAF50', '#667eea', '#764ba2', '#FFD700', '#FF6B6B', '#4ECDC4'];
         const confettiContainer = document.createElement('div');
         confettiContainer.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                pointer-events: none;
-                z-index: 9999;
-            `;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        `;
         document.body.appendChild(confettiContainer);
 
         // Создаем 50 кусочков конфетти
@@ -502,30 +496,33 @@
             const delay = Math.random() * 1000;
 
             confetti.style.cssText = `
-                    position: absolute;
-                    top: -10px;
-                    left: ${startX}px;
-                    width: ${size}px;
-                    height: ${size}px;
-                    background: ${color};
-                    border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
-                    opacity: 0.8;
-                    animation: confetti-fall ${duration}ms ease-in ${delay}ms forwards;
-                `;
+                position: absolute;
+                top: -10px;
+                left: ${startX}px;
+                width: ${size}px;
+                height: ${size}px;
+                background: ${color};
+                border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+                opacity: 0.8;
+                animation: confetti-fall ${duration}ms ease-in ${delay}ms forwards;
+            `;
 
             confettiContainer.appendChild(confetti);
         }
 
-        // Убираем конфетти через 4 секунды
+        // Очистка через 4 секунды
         setTimeout(() => {
             if (confettiContainer.parentNode) {
                 confettiContainer.parentNode.removeChild(confettiContainer);
+                console.log('🧹 Конфетти убрано');
             }
         }, 4000);
     }
 
+    // Система уведомлений
     function showNotification(message, type = 'info', duration = 4000) {
-        const container = document.getElementById('notificationContainer');
+        if (!DOM.notificationContainer) return;
+
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
 
@@ -537,17 +534,19 @@
         };
 
         notification.innerHTML = `
-                <div class="notification-content">
-                    <span class="notification-icon">${icons[type] || icons.info}</span>
-                    <span class="notification-message">${message}</span>
-                    <button class="notification-close">&times;</button>
-                </div>
-            `;
+            <div class="notification-content">
+                <span class="notification-icon">${icons[type] || icons.info}</span>
+                <span class="notification-message">${message}</span>
+                <button class="notification-close">&times;</button>
+            </div>
+        `;
 
-        container.appendChild(notification);
+        DOM.notificationContainer.appendChild(notification);
 
         // Анимация появления
-        setTimeout(() => notification.classList.add('show'), 100);
+        requestAnimationFrame(() => {
+            notification.classList.add('show');
+        });
 
         // Обработчик закрытия
         const closeBtn = notification.querySelector('.notification-close');
@@ -566,10 +565,9 @@
         }, 300);
     }
 
-    // Функция для генерации QR-кода (простая реализация)
-    function generateQRCode(text) {
-        // В реальном проекте используйте библиотеку QR.js
-        return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(text)}`;
+    // Утилиты
+    function formatPrice(price) {
+        return price.toLocaleString('ru-RU') + ' ₽';
     }
 
     // Анимация фона
@@ -581,22 +579,10 @@
         });
     }
 
-    // Запускаем анимацию фона
+    // Запуск анимации фона
     animateBackground();
 
-    // Обновляем статус заказа
-    setTimeout(() => {
-        const activeStep = document.querySelector('.status-step.active');
-        if (activeStep) {
-            activeStep.classList.remove('active');
-            activeStep.classList.add('completed');
-
-            const nextStep = activeStep.nextElementSibling;
-            if (nextStep) {
-                nextStep.classList.add('active');
-            }
-        }
-    }, 8000);
+    console.log('🚀 Страница результата оплаты полностью инициализирована');
 </script>
 </body>
 </html>

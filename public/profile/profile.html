@@ -7,7 +7,7 @@
 
     <!-- Montserrat -->
     <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 
     <!-- Глобальные стили -->
     <link rel="stylesheet" href="/css/style.css" />
@@ -52,140 +52,268 @@
 </script>
 
 <main class="profile-container">
-    <div class="profile-header">
-        <h1>Мой профиль</h1>
-        <div class="profile-stats">
-            <div class="stat-card">
-                <div class="stat-number" id="totalOrders">0</div>
-                <div class="stat-label">Всего заказов</div>
+    <!-- Приветственная шапка профиля -->
+    <div class="profile-hero">
+        <div class="profile-avatar">
+            <div class="avatar-circle">
+                <span class="avatar-text">👤</span>
             </div>
-            <div class="stat-card">
-                <div class="stat-number" id="totalSpent">0 ₽</div>
-                <div class="stat-label">Потрачено</div>
+        </div>
+        <div class="profile-welcome">
+            <h1>Добро пожаловать!</h1>
+            <p>Управляйте заказами и настройками аккаунта</p>
+        </div>
+
+        <!-- Красивая статистика -->
+        <div class="profile-stats-modern">
+            <div class="stat-modern">
+                <div class="stat-icon">📦</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="totalOrders">0</div>
+                    <div class="stat-label">Заказов</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-number" id="lastOrderDate">—</div>
-                <div class="stat-label">Последний заказ</div>
+            <div class="stat-modern">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="memberSince">2024</div>
+                    <div class="stat-label">С нами с</div>
+                </div>
+            </div>
+            <div class="stat-modern">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="orderStatus">—</div>
+                    <div class="stat-label">Статус</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="profile-content">
-        <!-- Вкладки -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="orders">Мои заказы</button>
-            <button class="tab-btn" data-tab="info">Личная информация</button>
-            <button class="tab-btn" data-tab="settings">Настройки</button>
+    <!-- Современное меню вкладок -->
+    <div class="modern-tabs">
+        <div class="tab-nav">
+            <button class="tab-button active" data-tab="orders">
+                <span class="tab-icon">📋</span>
+                <span class="tab-text">Мои заказы</span>
+            </button>
+            <button class="tab-button" data-tab="info">
+                <span class="tab-icon">👤</span>
+                <span class="tab-text">Профиль</span>
+            </button>
+            <button class="tab-button" data-tab="settings">
+                <span class="tab-icon">⚙️</span>
+                <span class="tab-text">Настройки</span>
+            </button>
         </div>
 
-        <!-- Контент вкладок -->
-        <div class="tab-content">
-            <!-- Вкладка "Мои заказы" -->
-            <div id="orders" class="tab-pane active">
-                <div class="orders-header">
-                    <h2>История заказов</h2>
-                    <button id="refreshOrdersBtn" class="refresh-btn">
-                        <span class="refresh-icon">🔄</span>
-                        Обновить
-                    </button>
-                </div>
+        <div class="tab-indicator"></div>
+    </div>
 
-                <div id="ordersContainer" class="orders-container">
-                    <div class="loading" id="ordersLoading">
-                        <div class="spinner"></div>
+    <!-- Контейнер контента -->
+    <div class="content-wrapper">
+        <!-- Вкладка "Мои заказы" -->
+        <div id="orders" class="tab-content active">
+            <div class="section-header">
+                <h2>История заказов</h2>
+                <button id="refreshOrdersBtn" class="refresh-btn">
+                    <span class="refresh-icon">🔄</span>
+                    Обновить
+                </button>
+            </div>
+
+            <!-- Прокручиваемый контейнер заказов -->
+            <div class="orders-scroll-container">
+                <div id="ordersContainer" class="orders-grid">
+                    <div class="loading-modern" id="ordersLoading">
+                        <div class="spinner-modern"></div>
                         <p>Загружаем ваши заказы...</p>
                     </div>
                 </div>
 
-                <div id="noOrdersMessage" class="no-orders" style="display: none;">
-                    <div class="no-orders-icon">📦</div>
-                    <h3>У вас пока нет заказов</h3>
-                    <p>Самое время сделать первую покупку!</p>
-                    <a href="/index.html" class="btn-primary">Перейти к покупкам</a>
+                <div id="noOrdersMessage" class="no-orders-modern" style="display: none;">
+                    <div class="no-orders-illustration">
+                        <div class="empty-box">📦</div>
+                        <div class="empty-sparkles">✨</div>
+                    </div>
+                    <h3>Пока заказов нет</h3>
+                    <p>Но это легко исправить! Выберите что-то интересное</p>
+                    <a href="/index.html" class="cta-button">
+                        <span>🛒</span>
+                        Начать покупки
+                    </a>
                 </div>
             </div>
+        </div>
 
-            <!-- Вкладка "Личная информация" -->
-            <div id="info" class="tab-pane">
-                <div class="info-section">
-                    <h2>Личная информация</h2>
-                    <div class="info-card">
-                        <form id="userInfoForm">
-                            <div class="form-group">
-                                <label for="userFullName">ФИО</label>
-                                <input type="text" id="userFullName" placeholder="Введите ваше полное имя">
+        <!-- Вкладка "Профиль" -->
+        <div id="info" class="tab-content">
+            <div class="modern-card">
+                <div class="card-header-modern">
+                    <h2>
+                        <span class="section-icon">👤</span>
+                        Личная информация
+                    </h2>
+                    <div class="header-decoration"></div>
+                </div>
+
+                <form id="userInfoForm" class="modern-form">
+                    <div class="form-grid">
+                        <div class="form-group-modern">
+                            <label for="userFullName">
+                                <span class="label-icon">🏷️</span>
+                                Полное имя
+                            </label>
+                            <input type="text" id="userFullName" placeholder="Иван Иванов">
+                        </div>
+
+                        <div class="form-group-modern">
+                            <label for="userPhone">
+                                <span class="label-icon">📱</span>
+                                Телефон
+                            </label>
+                            <input type="tel" id="userPhone" placeholder="+7 999 000 11 22">
+                        </div>
+
+                        <div class="form-group-modern full-width">
+                            <label for="userEmail">
+                                <span class="label-icon">📧</span>
+                                Email
+                            </label>
+                            <input type="email" id="userEmail" placeholder="your@email.com">
+                        </div>
+
+                        <div class="form-group-modern">
+                            <label for="userCity">
+                                <span class="label-icon">🏙️</span>
+                                Город
+                            </label>
+                            <input type="text" id="userCity" placeholder="Москва">
+                        </div>
+
+                        <div class="form-group-modern">
+                            <label for="userBirthday">
+                                <span class="label-icon">🎂</span>
+                                День рождения
+                            </label>
+                            <input type="date" id="userBirthday">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="save-button">
+                        <span>💾</span>
+                        Сохранить изменения
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Вкладка "Настройки" -->
+        <div id="settings" class="tab-content">
+            <div class="settings-grid">
+                <!-- Уведомления -->
+                <div class="modern-card">
+                    <div class="card-header-modern">
+                        <h3>
+                            <span class="section-icon">🔔</span>
+                            Уведомления
+                        </h3>
+                    </div>
+
+                    <div class="settings-list">
+                        <div class="setting-item-modern">
+                            <div class="setting-info">
+                                <div class="setting-title">📧 Email-уведомления</div>
+                                <div class="setting-desc">О статусе заказов и акциях</div>
                             </div>
-                            <div class="form-group">
-                                <label for="userPhone">Телефон</label>
-                                <input type="tel" id="userPhone" placeholder="+7 999 000 11 22">
+                            <label class="modern-toggle">
+                                <input type="checkbox" id="emailNotifications" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item-modern">
+                            <div class="setting-info">
+                                <div class="setting-title">📱 SMS-уведомления</div>
+                                <div class="setting-desc">Важные обновления по доставке</div>
                             </div>
-                            <div class="form-group">
-                                <label for="userEmail">Email</label>
-                                <input type="email" id="userEmail" placeholder="your@email.com">
+                            <label class="modern-toggle">
+                                <input type="checkbox" id="smsNotifications" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item-modern">
+                            <div class="setting-info">
+                                <div class="setting-title">🎁 Рекламные рассылки</div>
+                                <div class="setting-desc">Скидки и специальные предложения</div>
                             </div>
-                            <div class="form-group">
-                                <label for="userCity">Город</label>
-                                <input type="text" id="userCity" placeholder="Ваш город">
-                            </div>
-                            <button type="submit" class="btn-primary">Сохранить изменения</button>
-                        </form>
+                            <label class="modern-toggle">
+                                <input type="checkbox" id="marketingEmails">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Вкладка "Настройки" -->
-            <div id="settings" class="tab-pane">
-                <div class="settings-section">
-                    <h2>Настройки</h2>
-                    <div class="settings-card">
-                        <div class="setting-item">
+                <!-- Приватность -->
+                <div class="modern-card">
+                    <div class="card-header-modern">
+                        <h3>
+                            <span class="section-icon">🔒</span>
+                            Приватность
+                        </h3>
+                    </div>
+
+                    <div class="settings-list">
+                        <div class="setting-item-modern">
                             <div class="setting-info">
-                                <h3>Email-уведомления</h3>
-                                <p>Получать уведомления о статусе заказов</p>
+                                <div class="setting-title">👁️ Публичный профиль</div>
+                                <div class="setting-desc">Показывать профиль другим</div>
                             </div>
-                            <label class="toggle">
-                                <input type="checkbox" id="emailNotifications" checked>
-                                <span class="slider"></span>
+                            <label class="modern-toggle">
+                                <input type="checkbox" id="publicProfile">
+                                <span class="toggle-slider"></span>
                             </label>
                         </div>
 
-                        <div class="setting-item">
+                        <div class="setting-item-modern">
                             <div class="setting-info">
-                                <h3>SMS-уведомления</h3>
-                                <p>Получать SMS о доставке заказов</p>
+                                <div class="setting-title">📊 Аналитика</div>
+                                <div class="setting-desc">Помочь улучшить сервис</div>
                             </div>
-                            <label class="toggle">
-                                <input type="checkbox" id="smsNotifications" checked>
-                                <span class="slider"></span>
+                            <label class="modern-toggle">
+                                <input type="checkbox" id="analytics" checked>
+                                <span class="toggle-slider"></span>
                             </label>
                         </div>
+                    </div>
+                </div>
 
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <h3>Маркетинговые рассылки</h3>
-                                <p>Получать информацию о скидках и новинках</p>
-                            </div>
-                            <label class="toggle">
-                                <input type="checkbox" id="marketingEmails">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
+                <!-- Действия -->
+                <div class="modern-card">
+                    <div class="card-header-modern">
+                        <h3>
+                            <span class="section-icon">🔧</span>
+                            Действия
+                        </h3>
+                    </div>
 
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <h3>Очистить корзину</h3>
-                                <p>Удалить все товары из корзины</p>
-                            </div>
-                            <button id="clearCartBtn" class="btn-danger">Очистить</button>
-                        </div>
+                    <div class="action-buttons">
+                        <button id="clearCartBtn" class="action-btn secondary">
+                            <span>🛒</span>
+                            Очистить корзину
+                        </button>
 
-                        <div class="setting-item">
-                            <div class="setting-info">
-                                <h3>Очистить историю заказов</h3>
-                                <p>Удалить всю историю заказов (необратимо)</p>
-                            </div>
-                            <button id="clearHistoryBtn" class="btn-danger">Очистить историю</button>
-                        </div>
+                        <button id="exportDataBtn" class="action-btn primary">
+                            <span>📥</span>
+                            Экспорт данных
+                        </button>
+
+                        <button id="clearHistoryBtn" class="action-btn danger">
+                            <span>🗑️</span>
+                            Очистить историю
+                        </button>
                     </div>
                 </div>
             </div>
@@ -193,11 +321,19 @@
     </div>
 </main>
 
-<footer>
-    <p>© 2025 clip & go. Все права защищены.</p>
-    <p>
-        <a href="/Policy/privacy-cookie-policy.html">Политика cookies и конфиденциальности</a>
-    </p>
+<!-- Красивый footer -->
+<footer class="modern-footer">
+    <div class="footer-content">
+        <div class="footer-brand">
+            <strong>clip & go</strong>
+        </div>
+        <div class="footer-links">
+            <a href="/Policy/privacy-cookie-policy.html">Политика конфиденциальности</a>
+        </div>
+        <div class="footer-year">
+            © 2025
+        </div>
+    </div>
 </footer>
 
 <!-- Скрипты -->
