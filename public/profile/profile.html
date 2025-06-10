@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>clip & go • Профиль</title>
+
+    <!-- Montserrat -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet"/>
+
+    <!-- Глобальные стили -->
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/responsive.css" media="(max-width:768px)" />
+    <link rel="stylesheet" href="/css/header.css" />
+
+    <!-- Локальные стили профиля -->
+    <link rel="stylesheet" href="/profile/profile.css" />
+</head>
+
+<body>
+<!-- Общий header -->
+<div id="header-container"></div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('/header.html')
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById('header-container').innerHTML = html;
+                const hdr = document.getElementById('site-header');
+                hdr.classList.add('scrolled'); // шапка всегда белая на странице профиля
+            })
+            .catch(console.error);
+    });
+</script>
+
+<main class="profile-container">
+    <div class="profile-header">
+        <h1>Мой профиль</h1>
+        <div class="profile-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalOrders">0</div>
+                <div class="stat-label">Всего заказов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalSpent">0 ₽</div>
+                <div class="stat-label">Потрачено</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="lastOrderDate">—</div>
+                <div class="stat-label">Последний заказ</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-content">
+        <!-- Вкладки -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="orders">Мои заказы</button>
+            <button class="tab-btn" data-tab="info">Личная информация</button>
+            <button class="tab-btn" data-tab="settings">Настройки</button>
+        </div>
+
+        <!-- Контент вкладок -->
+        <div class="tab-content">
+            <!-- Вкладка "Мои заказы" -->
+            <div id="orders" class="tab-pane active">
+                <div class="orders-header">
+                    <h2>История заказов</h2>
+                    <button id="refreshOrdersBtn" class="refresh-btn">
+                        <span class="refresh-icon">🔄</span>
+                        Обновить
+                    </button>
+                </div>
+
+                <div id="ordersContainer" class="orders-container">
+                    <div class="loading" id="ordersLoading">
+                        <div class="spinner"></div>
+                        <p>Загружаем ваши заказы...</p>
+                    </div>
+                </div>
+
+                <div id="noOrdersMessage" class="no-orders" style="display: none;">
+                    <div class="no-orders-icon">📦</div>
+                    <h3>У вас пока нет заказов</h3>
+                    <p>Самое время сделать первую покупку!</p>
+                    <a href="/index.html" class="btn-primary">Перейти к покупкам</a>
+                </div>
+            </div>
+
+            <!-- Вкладка "Личная информация" -->
+            <div id="info" class="tab-pane">
+                <div class="info-section">
+                    <h2>Личная информация</h2>
+                    <div class="info-card">
+                        <form id="userInfoForm">
+                            <div class="form-group">
+                                <label for="userFullName">ФИО</label>
+                                <input type="text" id="userFullName" placeholder="Введите ваше полное имя">
+                            </div>
+                            <div class="form-group">
+                                <label for="userPhone">Телефон</label>
+                                <input type="tel" id="userPhone" placeholder="+7 999 000 11 22">
+                            </div>
+                            <div class="form-group">
+                                <label for="userEmail">Email</label>
+                                <input type="email" id="userEmail" placeholder="your@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="userCity">Город</label>
+                                <input type="text" id="userCity" placeholder="Ваш город">
+                            </div>
+                            <button type="submit" class="btn-primary">Сохранить изменения</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Вкладка "Настройки" -->
+            <div id="settings" class="tab-pane">
+                <div class="settings-section">
+                    <h2>Настройки</h2>
+                    <div class="settings-card">
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Email-уведомления</h3>
+                                <p>Получать уведомления о статусе заказов</p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="emailNotifications" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>SMS-уведомления</h3>
+                                <p>Получать SMS о доставке заказов</p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="smsNotifications" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Маркетинговые рассылки</h3>
+                                <p>Получать информацию о скидках и новинках</p>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="marketingEmails">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Очистить корзину</h3>
+                                <p>Удалить все товары из корзины</p>
+                            </div>
+                            <button id="clearCartBtn" class="btn-danger">Очистить</button>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h3>Очистить историю заказов</h3>
+                                <p>Удалить всю историю заказов (необратимо)</p>
+                            </div>
+                            <button id="clearHistoryBtn" class="btn-danger">Очистить историю</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>© 2025 clip & go. Все права защищены.</p>
+    <p>
+        <a href="/Policy/privacy-cookie-policy.html">Политика cookies и конфиденциальности</a>
+    </p>
+</footer>
+
+<!-- Скрипты -->
+<script src="/js/script.js"></script>
+<script src="/js/mobile-header.js"></script>
+<script src="/profile/profile.js"></script>
+</body>
+</html>

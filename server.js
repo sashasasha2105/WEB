@@ -18,6 +18,9 @@ const YOO_SECRET_KEY = process.env.YOO_KASSA_SECRET_KEY;
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
+// Временное хранилище заказов (в продакшене используйте БД)
+const pendingOrders = new Map(); // paymentId -> orderData
+const completedOrders = new Map(); // orderId -> fullOrderInfo
 
 // Отдаём клиенту ключи для Яндекс.Карт / Suggest
 app.get('/config.js', (_, res) => {
@@ -29,7 +32,6 @@ app.get('/config.js', (_, res) => {
     };
   `);
 });
-
 
 // =========================================
 // ====  CDEK OAuth: кешируем токен      ====
@@ -62,7 +64,6 @@ async function getCdekToken() {
     return cdekToken;
 }
 
-
 // ==================================================
 // ====  Прокси для Яндекс.Suggest (autocomplete) ====
 // ==================================================
@@ -92,7 +93,6 @@ app.get('/api/yandex/suggest', async (req, res) => {
     }
 });
 
-
 // =======================================================
 // ====  Прокси для поиска городов через CDEK (v2)     ====
 // =======================================================
@@ -118,7 +118,6 @@ app.get('/api/cdek/cities', async (req, res) => {
         return res.status(500).json({ error: 'cdek cities failed' });
     }
 });
-
 
 // =========================================================
 // ====  Прокси для получения ПВЗ/постаматов у CDEK (v2) ====
@@ -150,7 +149,6 @@ app.get('/api/cdek/pvz', async (req, res) => {
     }
 });
 
-
 // =========================================================
 // ====  Прокси для калькулятора тарифов CDEK (v2)       ====
 // =========================================================
@@ -175,57 +173,47 @@ app.post('/api/cdek/calculator/tariff', async (req, res) => {
     }
 });
 
-
 // =========================================================
-// ====  СОЗДАНИЕ ЗАКАЗА В CDEK (v2) - ПОЛНАЯ РЕАЛИЗАЦИЯ ====
+// ====  СОЗДАНИЕ ЗАКАЗА В CDEK (v2) - теперь внутренняя функция ====
 // =========================================================
-app.post('/api/cdek/orders', async (req, res) => {
-    console.log('[API /api/cdek/orders] Получен запрос на создание заказа');
-    console.log('[API /api/cdek/orders] Тело запроса:', JSON.stringify(req.body, null, 2));
+async function createCdekOrder(orderData) {
+    console.log('[createCdekOrder] Создание заказа в CDEK');
+    console.log('[createCdekOrder] Данные заказа:', JSON.stringify(orderData, null, 2));
 
     try {
-        // Получаем токен
         const token = await getCdekToken();
 
-        // Базовая структура заказа из запроса
-        const orderData = req.body;
-
-        // Добавляем обязательные поля для отправителя (магазина)
+        // Добавляем обязательные поля для отправителя
         if (!orderData.sender) {
             orderData.sender = {
-                company: 'ИП clip & go',  // Обязательное поле!
+                company: 'ИП clip & go',
                 name: 'Менеджер магазина',
                 email: 'clip_and_go@outlook.com',
                 phones: [{ number: '+79999999999' }]
             };
         }
 
-        // Добавляем номер заказа если его нет
         if (!orderData.number) {
             orderData.number = `CG-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
         }
 
-        // Добавляем комментарий к заказу
         if (!orderData.comment) {
             orderData.comment = 'Заказ с сайта clip & go';
         }
 
-        // Указываем from_location (откуда отправляем) - Москва
         if (!orderData.from_location) {
             orderData.from_location = {
-                code: 44,  // код Москвы в CDEK
+                code: 44,
                 city: 'Москва',
                 address: 'Склад интернет-магазина'
             };
         }
 
-        // Проверяем и дополняем данные о посылках
         if (orderData.packages && orderData.packages.length > 0) {
             orderData.packages = orderData.packages.map((pkg, index) => ({
                 ...pkg,
                 number: pkg.number || `PKG-${index + 1}`,
                 comment: pkg.comment || 'Товары clip & go',
-                // Убеждаемся что размеры указаны
                 length: pkg.length || 20,
                 width: pkg.width || 15,
                 height: pkg.height || 10,
@@ -233,30 +221,8 @@ app.post('/api/cdek/orders', async (req, res) => {
             }));
         }
 
-        // Финальная проверка обязательных полей
-        const requiredFields = ['type', 'tariff_code', 'recipient', 'packages'];
-        for (const field of requiredFields) {
-            if (!orderData[field]) {
-                console.error(`[API /api/cdek/orders] Отсутствует обязательное поле: ${field}`);
-                return res.status(400).json({
-                    error: `Отсутствует обязательное поле: ${field}`,
-                    details: `Поле '${field}' является обязательным для создания заказа`
-                });
-            }
-        }
+        console.log('[createCdekOrder] Отправляем заказ в CDEK:', JSON.stringify(orderData, null, 2));
 
-        // Проверяем наличие адреса доставки
-        if (!orderData.delivery_point && !orderData.to_location) {
-            console.error('[API /api/cdek/orders] Не указан адрес доставки');
-            return res.status(400).json({
-                error: 'Не указан адрес доставки',
-                details: 'Необходимо указать либо delivery_point (для ПВЗ), либо to_location (для курьера)'
-            });
-        }
-
-        console.log('[API /api/cdek/orders] Отправляем заказ в CDEK:', JSON.stringify(orderData, null, 2));
-
-        // Отправляем запрос в CDEK
         const response = await fetch(`${CDEK_BASE}/v2/orders`, {
             method: 'POST',
             headers: {
@@ -272,70 +238,43 @@ app.post('/api/cdek/orders', async (req, res) => {
         try {
             result = JSON.parse(responseText);
         } catch (e) {
-            console.error('[API /api/cdek/orders] Не удалось распарсить ответ:', responseText);
-            return res.status(500).json({
-                error: 'Некорректный ответ от CDEK',
-                details: responseText
-            });
+            console.error('[createCdekOrder] Не удалось распарсить ответ:', responseText);
+            throw new Error('Некорректный ответ от CDEK');
         }
 
-        console.log('[API /api/cdek/orders] Ответ от CDEK:', JSON.stringify(result, null, 2));
+        console.log('[createCdekOrder] Ответ от CDEK:', JSON.stringify(result, null, 2));
 
-        // Обработка успешного создания заказа
         if (response.ok && result.entity) {
-            console.log('[API /api/cdek/orders] Заказ успешно создан!');
-            console.log('[API /api/cdek/orders] UUID заказа:', result.entity.uuid);
-
-            return res.status(200).json({
+            console.log('[createCdekOrder] Заказ успешно создан! UUID:', result.entity.uuid);
+            return {
                 success: true,
                 order_uuid: result.entity.uuid,
                 order_number: orderData.number,
-                message: 'Заказ успешно создан в системе CDEK',
                 cdek_response: result
-            });
+            };
         }
 
-        // Обработка ошибок от CDEK
         if (result.errors && result.errors.length > 0) {
-            console.error('[API /api/cdek/orders] Ошибки от CDEK:', result.errors);
-
-            // Формируем понятное сообщение об ошибке
+            console.error('[createCdekOrder] Ошибки от CDEK:', result.errors);
             const errorMessages = result.errors.map(err =>
                 `${err.message || err.code} (код: ${err.code})`
             ).join('; ');
-
-            return res.status(400).json({
-                success: false,
-                error: 'Ошибка создания заказа в CDEK',
-                details: errorMessages,
-                cdek_errors: result.errors
-            });
+            throw new Error(`Ошибка CDEK: ${errorMessages}`);
         }
 
-        // Если статус не OK, но и ошибок нет
-        return res.status(response.status).json({
-            success: false,
-            error: 'Неожиданный ответ от CDEK',
-            status: response.status,
-            cdek_response: result
-        });
+        throw new Error(`Неожиданный ответ от CDEK: ${response.status}`);
 
     } catch (error) {
-        console.error('[API /api/cdek/orders] Критическая ошибка:', error);
-        return res.status(500).json({
-            success: false,
-            error: 'Внутренняя ошибка сервера',
-            details: error.message
-        });
+        console.error('[createCdekOrder] Ошибка:', error);
+        throw error;
     }
-});
-
+}
 
 // =============================================================
-// ====  Прокси для создания платежа в YooKassa (v3 API)       ====
+// ====  Создание платежа YooKassa (теперь сохраняем заказ)    ====
 // =============================================================
 app.post('/api/yookassa/create-payment', async (req, res) => {
-    const { amount, currency, description } = req.body;
+    const { amount, currency, description, orderData } = req.body;
     if (typeof amount !== 'number' || !currency) {
         return res.status(400).json({ error: 'Missing amount or currency' });
     }
@@ -346,13 +285,9 @@ app.post('/api/yookassa/create-payment', async (req, res) => {
 
     console.log('[API /api/yookassa/create-payment] amount=', amount, 'currency=', currency);
 
-    // Basic Auth (shopId:secretKey → base64)
     const auth = Buffer.from(`${YOO_SHOP_ID}:${YOO_SECRET_KEY}`).toString('base64');
-
-    // Генерируем уникальный ключ для Idempotence-Key
     const idemKey = randomUUID();
 
-    // Формируем тело запроса к YooKassa
     const paymentRequest = {
         amount: {
             value: amount.toFixed(2),
@@ -360,11 +295,13 @@ app.post('/api/yookassa/create-payment', async (req, res) => {
         },
         confirmation: {
             type: 'redirect',
-            // После оплаты YooKassa сделает редирект на эту страницу:
             return_url: `http://localhost:${PORT}/payment/payment-result.html`
         },
         capture: true,
-        description: description || 'Оплата заказа clip & go'
+        description: description || 'Оплата заказа clip & go',
+        metadata: {
+            order_source: 'clip_and_go_website'
+        }
     };
 
     try {
@@ -378,26 +315,161 @@ app.post('/api/yookassa/create-payment', async (req, res) => {
             body: JSON.stringify(paymentRequest)
         });
         const payment = await response.json();
+
         if (!response.ok) {
             console.error('[API /api/yookassa/create-payment] Ошибка от YooKassa:', payment);
             return res.status(response.status).json(payment);
         }
-        // В ответе YooKassa приходит confirmation: { confirmation_url: "..." }
+
         const confirmationUrl = payment.confirmation && payment.confirmation.confirmation_url;
         console.log('[API /api/yookassa/create-payment] confirmation_url =', confirmationUrl);
 
         if (!confirmationUrl) {
             return res.status(500).json({ error: 'confirmation_url missing in YooKassa response' });
         }
-        return res.json({ confirmation_url: confirmationUrl });
+
+        // Сохраняем данные заказа для последующей обработки после оплаты
+        if (orderData) {
+            pendingOrders.set(payment.id, {
+                ...orderData,
+                paymentId: payment.id,
+                createdAt: new Date().toISOString(),
+                amount: amount
+            });
+            console.log('[API /api/yookassa/create-payment] Заказ сохранен для обработки после оплаты');
+        }
+
+        return res.json({
+            confirmation_url: confirmationUrl,
+            payment_id: payment.id
+        });
     } catch (err) {
         console.error('[API /api/yookassa/create-payment] Ошибка:', err);
         return res.status(500).json({ error: 'yookassa create payment failed' });
     }
 });
 
+// =============================================================
+// ====  Вебхук для обработки уведомлений от YooKassa          ====
+// =============================================================
+app.post('/api/payment/webhook', async (req, res) => {
+    console.log('[Webhook] Получено уведомление от YooKassa:', JSON.stringify(req.body, null, 2));
+
+    const { type, event, object: payment } = req.body;
+
+    // YooKassa может отправлять разные форматы уведомлений
+    const isPaymentSucceeded =
+        (type === 'payment.succeeded' && payment && payment.status === 'succeeded') ||
+        (event === 'payment.succeeded' && payment && payment.status === 'succeeded');
+
+    if (isPaymentSucceeded) {
+        console.log('[Webhook] Платеж успешен! ID:', payment.id);
+
+        // Находим соответствующий заказ
+        const orderData = pendingOrders.get(payment.id);
+        if (!orderData) {
+            console.log('[Webhook] Заказ для платежа не найден:', payment.id);
+            console.log('[Webhook] Доступные платежи:', Array.from(pendingOrders.keys()));
+            return res.status(200).send('OK');
+        }
+
+        try {
+            // Создаем заказ в CDEK ТОЛЬКО после успешной оплаты
+            console.log('[Webhook] Создаем заказ в CDEK для оплаченного платежа...');
+            const cdekResult = await createCdekOrder(orderData);
+
+            // Сохраняем информацию о завершенном заказе
+            const completedOrder = {
+                id: `ORDER_${Date.now()}`,
+                paymentId: payment.id,
+                cdekUuid: cdekResult.order_uuid,
+                cdekNumber: cdekResult.order_number,
+                amount: orderData.amount,
+                items: orderData.packages?.[0]?.items || [],
+                recipient: orderData.recipient,
+                delivery: {
+                    type: orderData.delivery_point ? 'ПВЗ' : 'Курьер',
+                    address: orderData.delivery_point || orderData.to_location?.address,
+                    tariff: orderData.tariff_code
+                },
+                status: 'created',
+                createdAt: orderData.createdAt,
+                paidAt: new Date().toISOString()
+            };
+
+            completedOrders.set(completedOrder.id, completedOrder);
+            pendingOrders.delete(payment.id);
+
+            console.log('[Webhook] Заказ успешно создан в CDEK:', cdekResult.order_uuid);
+            console.log('[Webhook] Заказ сохранен с ID:', completedOrder.id);
+            console.log('[Webhook] Общее количество завершенных заказов:', completedOrders.size);
+
+        } catch (error) {
+            console.error('[Webhook] Ошибка создания заказа в CDEK:', error);
+            // Даже если заказ в CDEK не создался, сохраняем информацию об оплаченном заказе
+            const failedOrder = {
+                id: `ORDER_${Date.now()}`,
+                paymentId: payment.id,
+                amount: orderData.amount,
+                status: 'payment_success_cdek_failed',
+                error: error.message,
+                createdAt: orderData.createdAt,
+                paidAt: new Date().toISOString(),
+                orderData: orderData
+            };
+            completedOrders.set(failedOrder.id, failedOrder);
+            pendingOrders.delete(payment.id);
+
+            console.log('[Webhook] Заказ сохранен как failed с ID:', failedOrder.id);
+            console.log('[Webhook] Общее количество завершенных заказов:', completedOrders.size);
+        }
+    } else {
+        console.log('[Webhook] Неизвестный тип уведомления или статус:', { type, event, status: payment?.status });
+    }
+
+    res.status(200).send('OK');
+});
+
+// =============================================================
+// ====  API для получения заказов пользователя               ====
+// =============================================================
+app.get('/api/orders', (req, res) => {
+    // В будущем здесь будет фильтрация по пользователю
+    // Пока возвращаем все заказы
+    const orders = Array.from(completedOrders.values()).sort((a, b) =>
+        new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
+    console.log('[API /api/orders] Возвращаем заказы:', orders.length);
+    console.log('[API /api/orders] Pending заказов:', pendingOrders.size);
+    console.log('[API /api/orders] Completed заказов:', completedOrders.size);
+
+    if (orders.length > 0) {
+        console.log('[API /api/orders] Пример заказа:', {
+            id: orders[0].id,
+            status: orders[0].status,
+            amount: orders[0].amount
+        });
+    }
+
+    res.json(orders);
+});
+
+// =============================================================
+// ====  API для получения конкретного заказа                 ====
+// =============================================================
+app.get('/api/orders/:orderId', (req, res) => {
+    const order = completedOrders.get(req.params.orderId);
+    if (!order) {
+        return res.status(404).json({ error: 'Заказ не найден' });
+    }
+    res.json(order);
+});
 
 // Запускаем сервер
 app.listen(PORT, () => {
     console.log(`🚀 Server запущен на http://localhost:${PORT}`);
+    console.log(`📦 Вебхук YooKassa: https://e50b-2a0c-16c0-500-296-216-3cff-fea6-ec20.ngrok-free.app/api/payment/webhook`);
+    console.log(`📋 API заказов: http://localhost:${PORT}/api/orders`);
+    console.log(`👤 Профиль: http://localhost:${PORT}/profile/profile.html`);
 });

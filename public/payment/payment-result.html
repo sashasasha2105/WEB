@@ -1,6 +1,5 @@
 <!-- File: public/payment/payment-result.html -->
 
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -24,6 +23,7 @@
     <div class="header">
         <h1>Спасибо за покупку!</h1>
         <p>Ваш платёж успешно обработан и подтверждён.</p>
+        <p class="processing-note">Заказ в системе доставки создается автоматически. Вы можете отслеживать его статус в личном кабинете.</p>
     </div>
 
     <!-- Детали заказа -->
@@ -40,8 +40,8 @@
 
     <!-- Кнопки навигации -->
     <div class="buttons">
-        <a href="/cart/cart.html" class="btn-home">Вернуться в корзину</a>
-        <a href="/orders.html" class="btn-orders">Мои заказы</a>
+        <a href="/index.html" class="btn-home">На главную</a>
+        <a href="/profile/profile.html" class="btn-orders">Мой профиль</a>
     </div>
 
     <!-- Способы оплаты -->
@@ -119,9 +119,96 @@
         // Устанавливаем итоговую сумму
         totalAmountEl.textContent = total.toLocaleString('ru-RU') + ' ₽';
 
-        // Очищаем корзину, чтобы при возврате она была пустой
-        localStorage.removeItem('cartData');
+        // Показываем уведомление о автоматическом создании заказа
+        setTimeout(() => {
+            showNotification('Заказ автоматически создается в системе доставки СДЭК. Вы получите уведомление на email когда заказ будет готов к отправке.', 'info');
+        }, 2000);
+
+        // НЕ очищаем корзину сразу - дадим пользователю время ознакомиться
+        // Очистим через 30 секунд или когда пользователь уйдет со страницы
+        setTimeout(() => {
+            localStorage.removeItem('cartData');
+        }, 30000);
+
+        // Очистка при уходе со страницы
+        window.addEventListener('beforeunload', () => {
+            localStorage.removeItem('cartData');
+        });
     });
+
+    // Функция показа уведомлений
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            max-width: 350px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideInNotification 0.5s ease;
+        `;
+
+        switch (type) {
+            case 'info':
+                notification.style.backgroundColor = '#007BFF';
+                break;
+            case 'success':
+                notification.style.backgroundColor = '#28a745';
+                break;
+            case 'error':
+                notification.style.backgroundColor = '#dc3545';
+                break;
+        }
+
+        notification.textContent = message;
+
+        // Добавляем CSS анимации
+        if (!document.querySelector('#notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'notification-styles';
+            style.textContent = `
+                @keyframes slideInNotification {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes slideOutNotification {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(100%); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        document.body.appendChild(notification);
+
+        // Автоматически удаляем через 8 секунд
+        setTimeout(() => {
+            notification.style.animation = 'slideOutNotification 0.5s ease';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 500);
+        }, 8000);
+
+        // Клик для закрытия
+        notification.addEventListener('click', () => {
+            notification.style.animation = 'slideOutNotification 0.5s ease';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 500);
+        });
+
+        notification.style.cursor = 'pointer';
+        notification.title = 'Нажмите, чтобы закрыть';
+    }
 </script>
 
 </body>

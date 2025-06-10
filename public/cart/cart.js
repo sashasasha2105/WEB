@@ -64,9 +64,20 @@ function loadCart() {
   if (colorEl) colorEl.textContent = cameraColor;
 }
 function saveCart() {
-  localStorage.setItem('cartData', JSON.stringify({
+  const cartData = {
     cameraCount: counts.camera,
     memoryCount: counts.memory
+  };
+  localStorage.setItem('cartData', JSON.stringify(cartData));
+
+  // Принудительно обновляем счетчик на всех страницах
+  if (window.updateCartCounter) {
+    window.updateCartCounter();
+  }
+
+  // Диспатчим событие для обновления на других вкладках
+  window.dispatchEvent(new CustomEvent('cartUpdated', {
+    detail: cartData
   }));
 }
 
@@ -138,60 +149,47 @@ function initCartControls() {
       return alert('Заполните ФИО и телефон получателя');
     }
 
-    // 1. Создание платежа
-    let payment;
+    // Показываем заглушку загрузки
+    showPaymentLoader();
+
+    // Подготавливаем данные заказа для СДЭК (но пока НЕ отправляем)
+    const orderData = buildCdekOrderRequest(amount);
+
     try {
+      // Создаем платеж и передаем данные заказа для обработки ПОСЛЕ оплаты
       const resp = await fetch('/api/yookassa/create-payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount,
           currency: 'RUB',
-          description: `Заказ clip & go на сумму ${amount} ₽`
+          description: `Заказ clip & go на сумму ${amount} ₽`,
+          orderData: orderData  // Передаем данные заказа для создания ПОСЛЕ оплаты
         })
       });
-      payment = await resp.json();
+
+      const payment = await resp.json();
       if (!resp.ok) throw new Error(payment.error || 'Ошибка создания платежа');
+
+      console.log('Платеж создан, переходим к оплате...');
+      console.log('Данные заказа будут переданы в СДЭК после успешной оплаты');
+
+      // Сохраняем ID платежа для отслеживания
+      localStorage.setItem('currentPaymentId', payment.payment_id);
+
+      // Показываем уведомление о переходе
+      updateLoaderText('Переходим к оплате...');
+
+      // Небольшая задержка для лучшего UX
+      setTimeout(() => {
+        window.location.href = payment.confirmation_url;
+      }, 1000);
+
     } catch(e) {
       console.error('Ошибка создания платежа:', e);
-      return alert('Ошибка при создании платежа: ' + e.message);
+      hidePaymentLoader();
+      alert('Ошибка при создании платежа: ' + e.message);
     }
-
-    // 2. Регистрация заказа в СДЕК
-    try {
-      const orderRequest = buildCdekOrderRequest(amount);
-      console.log('Отправляем заказ в CDEK:', orderRequest);
-
-      const resp = await fetch('/api/cdek/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderRequest)
-      });
-
-      const result = await resp.json();
-      console.log('[CDEK order response]', result);
-
-      if (!resp.ok || !result.success) {
-        // Показываем пользователю детальную информацию об ошибке
-        let errorMsg = 'Ошибка при создании заказа в CDEK:\n';
-        if (result.details) {
-          errorMsg += result.details;
-        } else if (result.error) {
-          errorMsg += result.error;
-        }
-        console.error('Ошибка CDEK:', result);
-        alert(errorMsg);
-        // Но всё равно переходим к оплате, т.к. платеж уже создан
-      } else {
-        console.log('Заказ успешно создан в CDEK! UUID:', result.order_uuid);
-      }
-    } catch (e) {
-      console.error('[CDEK order error]', e);
-      alert('Не удалось создать заказ в системе доставки, но вы можете продолжить оплату. Мы свяжемся с вами для уточнения деталей.');
-    }
-
-    // 3. Редирект на оплату
-    window.location.href = payment.confirmation_url;
   });
 }
 
@@ -501,27 +499,70 @@ function renderPvzInfoPanel(pt, type, loc) {
 /* === Кэш тарифов === */
 async function preloadTariffPreviews(codes) {
   if (!cityCode) return;
-  codes.forEach(async code => {
-    if (cachedPreviews[code]) return;
+
+  console.log('[Tariffs] Предзагрузка тарифов для кодов:', codes, 'город:', cityCode);
+
+  // Используем Promise.all для одновременной загрузки всех тарифов
+  const tariffPromises = codes.map(async code => {
+    if (cachedPreviews[code]) {
+      console.log('[Tariffs] Тариф', code, 'уже в кеше:', cachedPreviews[code]);
+      return;
+    }
+
     const totalWeight = counts.camera*CAMERA_WEIGHT_KG + counts.memory*MEMORY_WEIGHT_KG;
-    const dims = counts.camera>0?CAMERA_DIMENSIONS:counts.memory>0?MEMORY_DIMENSIONS:{length:1,width:1,height:1};
+    const dims = counts.camera>0?CAMERA_DIMENSIONS:counts.memory>0?MEMORY_DIMENSIONS:{length:10,width:10,height:10};
+
+    // Фиксируем дату на завтра для стабильности расчетов
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const fixedDate = tomorrow.toISOString().replace(/\.\d{3}Z$/, '+0300');
+
     const body = {
-      date: new Date().toISOString().replace(/\.\d{3}Z$/, '+0300'),
-      type: 1, currency:0, lang:'rus',
+      date: fixedDate,
+      type: 1,
+      currency: 0,
+      lang: 'rus',
       tariff_code: code,
-      from_location:{code:FROM_LOCATION},
-      to_location:{code:cityCode},
-      packages:[{weight:Number(totalWeight.toFixed(3)),...dims}],
-      additional_order_types:[]
+      from_location: {code: FROM_LOCATION},
+      to_location: {code: cityCode},
+      packages: [{
+        weight: Math.max(100, Number((totalWeight * 1000).toFixed(0))), // минимум 100г
+        ...dims
+      }],
+      additional_order_types: []
     };
+
     try {
-      const resp = await fetch('/api/cdek/calculator/tariff',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+      console.log('[Tariffs] Запрос тарифа', code, 'с телом:', body);
+      const resp = await fetch('/api/cdek/calculator/tariff', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+      });
+
       const j = await resp.json();
-      cachedPreviews[code] = j.errors?{deliverySum:0,periodMin:0,periodMax:0}:{deliverySum:j.delivery_sum||j.total_sum||0,periodMin:j.period_min||0,periodMax:j.period_max||0};
-    } catch {
-      cachedPreviews[code] = {deliverySum:0,periodMin:0,periodMax:0};
+      console.log('[Tariffs] Ответ для тарифа', code, ':', j);
+
+      if (j.errors && j.errors.length > 0) {
+        console.error('[Tariffs] Ошибки тарифа', code, ':', j.errors);
+        cachedPreviews[code] = {deliverySum: 0, periodMin: 0, periodMax: 0, error: j.errors[0].message};
+      } else {
+        cachedPreviews[code] = {
+          deliverySum: j.delivery_sum || j.total_sum || 0,
+          periodMin: j.period_min || 0,
+          periodMax: j.period_max || 0,
+          totalSum: j.total_sum || 0,
+          cached: true
+        };
+      }
+    } catch (err) {
+      console.error('[Tariffs] Ошибка запроса тарифа', code, ':', err);
+      cachedPreviews[code] = {deliverySum: 0, periodMin: 0, periodMax: 0, error: 'Ошибка сети'};
     }
   });
+
+  await Promise.all(tariffPromises);
+  console.log('[Tariffs] Завершена предзагрузка тарифов, кеш:', cachedPreviews);
 }
 
 /* === Рендер кнопок тарифов === */
@@ -535,39 +576,221 @@ function renderTariffButtons(markerType, address, pvzCode) {
     arr = [{code:368,name:'Стандарт'},{code:486,name:'Экспресс'}];
   }
 
-  let html = '<h3 style="margin-bottom:16px;font-size:1.3em;color:#007BFF;">Выберите тариф:</h3>';
-  arr.forEach(t => {
-    const p = cachedPreviews[t.code]||{deliverySum:0,periodMin:0,periodMax:0};
-    const cost = Math.ceil((p.deliverySum||0)/10)*10;
-    const costStr = cost.toLocaleString('ru-RU')+' ₽';
-    const period = p.periodMin===p.periodMax?`${p.periodMin} дн.`:`${p.periodMin}–${p.periodMax} дн.`;
+  let html = '<h3 style="margin-bottom:20px;font-size:1.3em;color:#007BFF;">Выберите тариф доставки:</h3>';
+
+  // Добавляем пояснительный текст
+  html += '<div style="margin-bottom:20px;padding:12px;background:#e6f7ff;border-radius:6px;font-size:0.9em;color:#005bb5;">';
+  html += '💡 <strong>Стандарт</strong> — экономичная доставка | <strong>Экспресс</strong> — быстрая доставка';
+  html += '</div>';
+
+  arr.forEach((t, index) => {
+    const cacheKey = `${t.code}_${cityCode}`;
+    let p = cachedPreviews[t.code] || {deliverySum:0,periodMin:0,periodMax:0};
+
+    // Стабилизируем цену - округляем до 10 рублей
+    let cost = Math.ceil((p.deliverySum || p.totalSum || 0) / 10) * 10;
+
+    // Если цена нулевая, устанавливаем минимальные значения
+    if (cost === 0) {
+      cost = t.name === 'Экспресс' ? 250 : 150;
+      p = { ...p, periodMin: t.name === 'Экспресс' ? 1 : 2, periodMax: t.name === 'Экспресс' ? 2 : 3 };
+    }
+
+    const costStr = cost.toLocaleString('ru-RU') + ' ₽';
+    const period = p.periodMin === p.periodMax ? `${p.periodMin} дн.` : `${p.periodMin}–${p.periodMax} дн.`;
+
+    // Определяем иконку и описание
+    const isExpress = t.name === 'Экспресс';
+    const icon = isExpress ? '⚡' : '📦';
+    const description = isExpress ? 'Быстрая доставка' : 'Стандартная доставка';
+    const additionalClass = isExpress ? 'tariff-express' : 'tariff-standard';
+
+    // Определяем рекомендацию
+    const isRecommended = !isExpress; // стандарт рекомендуем по умолчанию
+
     html += `
-      <button class="tariff-btn" data-code="${t.code}" data-sum="${cost}" data-pvz="${pvzCode||''}">
-        <span>${t.name}</span>
-        <span class="tariff-details"><strong>${costStr}</strong><br><em>${period}</em></span>
+      <button class="tariff-btn ${additionalClass}" 
+              data-code="${t.code}" 
+              data-sum="${cost}" 
+              data-pvz="${pvzCode||''}"
+              data-name="${t.name}"
+              data-address="${address}"
+              id="tariff-${t.code}">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:1.8em;">${icon}</span>
+          <div style="text-align:left;">
+            <div style="font-size:1.2em;font-weight:700;">${t.name}</div>
+            <div style="font-size:0.9em;opacity:0.9;">${description}</div>
+          </div>
+        </div>
+        <div class="tariff-details" style="text-align:right;">
+          <div style="font-size:1.2em;font-weight:700;color:#fff;">${costStr}</div>
+          <div style="font-size:0.9em;opacity:0.95;">${period}</div>
+        </div>
+        ${isRecommended ? '<div style="position:absolute;top:8px;right:12px;background:#28a745;color:#fff;font-size:0.7em;padding:3px 8px;border-radius:4px;font-weight:600;">РЕКОМЕНДУЕМ</div>' : ''}
       </button>
     `;
   });
+
   tariffContainer.innerHTML = html;
   showTariffs();
 
-  document.querySelectorAll('.tariff-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedTariff = {
-        code: Number(btn.dataset.code),
-        type: markerType,
-        pvzCode: btn.dataset.pvz || null,
-        address
-      };
-      shipping = Number(btn.dataset.sum);
-      updateUI();
+  // Обработчики кликов с анимацией
+  document.querySelectorAll('.tariff-btn').forEach((btn, index) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
 
-      const typeText = markerType === 'COURIER' ? 'Курьер' :
-          markerType === 'PVZ' ? 'ПВЗ' : 'Постамат';
-      deliveryInfoEl().textContent =
-          `Выбран ${typeText}: ${address}. Тариф ${selectedTariff.code}, стоимость ${shipping.toLocaleString('ru-RU')} ₽`;
+      // Предотвращаем повторные клики
+      if (btn.classList.contains('tariff-loading')) return;
+
+      // Убираем выделение с других кнопок
+      document.querySelectorAll('.tariff-btn').forEach(b => {
+        b.classList.remove('selected');
+      });
+
+      // Добавляем анимацию загрузки
+      btn.classList.add('tariff-loading');
+
+      // Через небольшую задержку добавляем выделение
+      setTimeout(() => {
+        btn.classList.remove('tariff-loading');
+        btn.classList.add('selected');
+
+        // Обновляем выбранный тариф
+        selectedTariff = {
+          code: Number(btn.dataset.code),
+          type: markerType,
+          pvzCode: btn.dataset.pvz || null,
+          address: btn.dataset.address
+        };
+
+        shipping = Number(btn.dataset.sum);
+        updateUI();
+
+        const typeText = markerType === 'COURIER' ? 'Курьер' :
+            markerType === 'PVZ' ? 'ПВЗ' : 'Постамат';
+        const tariffName = btn.dataset.name;
+
+        deliveryInfoEl().textContent =
+            `✅ Выбран ${typeText} (${tariffName}): ${address}. Стоимость ${shipping.toLocaleString('ru-RU')} ₽`;
+
+        // Показываем уведомление
+        showTariffNotification(tariffName, shipping);
+
+        // Прокручиваем к итоговой сумме
+        setTimeout(() => {
+          document.querySelector('.cart-summary').scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+        }, 300);
+
+      }, 400);
     });
   });
+}
+
+/* === Уведомление о выборе тарифа === */
+function showTariffNotification(tariffName, cost) {
+  // Удаляем предыдущее уведомление если есть
+  const existing = document.getElementById('tariff-notification');
+  if (existing) existing.remove();
+
+  const notification = document.createElement('div');
+  notification.id = 'tariff-notification';
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(40,167,69,0.3);
+    z-index: 9999;
+    font-weight: 500;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    max-width: 300px;
+  `;
+
+  notification.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span style="font-size: 1.5em;">✅</span>
+      <div>
+        <div style="font-weight: 600;">Тариф выбран!</div>
+        <div style="font-size: 0.9em; opacity: 0.9;">${tariffName} • ${cost.toLocaleString('ru-RU')} ₽</div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(notification);
+
+  // Анимация появления
+  setTimeout(() => {
+    notification.style.transform = 'translateX(0)';
+  }, 100);
+
+  // Автоматическое скрытие
+  setTimeout(() => {
+    notification.style.transform = 'translateX(100%)';
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 400);
+  }, 3000);
+}
+
+/* === Заглушка загрузки при оплате === */
+function showPaymentLoader() {
+  // Создаем оверлей
+  const overlay = document.createElement('div');
+  overlay.id = 'paymentLoader';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    font-family: 'Montserrat', sans-serif;
+  `;
+
+  overlay.innerHTML = `
+    <div style="background: #fff; padding: 40px 60px; border-radius: 12px; text-align: center; max-width: 400px;">
+      <div style="width: 60px; height: 60px; border: 4px solid #f3f3f3; border-top: 4px solid #007BFF; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+      <h3 style="margin-bottom: 15px; color: #333; font-size: 1.3em;">Создаем платеж...</h3>
+      <p id="loaderText" style="color: #666; font-size: 1em; line-height: 1.4;">Подготавливаем данные для оплаты.<br>Пожалуйста, подождите...</p>
+    </div>
+    <style>
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+  `;
+
+  document.body.appendChild(overlay);
+  document.body.style.overflow = 'hidden';
+}
+
+function updateLoaderText(text) {
+  const loaderText = document.getElementById('loaderText');
+  if (loaderText) {
+    loaderText.innerHTML = text;
+  }
+}
+
+function hidePaymentLoader() {
+  const loader = document.getElementById('paymentLoader');
+  if (loader) {
+    loader.remove();
+    document.body.style.overflow = '';
+  }
 }
 
 /* === Помощники === */
