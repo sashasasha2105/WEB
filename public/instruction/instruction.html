@@ -1,4 +1,4 @@
-<!-- === File: instruction/instruction.html === -->
+<!-- === File: public/instruction/instruction.html === -->
 
 <!DOCTYPE html>
 <html lang="ru">
@@ -10,16 +10,16 @@
   <!-- Шрифт Montserrat -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
-    rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap"
+          rel="stylesheet"
   />
 
   <!-- Глобальные стили -->
   <link rel="stylesheet" href="../css/style.css" />
   <link
-    rel="stylesheet"
-    href="../css/responsive.css"
-    media="(max-width: 768px)"
+          rel="stylesheet"
+          href="../css/responsive.css"
+          media="(max-width: 768px)"
   />
 
   <!-- Локальные стили инструкции -->
@@ -27,129 +27,147 @@
 </head>
 <body>
 
-  <!-- общий header -->
-  <div id="header-container"></div>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      fetch('../header.html')
-        .then(r => r.text())
-        .then(html => {
-          document.getElementById('header-container').innerHTML = html;
-          const hdr = document.getElementById('site-header');
-          hdr.classList.remove('scrolled');
-          const TH = 50;
-          const onScroll = () =>
-            window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
-          onScroll();
-          window.addEventListener('scroll', onScroll);
-        })
-        .catch(console.error);
-    });
-  </script>
+<!-- общий header -->
+<div id="header-container"></div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch('../header.html')
+            .then(r => r.text())
+            .then(html => {
+              document.getElementById('header-container').innerHTML = html;
 
-  <main class="instruction-container">
-    <h1>Инструкция по эксплуатации clip &amp; go</h1>
+              const hdr = document.getElementById('site-header');
+              if (hdr) {
+                hdr.classList.remove('scrolled');
+                const TH = 50;
+                const onScroll = () =>
+                        window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
+                onScroll();
+                window.addEventListener('scroll', onScroll);
+              }
 
-    <!-- Шаг 1: Включение -->
-    <div class="step">
-      <div class="step-text">
-        <h2>🔌 Включение</h2>
-        <p>
-          Зажмите основную кнопку на <span class="highlight">4 секунды</span>.
-          Когда индикатор начнёт <span class="blue-text">мигать синим</span>
-          и почувствуется лёгкая вибрация — камера включена.
-        </p>
-      </div>
-      <div class="step-media">
-        <img src="../assets/images/step1.gif" alt="GIF: включение камеры">
-      </div>
+              // ВАЖНО: Ждем загрузки CartManager и обновляем счетчик
+              const waitForCartManager = () => {
+                if (window.CartManager) {
+                  console.log('[Header] CartManager найден, обновляем счетчик корзины');
+                  window.CartManager.updateCartCounter();
+                } else {
+                  console.log('[Header] Ожидание CartManager...');
+                  setTimeout(waitForCartManager, 50);
+                }
+              };
+
+              // Начинаем ожидание через небольшую задержку
+              setTimeout(waitForCartManager, 100);
+            })
+            .catch(console.error);
+  });
+</script>
+
+<main class="instruction-container">
+  <h1>Инструкция по эксплуатации clip &amp; go</h1>
+
+  <!-- Шаг 1: Включение -->
+  <div class="step">
+    <div class="step-text">
+      <h2>🔌 Включение</h2>
+      <p>
+        Зажмите основную кнопку на <span class="highlight">4 секунды</span>.
+        Когда индикатор начнёт <span class="blue-text">мигать синим</span>
+        и почувствуется лёгкая вибрация — камера включена.
+      </p>
     </div>
-
-    <!-- Шаг 2: Установка microSD -->
-    <div class="step reverse">
-      <div class="step-text">
-        <h2>💾 Установка microSD</h2>
-        <p>
-          Откройте боковую резиновую заглушку, вставьте карту (FAT32, до 256 ГБ) до щелчка.
-          Индикатор загорится постоянным синим светом.
-        </p>
-      </div>
-      <div class="step-media">
-        <img src="../assets/images/step2.gif" alt="GIF: установка microSD">
-      </div>
+    <div class="step-media">
+      <img src="../assets/images/step1.gif" alt="GIF: включение камеры">
     </div>
+  </div>
 
-    <!-- Шаг 3: Съёмка -->
-    <div class="step">
-      <div class="step-text">
-        <h2>🎥 Съёмка</h2>
-        <p>
-          Убедитесь, что индикатор горит синим.
-          <strong>Запись видео:</strong> один клик — индикатор мигает.<br>
-          <strong>Остановка:</strong> ещё один клик.<br>
-          <strong>Фото:</strong> переключитесь кнопкой <em>Mode</em> + клик «затвор».
-        </p>
-        <p>
-          4K (3840 × 2160), до 180 мин записи. Чтобы выключить — зажмите кнопку 4 сек.
-        </p>
-      </div>
-      <div class="step-media">
-        <img
-          src="../assets/images/step3.jpg"
-          alt="Фото: процесс съёмки"
-        >
-      </div>
+  <!-- Шаг 2: Установка microSD -->
+  <div class="step reverse">
+    <div class="step-text">
+      <h2>💾 Установка microSD</h2>
+      <p>
+        Откройте боковую резиновую заглушку, вставьте карту (FAT32, до 256 ГБ) до щелчка.
+        Индикатор загорится постоянным синим светом.
+      </p>
     </div>
-
-    <!-- Шаг 4.1: Выгрузка на телефон -->
-    <div class="step reverse">
-      <div class="step-text">
-        <h2>📱 Выгрузка на телефон</h2>
-        <ol>
-          <li>Установите приложение <em>Viidure</em>.</li>
-          <li>Включите камеру и дважды быстро нажмите кнопку — индикатор замигает сине-зелёным.</li>
-          <li>Подключитесь к Wi-Fi сети <code>H88-dc8403233f26</code>, пароль <code>12345678</code>.</li>
-          <li>Откройте Viidure и скачивайте файлы.</li>
-        </ol>
-      </div>
-      <div class="step-media">
-        <img src="../assets/images/step4.gif" alt="GIF: выгрузка на телефон">
-      </div>
+    <div class="step-media">
+      <img src="../assets/images/step2.gif" alt="GIF: установка microSD">
     </div>
+  </div>
 
-    <!-- Шаг 4.2: Выгрузка на ПК -->
-    <div class="step">
-      <div class="step-text">
-        <h2>💻 Выгрузка на ПК</h2>
-        <ol>
-          <li>Извлеките microSD и вставьте в картридер.</li>
-          <li>Подключите к USB-порту компьютера.</li>
-          <li>Скопируйте файлы из папки <code>DCIM</code>.</li>
-        </ol>
-      </div>
-      <div class="step-media">
-        <img src="../assets/images/step5.gif" alt="GIF: выгрузка на ПК">
-      </div>
+  <!-- Шаг 3: Съёмка -->
+  <div class="step">
+    <div class="step-text">
+      <h2>🎥 Съёмка</h2>
+      <p>
+        Убедитесь, что индикатор горит синим.
+        <strong>Запись видео:</strong> один клик — индикатор мигает.<br>
+        <strong>Остановка:</strong> ещё один клик.<br>
+        <strong>Фото:</strong> переключитесь кнопкой <em>Mode</em> + клик «затвор».
+      </p>
+      <p>
+        4K (3840 × 2160), до 180 мин записи. Чтобы выключить — зажмите кнопку 4 сек.
+      </p>
     </div>
-
-    <!-- Шаг 5: Завершение -->
-    <div class="step reverse last">
-      <div class="step-text">
-        <h2>✅ Приятного использования!</h2>
-        <p>
-          Камера готова к работе. Наслаждайтесь съёмкой и легко загружайте материалы!
-        </p>
-      </div>
-      <div class="step-media">
-        <img src="../assets/images/step6.gif" alt="GIF: завершение работы">
-      </div>
+    <div class="step-media">
+      <img
+              src="../assets/images/step3.jpg"
+              alt="Фото: процесс съёмки"
+      >
     </div>
+  </div>
 
-  </main>
+  <!-- Шаг 4.1: Выгрузка на телефон -->
+  <div class="step reverse">
+    <div class="step-text">
+      <h2>📱 Выгрузка на телефон</h2>
+      <ol>
+        <li>Установите приложение <em>Viidure</em>.</li>
+        <li>Включите камеру и дважды быстро нажмите кнопку — индикатор замигает сине-зелёным.</li>
+        <li>Подключитесь к Wi-Fi сети <code>H88-dc8403233f26</code>, пароль <code>12345678</code>.</li>
+        <li>Откройте Viidure и скачивайте файлы.</li>
+      </ol>
+    </div>
+    <div class="step-media">
+      <img src="../assets/images/step4.gif" alt="GIF: выгрузка на телефон">
+    </div>
+  </div>
 
-  <!-- Скрипты -->
-  <script src="../js/script.js"></script>
-  <script src="../js/mobile-header.js"></script>
-  <script src="instruction.js"></script>
+  <!-- Шаг 4.2: Выгрузка на ПК -->
+  <div class="step">
+    <div class="step-text">
+      <h2>💻 Выгрузка на ПК</h2>
+      <ol>
+        <li>Извлеките microSD и вставьте в картридер.</li>
+        <li>Подключите к USB-порту компьютера.</li>
+        <li>Скопируйте файлы из папки <code>DCIM</code>.</li>
+      </ol>
+    </div>
+    <div class="step-media">
+      <img src="../assets/images/step5.gif" alt="GIF: выгрузка на ПК">
+    </div>
+  </div>
+
+  <!-- Шаг 5: Завершение -->
+  <div class="step reverse last">
+    <div class="step-text">
+      <h2>✅ Приятного использования!</h2>
+      <p>
+        Камера готова к работе. Наслаждайтесь съёмкой и легко загружайте материалы!
+      </p>
+    </div>
+    <div class="step-media">
+      <img src="../assets/images/step6.gif" alt="GIF: завершение работы">
+    </div>
+  </div>
+
+</main>
+
+<!-- Скрипты -->
+<script src="/js/cart-manager.js"></script>
+<script src="../js/script.js"></script>
+<script src="../js/mobile-header.js"></script>
+<script src="instruction.js"></script>
 </body>
 </html>

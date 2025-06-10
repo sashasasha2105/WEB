@@ -27,8 +27,25 @@
             .then(r => r.text())
             .then(html => {
                 document.getElementById('header-container').innerHTML = html;
+
                 const hdr = document.getElementById('site-header');
-                hdr.classList.add('scrolled'); // шапка всегда белая на странице профиля
+                if (hdr) {
+                    hdr.classList.add('scrolled'); // шапка всегда белая на странице профиля
+                }
+
+                // ВАЖНО: Ждем загрузки CartManager и обновляем счетчик
+                const waitForCartManager = () => {
+                    if (window.CartManager) {
+                        console.log('[Header] CartManager найден, обновляем счетчик корзины');
+                        window.CartManager.updateCartCounter();
+                    } else {
+                        console.log('[Header] Ожидание CartManager...');
+                        setTimeout(waitForCartManager, 50);
+                    }
+                };
+
+                // Начинаем ожидание через небольшую задержку
+                setTimeout(waitForCartManager, 100);
             })
             .catch(console.error);
     });
@@ -184,6 +201,7 @@
 </footer>
 
 <!-- Скрипты -->
+<script src="/js/cart-manager.js"></script>
 <script src="/js/script.js"></script>
 <script src="/js/mobile-header.js"></script>
 <script src="/profile/profile.js"></script>

@@ -41,13 +41,30 @@
             .then(r => r.text())
             .then(html => {
               document.getElementById('header-container').innerHTML = html;
+
               const hdr = document.getElementById('site-header');
-              hdr.classList.remove('scrolled');
-              const TH = 50;
-              const onScroll = () =>
-                      window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
-              onScroll();
-              window.addEventListener('scroll', onScroll);
+              if (hdr) {
+                hdr.classList.remove('scrolled');
+                const TH = 50;
+                const onScroll = () =>
+                        window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
+                onScroll();
+                window.addEventListener('scroll', onScroll);
+              }
+
+              // ВАЖНО: Ждем загрузки CartManager и обновляем счетчик
+              const waitForCartManager = () => {
+                if (window.CartManager) {
+                  console.log('[Header] CartManager найден, обновляем счетчик корзины');
+                  window.CartManager.updateCartCounter();
+                } else {
+                  console.log('[Header] Ожидание CartManager...');
+                  setTimeout(waitForCartManager, 50);
+                }
+              };
+
+              // Начинаем ожидание через небольшую задержку
+              setTimeout(waitForCartManager, 100);
             })
             .catch(console.error);
   });
@@ -221,6 +238,7 @@
 </footer>
 
 <!-- Скрипты -->
+<script src="/js/cart-manager.js"></script>
 <script src="/js/script.js"></script>
 <script src="/js/mobile-header.js"></script>
 <script src="/cart/cart.js"></script>

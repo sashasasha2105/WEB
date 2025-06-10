@@ -1,4 +1,4 @@
-/* File: public/cart/cart.js */
+/* File: public/cart/cart.js - ПОЛНАЯ ИСПРАВЛЕННАЯ ВЕРСИЯ */
 
 /* === Цены и параметры === */
 const prices = { camera: 8900, memory: 500 };
@@ -20,7 +20,6 @@ let selectedTariff = null;  // { code, type, pvzCode, address }
 let justSelectedCity = false;
 
 /* === DOM-шорткаты === */
-const badgeEl         = () => document.querySelector('.cart-count');
 const totalEl         = () => document.getElementById('cartTotalValue');
 const shipEl          = () => document.getElementById('shippingCostValue');
 const deliveryInfoEl  = () => document.getElementById('deliveryInfo');
@@ -54,36 +53,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* === localStorage === */
 function loadCart() {
-  const d = JSON.parse(localStorage.getItem('cartData') || '{}');
-  counts.camera = d.cameraCount || 0;
-  counts.memory = d.memoryCount || 0;
+  // Используем CartManager для получения данных
+  if (window.CartManager) {
+    const data = window.CartManager.getCartData();
+    counts.camera = data.cameraCount || 0;
+    counts.memory = data.memoryCount || 0;
 
-  // Обновляем отображение цвета камеры
-  const cameraColor = d.cartColor || 'Чёрный';
-  const colorEl = document.getElementById('cameraColor');
-  if (colorEl) colorEl.textContent = cameraColor;
-}
-function saveCart() {
-  const cartData = {
-    cameraCount: counts.camera,
-    memoryCount: counts.memory
-  };
-  localStorage.setItem('cartData', JSON.stringify(cartData));
+    // Обновляем отображение цвета камеры
+    const cameraColor = data.cartColor || 'Чёрный';
+    const colorEl = document.getElementById('cameraColor');
+    if (colorEl) colorEl.textContent = cameraColor;
+  } else {
+    // Fallback на старый способ
+    const d = JSON.parse(localStorage.getItem('cartData') || '{}');
+    counts.camera = d.cameraCount || 0;
+    counts.memory = d.memoryCount || 0;
 
-  // Принудительно обновляем счетчик на всех страницах
-  if (window.updateCartCounter) {
-    window.updateCartCounter();
+    const cameraColor = d.cartColor || 'Чёрный';
+    const colorEl = document.getElementById('cameraColor');
+    if (colorEl) colorEl.textContent = cameraColor;
   }
+}
 
-  // Диспатчим событие для обновления на других вкладках
-  window.dispatchEvent(new CustomEvent('cartUpdated', {
-    detail: cartData
-  }));
+function saveCart() {
+  // Используем CartManager для сохранения
+  if (window.CartManager) {
+    const currentData = window.CartManager.getCartData();
+    window.CartManager.saveCartData(counts.camera, counts.memory, currentData.cartColor);
+  } else {
+    // Fallback на старый способ
+    const cartData = {
+      cameraCount: counts.camera,
+      memoryCount: counts.memory
+    };
+    localStorage.setItem('cartData', JSON.stringify(cartData));
+
+    // Принудительно обновляем счетчик на всех страницах
+    if (window.updateCartCounter) {
+      window.updateCartCounter();
+    }
+
+    // Диспатчим событие для обновления на других вкладках
+    window.dispatchEvent(new CustomEvent('cartUpdated', {
+      detail: cartData
+    }));
+  }
 }
 
 /* === Обновление UI === */
 function updateUI() {
-  if (badgeEl()) badgeEl().textContent = counts.camera + counts.memory;
+  // НЕ вызываем CartManager.updateCartCounter() здесь - это приводит к рекурсии!
+  // CartManager сам обновит счетчик при сохранении данных
+
   shipEl().textContent = shipping.toLocaleString('ru-RU');
 
   // Обновляем количество в UI
@@ -615,7 +636,8 @@ function renderTariffButtons(markerType, address, pvzCode) {
               data-pvz="${pvzCode||''}"
               data-name="${t.name}"
               data-address="${address}"
-              id="tariff-${t.code}">
+              id="tariff-${t.code}"
+              style="position:relative;">
         <div style="display:flex;align-items:center;gap:12px;">
           <span style="font-size:1.8em;">${icon}</span>
           <div style="text-align:left;">
@@ -812,3 +834,6 @@ function debounce(fn, ms = 300) {
   let t;
   return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
 }
+
+/* === Экспорт для совместимости === */
+window.updateUI = updateUI;
