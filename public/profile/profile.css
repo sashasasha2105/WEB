@@ -1,59 +1,79 @@
-/* === ИСПРАВЛЕННЫЙ CSS ДЛЯ СТРАНИЦЫ ПРОФИЛЯ === */
-/* Улучшенная читаемость, исправленные наложения и плавные анимации */
+/* === LIQUID GLASS PROFILE - ФИНАЛЬНАЯ ВЕРСИЯ === */
+/* Полностью исправленный CSS с улучшенной читаемостью */
 
 :root {
-    /* Улучшенная цветовая палитра с лучшей контрастностью */
-    --noble-light-blue: #4A90E2;
-    --noble-blue: #2C5282;
-    --noble-dark-blue: #1A365D;
-    --noble-navy: #0F2A44;
-    --noble-accent: #63B3ED;
+    /* Liquid Glass цветовая палитра */
+    --liquid-primary: #007AFF;
+    --liquid-secondary: #5856D6;
+    --liquid-tertiary: #AF52DE;
+    --liquid-accent: #FF2D55;
+    --liquid-success: #34C759;
+    --liquid-warning: #FF9500;
+    --liquid-error: #FF3B30;
 
-    /* Вспомогательные цвета */
-    --success: #38A169;
-    --warning: #D69E2E;
-    --error: #E53E3E;
-    --gray: #718096;
+    /* Liquid Glass градиенты */
+    --liquid-gradient-1: linear-gradient(135deg, #007AFF 0%, #5856D6 50%, #AF52DE 100%);
+    --liquid-gradient-2: linear-gradient(135deg, #5856D6 0%, #AF52DE 50%, #FF2D55 100%);
+    --liquid-gradient-3: linear-gradient(135deg, #AF52DE 0%, #FF2D55 50%, #FF9500 100%);
+    --liquid-gradient-soft: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(88, 86, 214, 0.08) 50%, rgba(175, 82, 222, 0.08) 100%);
 
-    /* Улучшенные градиенты */
-    --gradient-primary: linear-gradient(135deg, var(--noble-light-blue) 0%, var(--noble-blue) 50%, var(--noble-dark-blue) 100%);
-    --gradient-secondary: linear-gradient(135deg, var(--noble-accent) 0%, var(--noble-light-blue) 50%, var(--noble-blue) 100%);
-    --gradient-dark: linear-gradient(135deg, var(--noble-blue) 0%, var(--noble-dark-blue) 50%, var(--noble-navy) 100%);
+    /* Liquid Glass материалы */
+    --liquid-glass-ultra-thin: rgba(255, 255, 255, 0.25);
+    --liquid-glass-thin: rgba(255, 255, 255, 0.35);
+    --liquid-glass-regular: rgba(255, 255, 255, 0.45);
+    --liquid-glass-medium: rgba(255, 255, 255, 0.55);
+    --liquid-glass-thick: rgba(255, 255, 255, 0.65);
+    --liquid-glass-ultra-thick: rgba(255, 255, 255, 0.75);
 
-    /* ИСПРАВЛЕНО: Улучшенная Glass система с лучшей контрастностью */
-    --glass-ultra-thin: rgba(255, 255, 255, 0.15);
-    --glass-thin: rgba(255, 255, 255, 0.22);
-    --glass-regular: rgba(255, 255, 255, 0.30);
-    --glass-thick: rgba(255, 255, 255, 0.40);
-    --glass-ultra-thick: rgba(255, 255, 255, 0.55);
+    /* Темные стекла для контраста */
+    --liquid-glass-dark: rgba(0, 0, 0, 0.05);
+    --liquid-glass-dark-medium: rgba(0, 0, 0, 0.08);
+    --liquid-glass-dark-thick: rgba(0, 0, 0, 0.12);
 
-    /* Dark glass варианты для лучшей читаемости */
-    --glass-dark-thin: rgba(0, 0, 0, 0.15);
-    --glass-dark-regular: rgba(0, 0, 0, 0.25);
-    --glass-dark-thick: rgba(0, 0, 0, 0.35);
+    /* Liquid размытия */
+    --liquid-blur-subtle: blur(8px);
+    --liquid-blur-light: blur(16px);
+    --liquid-blur-medium: blur(24px);
+    --liquid-blur-heavy: blur(32px);
+    --liquid-blur-extreme: blur(48px);
+    --liquid-blur-max: blur(64px);
 
-    /* Blur levels */
-    --blur-sm: blur(8px);
-    --blur-md: blur(16px);
-    --blur-lg: blur(24px);
-    --blur-xl: blur(32px);
-    --blur-2xl: blur(40px);
+    /* Liquid тени */
+    --liquid-shadow-subtle: 0 4px 24px rgba(0, 0, 0, 0.04);
+    --liquid-shadow-regular: 0 8px 32px rgba(0, 0, 0, 0.06);
+    --liquid-shadow-elevated: 0 16px 48px rgba(0, 0, 0, 0.08);
+    --liquid-shadow-floating: 0 24px 64px rgba(0, 0, 0, 0.12);
+    --liquid-shadow-colorful: 0 20px 60px rgba(88, 86, 214, 0.15);
 
-    /* ИСПРАВЛЕНО: Улучшенные тени */
-    --shadow-glass: 0 8px 32px rgba(26, 54, 93, 0.20);
-    --shadow-elevated: 0 16px 48px rgba(26, 54, 93, 0.25);
-    --shadow-floating: 0 24px 64px rgba(26, 54, 93, 0.30);
+    /* Liquid анимации */
+    --liquid-timing: cubic-bezier(0.4, 0.0, 0.2, 1);
+    --liquid-timing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --liquid-timing-smooth: cubic-bezier(0.23, 1, 0.32, 1);
 
-    /* ИСПРАВЛЕНО: Плавные анимации */
-    --timing-swift: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    --timing-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --timing-gentle: cubic-bezier(0.25, 0.1, 0.25, 1);
+    /* Улучшенная типографика для читаемости */
+    --liquid-text-primary: rgba(0, 0, 0, 0.9);
+    --liquid-text-secondary: rgba(0, 0, 0, 0.7);
+    --liquid-text-tertiary: rgba(0, 0, 0, 0.5);
+    --liquid-text-muted: rgba(0, 0, 0, 0.3);
 
-    /* ИСПРАВЛЕНО: Улучшенная типографика с лучшей читаемостью */
-    --text-primary: rgba(255, 255, 255, 1);
-    --text-secondary: rgba(255, 255, 255, 0.90);
-    --text-tertiary: rgba(255, 255, 255, 0.75);
-    --text-muted: rgba(255, 255, 255, 0.65);
+    /* На темном фоне */
+    --liquid-text-light-primary: rgba(255, 255, 255, 0.95);
+    --liquid-text-light-secondary: rgba(255, 255, 255, 0.75);
+    --liquid-text-light-tertiary: rgba(255, 255, 255, 0.55);
+
+    /* Liquid отступы и радиусы */
+    --liquid-radius-small: 16px;
+    --liquid-radius-medium: 24px;
+    --liquid-radius-large: 32px;
+    --liquid-radius-xl: 40px;
+
+    /* Z-индексы для правильного наложения */
+    --z-background: -1;
+    --z-base: 1;
+    --z-card: 10;
+    --z-overlay: 100;
+    --z-modal: 1000;
+    --z-tooltip: 10000;
 }
 
 /* === Глобальные стили === */
@@ -69,22 +89,19 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'Montserrat', Arial, sans-serif;
-    background: var(--gradient-primary);
-    background-attachment: fixed;
-    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'Montserrat', system-ui, sans-serif;
+    background: #F5F5F7;
+    color: var(--liquid-text-primary);
     overflow-x: hidden;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     line-height: 1.5;
-
-    /* ИСПРАВЛЕНО: Добавляем тень для лучшей читаемости текста */
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    position: relative;
 }
 
-/* === ИСПРАВЛЕНО: Стабилизированный анимированный фон === */
+/* === Liquid Glass анимированный фон (более светлый) === */
 body::before {
     content: '';
     position: fixed;
@@ -93,651 +110,540 @@ body::before {
     width: 100%;
     height: 100%;
     background:
-            radial-gradient(circle at 20% 80%, rgba(74, 144, 226, 0.12) 0%, transparent 50%),
-            radial-gradient(circle at 80% 20%, rgba(44, 82, 130, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 40% 40%, rgba(26, 54, 93, 0.08) 0%, transparent 50%);
-    animation: backgroundFlow 30s ease-in-out infinite;
+            radial-gradient(circle at 20% 80%, rgba(0, 122, 255, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(88, 86, 214, 0.06) 0%, transparent 50%),
+            radial-gradient(circle at 40% 40%, rgba(175, 82, 222, 0.04) 0%, transparent 50%),
+            #F5F5F7;
+    z-index: var(--z-background);
     pointer-events: none;
-    z-index: -1;
-    will-change: transform;
 }
 
-@keyframes backgroundFlow {
-    0%, 100% {
-        transform: scale(1) rotate(0deg);
-        opacity: 0.7;
-    }
-    50% {
-        transform: scale(1.02) rotate(0.5deg);
-        opacity: 1;
-    }
-}
-
-/* === ИСПРАВЛЕНО: Контейнер профиля с правильными отступами === */
-.profile-container {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 140px 24px 80px;
-    position: relative;
-    min-height: 100vh;
-}
-
-/* === ИСПРАВЛЕНО: Hero секция без наложений === */
-.profile-hero {
-    background: var(--glass-thick);
-    backdrop-filter: var(--blur-xl);
-    -webkit-backdrop-filter: var(--blur-xl);
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    border-radius: 32px;
-    padding: 56px 48px;
-    margin-bottom: 48px;
-    box-shadow: var(--shadow-elevated);
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 48px;
-    animation: heroEntry 1s var(--timing-swift);
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-}
-
-.profile-hero::before {
+/* Liquid Glass движущиеся блобы */
+body::after {
     content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--gradient-secondary);
-    border-radius: 32px 32px 0 0;
-}
-
-.profile-hero::after {
-    content: '';
-    position: absolute;
+    position: fixed;
     top: -50%;
     left: -50%;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, transparent 70%);
-    animation: heroGlow 15s ease-in-out infinite;
+    background:
+            radial-gradient(circle at 30% 50%, rgba(0, 122, 255, 0.04) 0%, transparent 40%),
+            radial-gradient(circle at 70% 50%, rgba(175, 82, 222, 0.03) 0%, transparent 40%);
+    animation: liquidFlow 30s ease-in-out infinite;
+    z-index: var(--z-background);
     pointer-events: none;
-    z-index: -1;
 }
 
-@keyframes heroEntry {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.98);
-        backdrop-filter: blur(0px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-        backdrop-filter: var(--blur-xl);
-    }
-}
-
-@keyframes heroGlow {
+@keyframes liquidFlow {
     0%, 100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 0.3;
+        transform: translate(0, 0) rotate(0deg) scale(1);
     }
-    50% {
-        transform: translate(-48%, -48%) scale(1.02);
-        opacity: 0.5;
+    33% {
+        transform: translate(-10%, 5%) rotate(120deg) scale(1.1);
+    }
+    66% {
+        transform: translate(5%, -10%) rotate(240deg) scale(0.9);
     }
 }
 
-/* === ИСПРАВЛЕНО: Аватар с стабильной анимацией === */
-.profile-avatar {
+/* === Контейнер профиля === */
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 140px 24px 80px;
     position: relative;
-    z-index: 10;
+    min-height: 100vh;
+    z-index: var(--z-base);
 }
 
-.avatar-circle {
-    width: 96px;
-    height: 96px;
-    background: var(--gradient-secondary);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow:
-            0 12px 32px rgba(74, 144, 226, 0.4),
-            inset 0 2px 8px rgba(255, 255, 255, 0.4);
-    animation: avatarPulse 10s ease-in-out infinite;
-    border: 3px solid rgba(255, 255, 255, 0.5);
-    position: relative;
-    overflow: hidden;
-    will-change: transform;
-}
-
-.avatar-circle::before {
-    content: '';
-    position: absolute;
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
-    background: var(--gradient-secondary);
-    border-radius: 50%;
-    z-index: -1;
-    animation: avatarRing 8s linear infinite;
-}
-
-@keyframes avatarPulse {
-    0%, 100% {
-        transform: scale(1);
-        box-shadow:
-                0 12px 32px rgba(74, 144, 226, 0.4),
-                inset 0 2px 8px rgba(255, 255, 255, 0.4);
-    }
-    50% {
-        transform: scale(1.01);
-        box-shadow:
-                0 16px 48px rgba(74, 144, 226, 0.5),
-                inset 0 2px 8px rgba(255, 255, 255, 0.5);
-    }
-}
-
-@keyframes avatarRing {
-    0% {
-        transform: rotate(0deg) scale(1);
-        opacity: 0.6;
-    }
-    50% {
-        transform: rotate(180deg) scale(1.005);
-        opacity: 0.8;
-    }
-    100% {
-        transform: rotate(360deg) scale(1);
-        opacity: 0.6;
-    }
-}
-
-.avatar-text {
-    font-size: 2.4em;
-    font-weight: 600;
-    color: var(--text-primary);
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
-    z-index: 2;
-}
-
-/* === ИСПРАВЛЕНО: Welcome секция с улучшенной читаемостью === */
-.profile-welcome {
-    z-index: 10;
-}
-
-.profile-welcome h1 {
-    font-size: 3.2em;
-    font-weight: 700;
-    margin-bottom: 16px;
-    background: linear-gradient(135deg, var(--text-primary) 0%, var(--text-secondary) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.4));
-}
-
-.profile-welcome p {
-    font-size: 1.3em;
-    color: var(--text-secondary);
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    line-height: 1.4;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-/* === ИСПРАВЛЕНО: Статистика без наложений === */
-.profile-stats-modern {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    z-index: 10;
-}
-
-.stat-modern {
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-lg);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 24px;
-    padding: 32px 24px;
-    text-align: center;
-    transition: all 0.4s var(--timing-swift);
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    z-index: 2;
-}
-
-.stat-modern::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-    transition: left 0.6s var(--timing-swift);
-}
-
-.stat-modern:hover::before {
-    left: 100%;
-}
-
-.stat-modern:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: var(--shadow-floating);
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-2xl);
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-.stat-modern:active {
-    transform: translateY(-4px) scale(0.99);
-    transition: all 0.15s var(--timing-swift);
-}
-
-.stat-icon {
-    font-size: 2.4em;
-    margin-bottom: 16px;
-    opacity: 0.95;
-    display: block;
-    animation: statIconFloat 8s ease-in-out infinite;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
-}
-
-@keyframes statIconFloat {
-    0%, 100% {
-        transform: translateY(0px) rotate(0deg);
-    }
-    50% {
-        transform: translateY(-2px) rotate(0.5deg);
-    }
-}
-
-.stat-number {
-    font-size: 2.4em;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 8px;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.stat-label {
-    font-size: 0.95em;
-    color: var(--text-tertiary);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* === ИСПРАВЛЕНО: Навигация вкладок с правильным z-index === */
-.modern-tabs {
-    position: relative;
-    margin-bottom: 48px;
-    z-index: 5;
-}
-
-.tab-nav {
-    display: flex;
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-xl);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 24px;
-    padding: 8px;
-    box-shadow: var(--shadow-glass);
-    position: relative;
-    overflow: hidden;
-    z-index: 6;
-}
-
-.tab-nav::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--gradient-secondary);
-    border-radius: 24px 24px 0 0;
-}
-
-.tab-button {
-    flex: 1;
-    background: none;
-    border: none;
-    padding: 20px 28px;
-    border-radius: 18px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    font-weight: 600;
-    color: var(--text-tertiary);
-    transition: all 0.3s var(--timing-swift);
-    position: relative;
-    z-index: 7;
-    font-size: 1.1em;
-    letter-spacing: -0.01em;
-}
-
-.tab-button.active {
-    color: var(--text-primary);
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-lg);
-    box-shadow:
-            0 8px 24px rgba(0, 0, 0, 0.2),
-            inset 0 1px 4px rgba(255, 255, 255, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    transform: scale(1.01);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-}
-
-.tab-button:not(.active):hover {
-    color: var(--text-secondary);
-    background: var(--glass-thin);
-    backdrop-filter: var(--blur-md);
-    transform: translateY(-1px);
-}
-
-.tab-icon {
-    font-size: 1.3em;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
-}
-
-.tab-text {
-    font-size: 1.1em;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-}
-
-/* === ИСПРАВЛЕНО: Контент вкладок с правильной высотой === */
-.content-wrapper {
-    position: relative;
-    margin-bottom: 48px;
-    min-height: 400px;
-    z-index: 4;
-}
-
-.tab-content {
-    display: none;
-    animation: contentSlideIn 0.5s var(--timing-swift);
-    position: relative;
-    z-index: 3;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-@keyframes contentSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px) scale(0.99);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-/* === ИСПРАВЛЕНО: Заголовки секций === */
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* === Liquid Glass Hero секция === */
+.profile-hero {
+    background: var(--liquid-glass-ultra-thick);
+    backdrop-filter: var(--liquid-blur-heavy);
+    -webkit-backdrop-filter: var(--liquid-blur-heavy);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--liquid-radius-large);
+    padding: 48px;
     margin-bottom: 32px;
-    flex-wrap: wrap;
-    gap: 16px;
-    z-index: 5;
-    position: relative;
-}
-
-.section-header h2 {
-    font-size: 2.4em;
-    font-weight: 700;
-    color: var(--text-primary);
-    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-    letter-spacing: -0.02em;
-}
-
-.refresh-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 16px 28px;
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-lg);
-    color: var(--text-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 20px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s var(--timing-swift);
-    font-size: 1em;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-    z-index: 6;
-    position: relative;
-}
-
-.refresh-btn:hover {
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-xl);
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-elevated);
-    color: var(--text-primary);
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-.refresh-btn:active {
-    transform: translateY(-1px) scale(0.99);
-}
-
-.refresh-icon {
-    transition: transform 0.5s var(--timing-bounce);
-}
-
-.refresh-btn:hover .refresh-icon {
-    transform: rotate(180deg) scale(1.05);
-}
-
-/* === ИСПРАВЛЕНО: Сетка заказов с правильными отступами === */
-.orders-grid {
+    box-shadow:
+            var(--liquid-shadow-elevated),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.02);
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(480px, 1fr));
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
     gap: 32px;
     position: relative;
-    z-index: 3;
-}
-
-/* === ИСПРАВЛЕНО: Карточки заказов без наложений === */
-.order-card-modern {
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-xl);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 28px;
-    padding: 40px;
-    box-shadow: var(--shadow-elevated);
-    transition: all 0.4s var(--timing-swift);
-    position: relative;
     overflow: hidden;
-    min-height: 480px;
-    cursor: pointer;
-    z-index: 2;
+    animation: liquidEntry 1s var(--liquid-timing-smooth);
 }
 
-.order-card-modern::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: var(--gradient-secondary);
-    border-radius: 28px 28px 0 0;
-}
-
-.order-card-modern::after {
+/* Liquid Glass переливающийся эффект */
+.profile-hero::before {
     content: '';
     position: absolute;
     top: -100%;
     left: -100%;
     width: 300%;
     height: 300%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-    transition: all 0.6s var(--timing-swift);
+    background:
+            radial-gradient(circle at 20% 50%, rgba(0, 122, 255, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 80% 50%, rgba(175, 82, 222, 0.04) 0%, transparent 50%);
+    animation: liquidShimmer 15s ease-in-out infinite;
     pointer-events: none;
-    z-index: -1;
 }
 
-.order-card-modern:hover {
-    transform: translateY(-8px) scale(1.01);
-    box-shadow: var(--shadow-floating);
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-2xl);
-    border-color: rgba(255, 255, 255, 0.5);
+@keyframes liquidShimmer {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translate(-30%, -30%) rotate(180deg);
+        opacity: 1;
+    }
 }
 
-.order-card-modern:hover::after {
+@keyframes liquidEntry {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+        filter: blur(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* === Liquid Glass аватар === */
+.profile-avatar {
+    position: relative;
+}
+
+.avatar-circle {
+    width: 96px;
+    height: 96px;
+    background: var(--liquid-gradient-1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:
+            var(--liquid-shadow-elevated),
+            inset 0 2px 4px rgba(255, 255, 255, 0.5);
+    position: relative;
+    overflow: hidden;
+    animation: liquidPulse 8s ease-in-out infinite;
+}
+
+/* Liquid Glass отражение */
+.avatar-circle::before {
+    content: '';
+    position: absolute;
     top: -50%;
     left: -50%;
-    opacity: 0.6;
+    width: 200%;
+    height: 200%;
+    background:
+            radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 50%),
+            radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+    animation: liquidRotate 10s linear infinite;
 }
 
-.order-card-modern:active {
-    transform: translateY(-6px) scale(0.99);
-    transition: all 0.15s var(--timing-swift);
+@keyframes liquidPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow:
+                var(--liquid-shadow-elevated),
+                inset 0 2px 4px rgba(255, 255, 255, 0.5);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow:
+                var(--liquid-shadow-floating),
+                inset 0 2px 8px rgba(255, 255, 255, 0.7);
+    }
 }
 
-/* === ИСПРАВЛЕНО: Заголовок карточки с правильным z-index === */
-.order-header-modern {
+@keyframes liquidRotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.avatar-text {
+    font-size: 2.4em;
+    color: var(--liquid-text-light-primary);
+    z-index: 2;
+    position: relative;
+}
+
+/* === Welcome секция с улучшенной читаемостью === */
+.profile-welcome h1 {
+    font-size: 2.8em;
+    font-weight: 700;
+    margin-bottom: 12px;
+    background: var(--liquid-gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+}
+
+.profile-welcome p {
+    font-size: 1.2em;
+    color: var(--liquid-text-secondary);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+}
+
+/* === Liquid Glass статистика === */
+.profile-stats-modern {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.stat-modern {
+    background: var(--liquid-glass-ultra-thick);
+    backdrop-filter: var(--liquid-blur-medium);
+    -webkit-backdrop-filter: var(--liquid-blur-medium);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--liquid-radius-medium);
+    padding: 24px;
+    text-align: center;
+    transition: all 0.4s var(--liquid-timing);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.stat-modern::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    width: 300%;
+    height: 300%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s var(--liquid-timing);
+}
+
+.stat-modern:hover::before {
+    opacity: 1;
+}
+
+.stat-modern:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow:
+            var(--liquid-shadow-floating),
+            var(--liquid-shadow-colorful);
+    background: rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+.stat-icon {
+    font-size: 2em;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.stat-number {
+    font-size: 2.2em;
+    font-weight: 700;
+    color: var(--liquid-text-primary);
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.9em;
+    color: var(--liquid-text-tertiary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* === Liquid Glass навигация вкладок === */
+.modern-tabs {
+    margin-bottom: 32px;
+    position: relative;
+    z-index: var(--z-card);
+}
+
+.tab-nav {
+    display: flex;
+    background: var(--liquid-glass-ultra-thick);
+    backdrop-filter: var(--liquid-blur-heavy);
+    -webkit-backdrop-filter: var(--liquid-blur-heavy);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--liquid-radius-medium);
+    padding: 6px;
+    box-shadow:
+            var(--liquid-shadow-regular),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Liquid Glass индикатор активной вкладки */
+.tab-nav::before {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: var(--indicator-left, 6px);
+    width: var(--indicator-width, 0);
+    height: calc(100% - 12px);
+    background: var(--liquid-gradient-soft);
+    border-radius: calc(var(--liquid-radius-medium) - 6px);
+    transition: all 0.4s var(--liquid-timing-smooth);
+    z-index: 0;
+}
+
+.tab-button {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 16px 24px;
+    border-radius: calc(var(--liquid-radius-medium) - 6px);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-weight: 600;
+    color: var(--liquid-text-tertiary);
+    transition: all 0.3s var(--liquid-timing);
+    position: relative;
+    z-index: 1;
+    font-size: 1em;
+}
+
+.tab-button.active {
+    color: var(--liquid-text-primary);
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: var(--liquid-blur-light);
+    box-shadow:
+            0 4px 16px rgba(0, 0, 0, 0.04),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.tab-button:not(.active):hover {
+    color: var(--liquid-text-secondary);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.tab-icon {
+    font-size: 1.2em;
+}
+
+/* === Контент вкладок с правильными отступами === */
+.content-wrapper {
+    position: relative;
+    min-height: 400px;
+    margin-bottom: 32px;
+}
+
+.tab-content {
+    display: none;
+    opacity: 0;
+    animation: liquidContentFade 0.5s var(--liquid-timing) forwards;
+}
+
+.tab-content.active {
+    display: block;
+    opacity: 1;
+}
+
+@keyframes liquidContentFade {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+        filter: blur(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* === Заголовки секций === */
+.section-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
-    position: relative;
-    z-index: 10;
+    align-items: center;
+    margin-bottom: 24px;
     flex-wrap: wrap;
     gap: 16px;
 }
 
-.order-number-modern {
-    font-size: 1.6em;
+.section-header h2 {
+    font-size: 2.2em;
     font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: 10px;
+    color: var(--liquid-text-primary);
     letter-spacing: -0.02em;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    line-height: 1.2;
+}
+
+.refresh-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--liquid-glass-thick);
+    backdrop-filter: var(--liquid-blur-medium);
+    -webkit-backdrop-filter: var(--liquid-blur-medium);
+    color: var(--liquid-text-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--liquid-radius-small);
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s var(--liquid-timing);
+    box-shadow: var(--liquid-shadow-subtle);
+}
+
+.refresh-btn:hover {
+    background: rgba(255, 255, 255, 0.85);
+    transform: translateY(-2px);
+    box-shadow: var(--liquid-shadow-regular);
+    color: var(--liquid-text-primary);
+}
+
+.refresh-icon {
+    transition: transform 0.5s var(--liquid-timing-bounce);
+}
+
+.refresh-btn:hover .refresh-icon {
+    transform: rotate(180deg);
+}
+
+/* === Liquid Glass карточки заказов === */
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 24px;
+}
+
+.order-card-modern {
+    background: var(--liquid-glass-ultra-thick);
+    backdrop-filter: var(--liquid-blur-heavy);
+    -webkit-backdrop-filter: var(--liquid-blur-heavy);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--liquid-radius-medium);
+    padding: 32px;
+    box-shadow:
+            var(--liquid-shadow-regular),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transition: all 0.4s var(--liquid-timing);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* Liquid Glass эффект на карточках */
+.order-card-modern::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background:
+            radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.4s var(--liquid-timing);
+    pointer-events: none;
+}
+
+.order-card-modern:hover::before {
+    opacity: 1;
+}
+
+.order-card-modern:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow:
+            var(--liquid-shadow-floating),
+            var(--liquid-shadow-colorful);
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.order-header-modern {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.order-number-modern {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--liquid-text-primary);
+    margin-bottom: 6px;
 }
 
 .order-date-modern {
-    font-size: 1.05em;
-    color: var(--text-tertiary);
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    font-size: 0.9em;
+    color: var(--liquid-text-tertiary);
 }
 
-/* === ИСПРАВЛЕНО: Статусы заказов с лучшей читаемостью === */
+/* === Liquid Glass статусы === */
 .order-status-modern {
-    padding: 12px 20px;
-    border-radius: 16px;
-    font-size: 0.95em;
+    padding: 8px 16px;
+    border-radius: var(--liquid-radius-small);
+    font-size: 0.85em;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    backdrop-filter: var(--blur-md);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    transition: all 0.3s var(--timing-swift);
-    position: relative;
-    overflow: hidden;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-    flex-shrink: 0;
-    z-index: 11;
-}
-
-.order-status-modern::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-    transition: left 0.5s var(--timing-swift);
-}
-
-.order-status-modern:hover::before {
-    left: 100%;
+    backdrop-filter: var(--liquid-blur-light);
+    -webkit-backdrop-filter: var(--liquid-blur-light);
+    border: 1px solid transparent;
+    transition: all 0.3s var(--liquid-timing);
 }
 
 .order-status-modern.created {
-    background: rgba(56, 161, 105, 0.35);
-    color: #68D391;
-    box-shadow: 0 8px 24px rgba(56, 161, 105, 0.4);
-    border-color: rgba(56, 161, 105, 0.5);
+    background: rgba(52, 199, 89, 0.15);
+    color: #34C759;
+    border-color: rgba(52, 199, 89, 0.3);
 }
 
 .order-status-modern.paid {
-    background: rgba(74, 144, 226, 0.35);
-    color: #90CDF4;
-    box-shadow: 0 8px 24px rgba(74, 144, 226, 0.4);
-    border-color: rgba(74, 144, 226, 0.5);
+    background: rgba(0, 122, 255, 0.15);
+    color: #007AFF;
+    border-color: rgba(0, 122, 255, 0.3);
 }
 
 .order-status-modern.failed {
-    background: rgba(229, 62, 62, 0.35);
-    color: #FC8181;
-    box-shadow: 0 8px 24px rgba(229, 62, 62, 0.4);
-    border-color: rgba(229, 62, 62, 0.5);
+    background: rgba(255, 59, 48, 0.15);
+    color: #FF3B30;
+    border-color: rgba(255, 59, 48, 0.3);
 }
 
-/* === ИСПРАВЛЕНО: Товары в заказе === */
+/* === Товары в заказе === */
 .order-items-modern {
-    margin-bottom: 32px;
-    position: relative;
-    z-index: 10;
+    margin-bottom: 24px;
 }
 
 .order-items-title {
-    font-size: 1.2em;
-    color: var(--text-secondary);
-    margin-bottom: 20px;
+    font-size: 1.1em;
+    color: var(--liquid-text-secondary);
+    margin-bottom: 16px;
     font-weight: 600;
-    letter-spacing: -0.01em;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 .order-item-modern {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 18px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    transition: all 0.25s var(--timing-swift);
-    border-radius: 12px;
-    gap: 16px;
-}
-
-.order-item-modern:hover {
-    background: var(--glass-thin);
-    backdrop-filter: var(--blur-md);
-    padding-left: 20px;
-    padding-right: 20px;
-    margin: 0 -20px;
-    border-color: rgba(255, 255, 255, 0.3);
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .order-item-modern:last-child {
@@ -745,315 +651,84 @@ body::before {
 }
 
 .item-name-modern {
-    font-weight: 600;
-    color: var(--text-primary);
-    font-size: 1.1em;
-    line-height: 1.4;
-    max-width: 65%;
-    word-wrap: break-word;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
+    color: var(--liquid-text-primary);
 }
 
 .item-price-modern {
-    font-weight: 700;
-    color: var(--text-primary);
-    font-size: 1.15em;
-    letter-spacing: -0.01em;
-    text-align: right;
-    white-space: nowrap;
+    font-weight: 600;
+    color: var(--liquid-text-primary);
     font-variant-numeric: tabular-nums;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* === ИСПРАВЛЕНО: Итоговая сумма с правильным позиционированием === */
+/* === Liquid Glass итоговая сумма === */
 .order-total-modern {
     text-align: right;
-    padding-top: 28px;
-    border-top: 2px solid rgba(255, 255, 255, 0.3);
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-lg);
-    margin: 0 -40px -40px;
-    padding: 32px 40px;
-    border-radius: 0 0 28px 28px;
-    position: relative;
-    z-index: 10;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .total-label {
-    font-size: 1.1em;
-    color: var(--text-secondary);
-    margin-bottom: 12px;
-    font-weight: 500;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    font-size: 0.9em;
+    color: var(--liquid-text-secondary);
+    margin-bottom: 4px;
 }
 
 .total-amount {
-    font-size: 2em;
+    font-size: 1.8em;
     font-weight: 700;
-    color: var(--text-primary);
-    letter-spacing: -0.02em;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    font-variant-numeric: tabular-nums;
+    background: var(--liquid-gradient-1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
-/* === ИСПРАВЛЕНО: Дополнительная информация === */
+/* === Дополнительная информация === */
 .delivery-info-compact {
-    margin-top: 24px;
-    padding: 16px 20px;
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-md);
-    border-radius: 16px;
-    color: var(--text-secondary);
-    font-size: 1em;
+    margin-top: 20px;
+    padding: 12px 16px;
+    background: var(--liquid-glass-thin);
+    backdrop-filter: var(--liquid-blur-light);
+    -webkit-backdrop-filter: var(--liquid-blur-light);
+    border-radius: var(--liquid-radius-small);
+    color: var(--liquid-text-secondary);
+    font-size: 0.9em;
     line-height: 1.4;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    position: relative;
-    z-index: 10;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
-.order-error-modern {
-    margin-top: 24px;
-    padding: 16px 20px;
-    background: rgba(229, 62, 62, 0.25);
-    backdrop-filter: var(--blur-md);
-    border-left: 4px solid #FC8181;
-    border-radius: 12px;
-    color: var(--text-primary);
-    font-size: 1em;
-    line-height: 1.4;
-    position: relative;
-    z-index: 10;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* === ИСПРАВЛЕНО: Состояния загрузки === */
-.loading-modern {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 120px 20px;
-    color: var(--text-secondary);
-    text-align: center;
-    position: relative;
-    z-index: 5;
-}
-
-.spinner-modern {
-    width: 64px;
-    height: 64px;
-    border: 4px solid rgba(255, 255, 255, 0.25);
-    border-top: 4px solid var(--noble-accent);
-    border-radius: 50%;
-    animation: modernSpin 1s linear infinite;
-    margin-bottom: 28px;
-    will-change: transform;
-}
-
-@keyframes modernSpin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.no-orders-modern {
-    text-align: center;
-    padding: 140px 20px;
-    color: var(--text-secondary);
-    position: relative;
-    z-index: 5;
-}
-
-.no-orders-illustration {
-    position: relative;
-    margin-bottom: 36px;
-    display: inline-block;
-}
-
-.empty-box {
-    font-size: 5.5em;
-    opacity: 0.9;
-    animation: modernFloat 8s ease-in-out infinite;
-    filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.4));
-}
-
-@keyframes modernFloat {
-    0%, 100% {
-        transform: translateY(0px) rotate(0deg);
-    }
-    50% {
-        transform: translateY(-8px) rotate(1deg);
-    }
-}
-
-.empty-sparkles {
-    position: absolute;
-    top: -20px;
-    right: -20px;
-    font-size: 2em;
-    animation: modernSparkle 5s ease-in-out infinite;
-}
-
-@keyframes modernSparkle {
-    0%, 100% {
-        opacity: 0.5;
-        transform: scale(1) rotate(0deg);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.2) rotate(180deg);
-    }
-}
-
-.no-orders-modern h3 {
-    font-size: 2.2em;
-    margin-bottom: 20px;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--text-primary);
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.no-orders-modern p {
-    font-size: 1.3em;
-    margin-bottom: 36px;
-    opacity: 0.9;
-    line-height: 1.4;
-    color: var(--text-secondary);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-}
-
-.cta-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-    padding: 20px 40px;
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-xl);
-    color: var(--text-primary);
-    text-decoration: none;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 1.2em;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    transition: all 0.3s var(--timing-swift);
-    box-shadow: var(--shadow-glass);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-    position: relative;
-    z-index: 6;
-}
-
-.cta-button:hover {
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-2xl);
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: var(--shadow-floating);
-    border-color: rgba(255, 255, 255, 0.6);
-}
-
-/* === ИСПРАВЛЕНО: Современные Glass карточки === */
+/* === Liquid Glass формы === */
 .modern-card {
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-xl);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 28px;
-    padding: 36px;
-    box-shadow: var(--shadow-elevated);
-    transition: all 0.4s var(--timing-swift);
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 32px;
-    z-index: 3;
-}
-
-.modern-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--gradient-secondary);
-    border-radius: 28px 28px 0 0;
-}
-
-.modern-card::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
-    transition: left 0.6s var(--timing-swift);
-}
-
-.modern-card:hover::after {
-    left: 100%;
-}
-
-.modern-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-floating);
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-2xl);
-    border-color: rgba(255, 255, 255, 0.5);
-}
-
-.card-header-modern {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
-    position: relative;
-    flex-wrap: wrap;
-    gap: 16px;
-    z-index: 10;
+    background: var(--liquid-glass-ultra-thick);
+    backdrop-filter: var(--liquid-blur-heavy);
+    -webkit-backdrop-filter: var(--liquid-blur-heavy);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--liquid-radius-medium);
+    padding: 32px;
+    box-shadow:
+            var(--liquid-shadow-regular),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    margin-bottom: 24px;
 }
 
 .card-header-modern h2,
 .card-header-modern h3 {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     font-weight: 700;
-    color: var(--text-primary);
-    margin: 0;
-    letter-spacing: -0.02em;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.card-header-modern h2 {
-    font-size: 1.8em;
-}
-
-.card-header-modern h3 {
-    font-size: 1.6em;
-}
-
-.section-icon {
-    font-size: 1.4em;
-    opacity: 0.9;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
-}
-
-/* === ИСПРАВЛЕНО: Современная форма === */
-.modern-form {
-    position: relative;
-    margin-bottom: 28px;
-    z-index: 5;
+    color: var(--liquid-text-primary);
+    margin: 0 0 24px 0;
 }
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 28px;
-    margin-bottom: 36px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
 }
 
 .form-group-modern {
     position: relative;
-    z-index: 6;
 }
 
 .form-group-modern.full-width {
@@ -1063,158 +738,173 @@ body::before {
 .form-group-modern label {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
+    gap: 8px;
+    margin-bottom: 10px;
     font-weight: 600;
-    color: var(--text-secondary);
-    font-size: 1.05em;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-}
-
-.label-icon {
-    font-size: 1.2em;
-    opacity: 0.8;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.4));
+    color: var(--liquid-text-secondary);
+    font-size: 0.95em;
 }
 
 .form-group-modern input {
     width: 100%;
-    padding: 18px 24px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-radius: 18px;
-    font-size: 1.05em;
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-md);
-    color: var(--text-primary);
-    transition: all 0.3s var(--timing-swift);
+    padding: 14px 18px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: var(--liquid-radius-small);
+    font-size: 1em;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: var(--liquid-blur-light);
+    -webkit-backdrop-filter: var(--liquid-blur-light);
+    color: var(--liquid-text-primary);
+    transition: all 0.3s var(--liquid-timing);
     font-family: inherit;
-    letter-spacing: -0.01em;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 .form-group-modern input::placeholder {
-    color: var(--text-muted);
+    color: var(--liquid-text-muted);
 }
 
 .form-group-modern input:focus {
     outline: none;
-    border-color: rgba(255, 255, 255, 0.6);
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-lg);
-    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.15);
-    transform: translateY(-1px);
+    border-color: var(--liquid-primary);
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow:
+            0 0 0 4px rgba(0, 122, 255, 0.1),
+            var(--liquid-shadow-subtle);
 }
 
-.form-group-modern input:valid {
-    border-color: rgba(56, 161, 105, 0.7);
-    box-shadow: 0 0 0 2px rgba(56, 161, 105, 0.25);
-}
-
-.save-button {
-    display: flex;
+/* === Liquid Glass кнопки === */
+.save-button,
+.action-btn {
+    display: inline-flex;
     align-items: center;
-    gap: 14px;
-    padding: 20px 40px;
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-xl);
-    color: var(--text-primary);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    border-radius: 20px;
-    font-size: 1.15em;
+    gap: 10px;
+    padding: 14px 28px;
+    background: var(--liquid-gradient-1);
+    color: white;
+    border: none;
+    border-radius: var(--liquid-radius-small);
+    font-size: 1em;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.3s var(--timing-swift);
-    margin-bottom: 28px;
-    box-shadow: var(--shadow-glass);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s var(--liquid-timing);
+    box-shadow:
+            var(--liquid-shadow-regular),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
     position: relative;
-    z-index: 6;
+    overflow: hidden;
 }
 
-.save-button:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: var(--shadow-floating);
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-2xl);
-    border-color: rgba(255, 255, 255, 0.6);
+.save-button::before,
+.action-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s var(--liquid-timing);
 }
 
-.save-button:active {
-    transform: translateY(-1px) scale(0.99);
-    transition: all 0.15s var(--timing-swift);
+.save-button:hover::before,
+.action-btn:hover::before {
+    opacity: 1;
 }
 
-/* === ИСПРАВЛЕНО: Настройки === */
+.save-button:hover,
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+            var(--liquid-shadow-elevated),
+            var(--liquid-shadow-colorful);
+}
+
+.action-btn.secondary {
+    background: var(--liquid-glass-ultra-thick);
+    color: var(--liquid-text-primary);
+    backdrop-filter: var(--liquid-blur-medium);
+    -webkit-backdrop-filter: var(--liquid-blur-medium);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.action-btn.danger {
+    background: var(--liquid-error);
+}
+
+/* === Информационный блок === */
+.info-tip {
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: var(--liquid-glass-thin);
+    backdrop-filter: var(--liquid-blur-light);
+    -webkit-backdrop-filter: var(--liquid-blur-light);
+    border-radius: var(--liquid-radius-small);
+    color: var(--liquid-text-secondary);
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+.info-tip strong {
+    color: var(--liquid-text-primary);
+}
+
+/* === Настройки === */
 .settings-grid {
     display: grid;
-    gap: 32px;
-    margin-bottom: 36px;
-    position: relative;
-    z-index: 3;
+    gap: 24px;
 }
 
 .settings-list {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    margin-bottom: 28px;
+    gap: 12px;
 }
 
 .setting-item-modern {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 28px 32px;
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-lg);
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: all 0.3s var(--timing-swift);
+    padding: 20px;
+    background: var(--liquid-glass-medium);
+    backdrop-filter: var(--liquid-blur-light);
+    -webkit-backdrop-filter: var(--liquid-blur-light);
+    border-radius: var(--liquid-radius-small);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    transition: all 0.3s var(--liquid-timing);
     cursor: pointer;
-    gap: 20px;
-    position: relative;
-    z-index: 4;
 }
 
 .setting-item-modern:hover {
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-xl);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateX(6px) scale(1.005);
-    box-shadow: var(--shadow-glass);
+    background: var(--liquid-glass-thick);
+    transform: translateX(4px);
+    box-shadow: var(--liquid-shadow-subtle);
 }
 
 .setting-info {
     flex: 1;
     min-width: 0;
-    z-index: 5;
 }
 
 .setting-title {
     font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 6px;
-    font-size: 1.1em;
-    letter-spacing: -0.01em;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    color: var(--liquid-text-primary);
+    margin-bottom: 4px;
 }
 
 .setting-desc {
-    font-size: 0.95em;
-    color: var(--text-tertiary);
-    line-height: 1.4;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    font-size: 0.85em;
+    color: var(--liquid-text-tertiary);
 }
 
-/* === ИСПРАВЛЕНО: Современные переключатели === */
+/* === Liquid Glass Toggle Switch === */
 .modern-toggle {
     position: relative;
     display: inline-block;
-    width: 64px;
-    height: 36px;
+    width: 56px;
+    height: 32px;
     cursor: pointer;
     flex-shrink: 0;
-    z-index: 10;
 }
 
 .modern-toggle input {
@@ -1230,222 +920,227 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: var(--blur-md);
-    border-radius: 36px;
-    transition: all 0.3s var(--timing-swift);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.15);
+    background: var(--liquid-glass-dark-medium);
+    backdrop-filter: var(--liquid-blur-light);
+    -webkit-backdrop-filter: var(--liquid-blur-light);
+    border-radius: 32px;
+    transition: all 0.3s var(--liquid-timing);
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .toggle-slider:before {
     position: absolute;
     content: "";
-    height: 30px;
-    width: 30px;
+    height: 26px;
+    width: 26px;
     left: 3px;
     bottom: 3px;
-    background: rgba(255, 255, 255, 0.98);
+    background: white;
     border-radius: 50%;
-    transition: all 0.3s var(--timing-bounce);
+    transition: all 0.3s var(--liquid-timing-smooth);
     box-shadow:
-            0 4px 12px rgba(0, 0, 0, 0.3),
-            0 2px 6px rgba(0, 0, 0, 0.2);
-    backdrop-filter: var(--blur-md);
+            0 2px 8px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 .modern-toggle input:checked + .toggle-slider {
-    background: var(--gradient-secondary);
-    border-color: rgba(74, 144, 226, 0.7);
-    box-shadow:
-            inset 0 2px 8px rgba(0, 0, 0, 0.2),
-            0 0 20px rgba(74, 144, 226, 0.5);
+    background: var(--liquid-gradient-1);
+    border-color: transparent;
 }
 
 .modern-toggle input:checked + .toggle-slider:before {
-    transform: translateX(28px) scale(1.02);
-    background: rgba(255, 255, 255, 1);
-    box-shadow:
-            0 6px 16px rgba(0, 0, 0, 0.35),
-            0 3px 8px rgba(0, 0, 0, 0.25);
+    transform: translateX(24px);
 }
 
-.modern-toggle:hover .toggle-slider:before {
-    transform: scale(1.01);
-}
-
-/* === ИСПРАВЛЕНО: Кнопки действий === */
+/* === Кнопки действий === */
 .action-buttons {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    margin-bottom: 36px;
-    position: relative;
-    z-index: 4;
+    gap: 12px;
+    margin-bottom: 24px;
 }
 
-.action-btn {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 20px 32px;
-    border-radius: 20px;
-    font-size: 1.05em;
+/* === Версия приложения === */
+.version-info {
+    margin-top: 20px;
+    padding: 16px;
+    background: var(--liquid-glass-thin);
+    backdrop-filter: var(--liquid-blur-light);
+    -webkit-backdrop-filter: var(--liquid-blur-light);
+    border-radius: var(--liquid-radius-small);
+    text-align: center;
+    color: var(--liquid-text-tertiary);
+    font-size: 0.85em;
+}
+
+.app-version {
+    margin-bottom: 6px;
+    color: var(--liquid-text-secondary);
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s var(--timing-swift);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    backdrop-filter: var(--blur-lg);
-    box-shadow: var(--shadow-glass);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.build-info {
+    font-size: 0.8em;
+    color: var(--liquid-text-tertiary);
+}
+
+/* === Состояния загрузки === */
+.loading-modern {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+    color: var(--liquid-text-secondary);
+}
+
+.spinner-modern {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--liquid-glass-thick);
+    border-top: 3px solid var(--liquid-primary);
+    border-radius: 50%;
+    animation: liquidSpin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes liquidSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.no-orders-modern {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--liquid-text-secondary);
+}
+
+.no-orders-illustration {
+    margin-bottom: 24px;
+}
+
+.empty-box {
+    font-size: 4em;
+    margin-bottom: 16px;
+    opacity: 0.8;
+    animation: liquidFloat 6s ease-in-out infinite;
+}
+
+.empty-sparkles {
     position: relative;
-    z-index: 5;
+    font-size: 1.5em;
+    opacity: 0.6;
+    animation: liquidSparkle 3s ease-in-out infinite;
 }
 
-.action-btn.primary {
-    background: rgba(74, 144, 226, 0.4);
-    color: var(--text-primary);
-    border-color: rgba(74, 144, 226, 0.6);
+@keyframes liquidFloat {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-10px) rotate(5deg);
+    }
 }
 
-.action-btn.primary:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: var(--shadow-elevated);
-    background: rgba(74, 144, 226, 0.5);
-    backdrop-filter: var(--blur-xl);
-    border-color: rgba(74, 144, 226, 0.7);
+@keyframes liquidSparkle {
+    0%, 100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
 }
 
-.action-btn.secondary {
-    background: var(--glass-ultra-thick);
-    color: var(--text-secondary);
-    border-color: rgba(255, 255, 255, 0.4);
+.no-orders-modern h3 {
+    font-size: 1.8em;
+    margin-bottom: 12px;
+    color: var(--liquid-text-primary);
 }
 
-.action-btn.secondary:hover {
-    background: var(--glass-ultra-thick);
-    border-color: rgba(255, 255, 255, 0.5);
-    transform: translateY(-3px) scale(1.02);
-    backdrop-filter: var(--blur-xl);
-    color: var(--text-primary);
+.no-orders-modern p {
+    font-size: 1.1em;
+    margin-bottom: 24px;
+    color: var(--liquid-text-secondary);
 }
 
-.action-btn.danger {
-    background: rgba(229, 62, 62, 0.35);
-    color: #FC8181;
-    border-color: rgba(229, 62, 62, 0.5);
+.cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: var(--liquid-gradient-1);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--liquid-radius-small);
+    font-weight: 600;
+    transition: all 0.3s var(--liquid-timing);
+    box-shadow: var(--liquid-shadow-regular);
 }
 
-.action-btn.danger:hover {
-    background: rgba(229, 62, 62, 0.45);
-    border-color: rgba(229, 62, 62, 0.6);
-    transform: translateY(-3px) scale(1.02);
-    backdrop-filter: var(--blur-xl);
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow:
+            var(--liquid-shadow-elevated),
+            var(--liquid-shadow-colorful);
 }
 
-/* === ИСПРАВЛЕНО: Современный footer === */
+/* === Liquid Glass Footer === */
 .modern-footer {
-    margin-top: 100px;
-    padding: 56px 0;
-    background: var(--glass-ultra-thick);
-    backdrop-filter: var(--blur-xl);
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 32px 32px 0 0;
-    position: relative;
-    z-index: 3;
-}
-
-.modern-footer::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--gradient-secondary);
-    border-radius: 32px 32px 0 0;
+    margin-top: 80px;
+    padding: 48px 0;
+    background: var(--liquid-glass-thick);
+    backdrop-filter: var(--liquid-blur-heavy);
+    -webkit-backdrop-filter: var(--liquid-blur-heavy);
+    border-top: 1px solid rgba(255, 255, 255, 0.8);
 }
 
 .footer-content {
-    max-width: 1440px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: var(--text-secondary);
     flex-wrap: wrap;
     gap: 16px;
 }
 
 .footer-brand {
-    font-size: 1.4em;
+    font-size: 1.2em;
     font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--text-primary);
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    color: var(--liquid-text-primary);
 }
 
 .footer-links a {
-    color: var(--text-tertiary);
+    color: var(--liquid-text-secondary);
     text-decoration: none;
-    font-size: 1em;
-    transition: all 0.25s var(--timing-swift);
-    font-weight: 500;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    transition: color 0.3s var(--liquid-timing);
 }
 
 .footer-links a:hover {
-    color: var(--text-primary);
-    transform: translateY(-1px);
+    color: var(--liquid-primary);
 }
 
 .footer-year {
-    font-size: 0.95em;
-    opacity: 0.8;
-    font-weight: 500;
-    color: var(--text-tertiary);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    font-size: 0.9em;
+    color: var(--liquid-text-tertiary);
 }
 
-/* === ИСПРАВЛЕНО: Адаптивный дизайн === */
-@media (max-width: 1200px) {
-    .profile-container {
-        max-width: 100%;
-        padding: 130px 20px 80px;
-    }
-
-    .orders-grid {
-        grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-        gap: 28px;
-    }
-
-    .order-card-modern {
-        min-height: 460px;
-        padding: 36px;
-    }
-}
-
+/* === Адаптивный дизайн === */
 @media (max-width: 1024px) {
     .orders-grid {
-        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-        gap: 24px;
-    }
-
-    .order-card-modern {
-        min-height: 440px;
-        padding: 32px;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     }
 
     .profile-hero {
         grid-template-columns: 1fr;
         text-align: center;
-        gap: 32px;
-        padding: 48px 36px;
+        gap: 24px;
     }
 
     .profile-stats-modern {
-        grid-template-columns: repeat(3, 1fr);
         justify-content: center;
     }
 }
@@ -1456,166 +1151,11 @@ body::before {
     }
 
     .profile-hero {
-        padding: 40px 28px;
-        border-radius: 28px;
-        margin-bottom: 32px;
-        gap: 28px;
-    }
-
-    .profile-welcome h1 {
-        font-size: 2.4em;
-    }
-
-    .profile-welcome p {
-        font-size: 1.1em;
-    }
-
-    .profile-stats-modern {
-        gap: 16px;
-    }
-
-    .stat-modern {
-        padding: 24px 20px;
-    }
-
-    .stat-number {
-        font-size: 2em;
-    }
-
-    .tab-nav {
-        padding: 6px;
-        border-radius: 20px;
-    }
-
-    .tab-button {
-        padding: 16px 20px;
-        flex-direction: column;
-        gap: 8px;
-        border-radius: 14px;
-    }
-
-    .tab-text {
-        font-size: 0.95em;
-        font-weight: 600;
-    }
-
-    .section-header {
-        flex-direction: column;
-        gap: 20px;
-        align-items: flex-start;
-    }
-
-    .section-header h2 {
-        font-size: 2em;
-    }
-
-    .orders-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .order-card-modern {
-        padding: 28px;
-        border-radius: 24px;
-        min-height: 400px;
-    }
-
-    .order-header-modern {
-        margin-bottom: 24px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .order-number-modern {
-        font-size: 1.4em;
-    }
-
-    .order-total-modern {
-        margin: 0 -28px -28px;
-        padding: 24px 28px;
-        border-radius: 0 0 24px 24px;
-    }
-
-    .total-amount {
-        font-size: 1.7em;
-    }
-
-    .modern-card {
-        padding: 28px;
-        margin-bottom: 24px;
-        border-radius: 24px;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-    }
-
-    .settings-grid {
-        gap: 24px;
-        margin-bottom: 32px;
-    }
-
-    .setting-item-modern {
-        padding: 24px 28px;
-        border-radius: 16px;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-    }
-
-    .action-buttons {
-        gap: 16px;
-        margin-bottom: 32px;
-    }
-
-    .footer-content {
-        flex-direction: column;
-        gap: 20px;
-        text-align: center;
-    }
-
-    .modern-footer {
-        margin-top: 80px;
-        padding: 48px 0;
-        border-radius: 28px 28px 0 0;
-    }
-
-    .content-wrapper {
-        margin-bottom: 36px;
-        min-height: 300px;
-    }
-
-    .tab-content {
-        padding-bottom: 20px;
-    }
-
-    .loading-modern {
-        padding: 100px 20px;
-    }
-
-    .no-orders-modern {
-        padding: 120px 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .profile-container {
-        padding: 110px 12px 50px;
-    }
-
-    .profile-hero {
         padding: 32px 24px;
-        border-radius: 24px;
     }
 
     .profile-welcome h1 {
-        font-size: 2em;
-    }
-
-    .profile-welcome p {
-        font-size: 1em;
+        font-size: 2.2em;
     }
 
     .profile-stats-modern {
@@ -1623,42 +1163,96 @@ body::before {
     }
 
     .stat-modern {
-        min-width: 100px;
         padding: 20px 16px;
-        border-radius: 20px;
     }
 
     .stat-number {
         font-size: 1.8em;
     }
 
-    .stat-label {
-        font-size: 0.85em;
+    .tab-nav {
+        flex-direction: column;
     }
 
     .tab-button {
-        padding: 14px 16px;
-        border-radius: 12px;
+        width: 100%;
+        justify-content: flex-start;
     }
 
-    .tab-text {
-        font-size: 0.9em;
+    /* Скрываем индикатор на мобильных */
+    .tab-nav::before {
+        display: none;
     }
 
     .orders-grid {
+        grid-template-columns: 1fr;
         gap: 16px;
     }
 
     .order-card-modern {
         padding: 24px;
-        border-radius: 20px;
-        min-height: 380px;
     }
 
-    .order-total-modern {
-        margin: 0 -24px -24px;
-        padding: 20px 24px;
-        border-radius: 0 0 20px 20px;
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .setting-item-modern {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .modern-toggle {
+        align-self: flex-end;
+    }
+
+    .action-buttons {
+        gap: 8px;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-hero {
+        padding: 24px 16px;
+    }
+
+    .profile-welcome h1 {
+        font-size: 1.8em;
+    }
+
+    .profile-welcome p {
+        font-size: 1em;
+    }
+
+    .stat-number {
+        font-size: 1.6em;
+    }
+
+    .stat-label {
+        font-size: 0.8em;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .section-header h2 {
+        font-size: 1.8em;
+    }
+
+    .order-card-modern {
+        padding: 20px;
+    }
+
+    .order-number-modern {
+        font-size: 1.2em;
     }
 
     .total-amount {
@@ -1666,53 +1260,115 @@ body::before {
     }
 
     .modern-card {
-        padding: 24px;
-        border-radius: 20px;
+        padding: 24px 20px;
     }
 
-    .modern-footer {
-        border-radius: 24px 24px 0 0;
-    }
-
-    .modern-toggle {
-        width: 56px;
-        height: 32px;
-    }
-
-    .toggle-slider:before {
-        height: 26px;
-        width: 26px;
-    }
-
-    .modern-toggle input:checked + .toggle-slider:before {
-        transform: translateX(24px) scale(1.02);
+    .card-header-modern h2,
+    .card-header-modern h3 {
+        font-size: 1.4em;
     }
 }
 
-/* === ИСПРАВЛЕНО: Продвинутые анимации === */
-@keyframes cardStagger {
-    from {
-        opacity: 0;
-        transform: translateY(24px) scale(0.98);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
+/* === Улучшения производительности === */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
 }
 
-.order-card-modern:nth-child(1) { animation: cardStagger 0.5s var(--timing-swift) 0.1s both; }
-.order-card-modern:nth-child(2) { animation: cardStagger 0.5s var(--timing-swift) 0.15s both; }
-.order-card-modern:nth-child(3) { animation: cardStagger 0.5s var(--timing-swift) 0.2s both; }
-.order-card-modern:nth-child(4) { animation: cardStagger 0.5s var(--timing-swift) 0.25s both; }
-.order-card-modern:nth-child(5) { animation: cardStagger 0.5s var(--timing-swift) 0.3s both; }
-.order-card-modern:nth-child(n+6) { animation: cardStagger 0.5s var(--timing-swift) 0.35s both; }
+/* === Поддержка темной темы === */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #1C1C1E;
+    }
 
-/* === ИСПРАВЛЕНО: Scroll анимации === */
+    body::before {
+        background:
+                radial-gradient(circle at 20% 80%, rgba(0, 122, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(88, 86, 214, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(175, 82, 222, 0.08) 0%, transparent 50%),
+                #1C1C1E;
+    }
+
+    :root {
+        --liquid-glass-ultra-thin: rgba(255, 255, 255, 0.08);
+        --liquid-glass-thin: rgba(255, 255, 255, 0.12);
+        --liquid-glass-regular: rgba(255, 255, 255, 0.16);
+        --liquid-glass-medium: rgba(255, 255, 255, 0.20);
+        --liquid-glass-thick: rgba(255, 255, 255, 0.24);
+        --liquid-glass-ultra-thick: rgba(255, 255, 255, 0.28);
+
+        --liquid-text-primary: rgba(255, 255, 255, 0.95);
+        --liquid-text-secondary: rgba(255, 255, 255, 0.75);
+        --liquid-text-tertiary: rgba(255, 255, 255, 0.55);
+        --liquid-text-muted: rgba(255, 255, 255, 0.35);
+    }
+}
+
+/* === Финальные улучшения === */
+
+/* Убираем обрезание контента */
+.profile-hero,
+.stat-modern,
+.order-card-modern,
+.modern-card,
+.tab-content,
+.content-wrapper {
+    overflow: visible;
+}
+
+/* Улучшаем контрастность для всех текстов */
+h1, h2, h3, h4, h5, h6,
+.stat-number,
+.order-number-modern,
+.setting-title,
+.card-header-modern h2,
+.card-header-modern h3 {
+    color: var(--liquid-text-primary);
+}
+
+/* Убираем лишние тени для лучшей читаемости */
+.profile-hero *,
+.stat-modern *,
+.order-card-modern *,
+.modern-card * {
+    text-shadow: none;
+}
+
+/* Фиксим z-index для правильного наложения */
+.profile-container > * {
+    position: relative;
+    z-index: var(--z-base);
+}
+
+.modern-tabs {
+    z-index: calc(var(--z-base) + 1);
+}
+
+.tab-nav {
+    z-index: calc(var(--z-base) + 2);
+}
+
+.tab-button {
+    z-index: calc(var(--z-base) + 3);
+}
+
+/* Добавляем минимальную высоту для предотвращения обрезания */
+.content-wrapper {
+    min-height: 500px;
+}
+
+.tab-content {
+    min-height: 400px;
+}
+
+/* Улучшаем анимацию появления элементов */
 .fade-in-on-scroll {
     opacity: 0;
     transform: translateY(20px);
-    transition: opacity 0.6s var(--timing-swift), transform 0.6s var(--timing-swift);
+    transition: opacity 0.6s ease, transform 0.6s ease;
 }
 
 .fade-in-on-scroll.visible {
@@ -1720,264 +1376,41 @@ body::before {
     transform: translateY(0);
 }
 
-/* === ИСПРАВЛЕНО: Производительность и доступность === */
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-
-    .order-card-modern,
-    .avatar-circle,
-    .stat-modern {
-        animation: none !important;
-    }
-
-    body::before {
-        animation: none !important;
-    }
-}
-
-/* === ИСПРАВЛЕНО: Оптимизация для retina дисплеев === */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .avatar-circle,
-    .order-card-modern,
-    .modern-card {
-        border-width: 0.5px;
-    }
-}
-
-/* === ИСПРАВЛЕНО: Дополнительные hover эффекты === */
-.modern-card:hover,
-.order-card-modern:hover,
-.stat-modern:hover {
-    backdrop-filter: var(--blur-2xl);
-}
-
-.tab-button.active,
-.save-button:hover,
-.refresh-btn:hover,
-.cta-button:hover {
-    backdrop-filter: var(--blur-2xl);
-}
-
-/* === ИСПРАВЛЕНО: Стили для подсказки в форме === */
-.info-tip {
-    margin-top: 24px;
-    padding: 20px;
-    background: var(--glass-ultra-thick);
-    border-radius: 16px;
-    color: var(--text-secondary);
-    font-size: 0.95em;
-    line-height: 1.4;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-    position: relative;
-    z-index: 5;
-}
-
-.info-tip strong {
-    color: var(--text-primary);
-}
-
-/* === ИСПРАВЛЕНО: Стили для версии приложения === */
-.version-info {
-    margin-top: 28px;
-    padding: 20px;
-    background: var(--glass-ultra-thick);
-    border-radius: 16px;
-    text-align: center;
-    color: var(--text-tertiary);
-    font-size: 0.9em;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    position: relative;
-    z-index: 5;
-}
-
-.app-version {
-    margin-bottom: 8px;
-    color: var(--text-primary);
-    font-weight: 600;
-    font-size: 1em;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-}
-
-.build-info {
-    font-size: 0.85em;
-    opacity: 0.8;
-    color: var(--text-tertiary);
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* === ИСПРАВЛЕНО: Анимация при загрузке страницы === */
-@keyframes pageLoad {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.profile-container {
-    animation: pageLoad 0.6s var(--timing-swift);
-}
-
-/* === ИСПРАВЛЕНО: Глобальные улучшения z-index === */
-.profile-hero {
-    z-index: 100;
-}
-
-.modern-tabs {
-    z-index: 90;
-}
-
-.tab-nav {
-    z-index: 95;
-}
-
-.tab-button {
-    z-index: 96;
-}
-
-.content-wrapper {
-    z-index: 80;
-}
-
-.tab-content {
-    z-index: 85;
-}
-
-.orders-grid {
-    z-index: 70;
-}
-
-.order-card-modern {
-    z-index: 75;
-}
-
-.modern-card {
-    z-index: 75;
-}
-
-.section-header {
-    z-index: 85;
-}
-
-.refresh-btn {
-    z-index: 90;
-}
-
-.modern-footer {
-    z-index: 60;
-}
-
-/* === ИСПРАВЛЕНО: Улучшения читаемости === */
-.order-header-modern,
-.order-items-modern,
-.order-total-modern,
-.card-header-modern,
-.form-group-modern,
-.setting-item-modern,
-.action-btn,
-.save-button {
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-}
-
-.order-number-modern,
-.total-amount,
-.profile-welcome h1,
-.section-header h2 {
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-}
-
-/* === ИСПРАВЛЕНО: Предотвращение наложений === */
-.order-total-modern {
-    padding: 32px 40px !important;
-    z-index: 85 !important;
-}
-
-.setting-item-modern {
-    padding: 28px 32px !important;
-    z-index: 80 !important;
-}
-
-.modern-toggle {
-    z-index: 90 !important;
-}
-
-/* === ИСПРАВЛЕНО: Стабилизация анимаций === */
-.avatar-circle,
-.stat-modern,
-.order-card-modern,
-.modern-card {
-    transform: translateZ(0);
-    will-change: transform;
+/* Фиксируем ошибки свойств */
+* {
+    -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
 }
 
-/* === ИСПРАВЛЕНО: Улучшенная контрастность фона === */
+/* Улучшаем hover эффекты */
+button:not(:disabled),
+a,
+.clickable {
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Добавляем плавность всем переходам */
+* {
+    transition-timing-function: var(--liquid-timing);
+}
+
+/* Финальная оптимизация производительности */
+.profile-hero::before,
+.profile-hero::after,
+.stat-modern::before,
+.order-card-modern::before,
+.modern-card::before {
+    will-change: transform, opacity;
+}
+
+/* Убираем артефакты размытия на краях */
 .profile-hero,
-.modern-card,
-.order-card-modern,
 .stat-modern,
-.tab-nav,
-.modern-toggle,
-.setting-item-modern {
-    box-shadow:
-            var(--shadow-elevated),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-/* === ИСПРАВЛЕНО: Дополнительные исправления для стабильности === */
-.profile-stats-modern .stat-modern:nth-child(1) {
-    animation-delay: 0.1s;
-}
-
-.profile-stats-modern .stat-modern:nth-child(2) {
-    animation-delay: 0.2s;
-}
-
-.profile-stats-modern .stat-modern:nth-child(3) {
-    animation-delay: 0.3s;
-}
-
-/* === ИСПРАВЛЕНО: Улучшенные переходы для мобильных === */
-@media (max-width: 768px) {
-    .setting-item-modern {
-        padding: 24px 28px !important;
-        gap: 16px !important;
-    }
-
-    .modern-toggle {
-        align-self: flex-start;
-        margin-top: 8px;
-    }
-}
-
-/* === ИСПРАВЛЕНО: Финальные улучшения производительности === */
-@supports (backdrop-filter: blur(10px)) {
-    .profile-hero,
-    .modern-card,
-    .order-card-modern,
-    .stat-modern,
-    .tab-nav,
-    .setting-item-modern {
-        backdrop-filter: var(--blur-xl);
-        -webkit-backdrop-filter: var(--blur-xl);
-    }
-}
-
-@supports not (backdrop-filter: blur(10px)) {
-    .profile-hero,
-    .modern-card,
-    .order-card-modern,
-    .stat-modern,
-    .tab-nav,
-    .setting-item-modern {
-        background: rgba(255, 255, 255, 0.6);
-    }
+.order-card-modern,
+.modern-card,
+.tab-nav {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
