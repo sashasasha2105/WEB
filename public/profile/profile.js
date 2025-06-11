@@ -1,4 +1,4 @@
-/* File: public/profile/profile.js - ОПТИМИЗИРОВАННАЯ ВЕРСИЯ */
+/* File: public/profile/profile.js - ИСПРАВЛЕННАЯ ВЕРСИЯ С ДИНАМИЧЕСКИМИ РАЗМЕРАМИ */
 
 /* === Состояние приложения === */
 let currentTab = 'orders';
@@ -34,10 +34,35 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         loadOrders(); // Загружаем заказы
         showActiveTabContent(); // Показываем активную вкладку
+        adjustContainerHeight(); // Подстраиваем высоту
     }, 100);
 
     console.log('✅ Профиль полностью инициализирован');
 });
+
+/* === НОВАЯ ФУНКЦИЯ: Динамическая подстройка высоты контейнера === */
+function adjustContainerHeight() {
+    const contentWrapper = document.querySelector('.content-wrapper');
+    const activeTab = document.querySelector('.tab-content.active');
+
+    if (contentWrapper && activeTab) {
+        // Убираем любые фиксированные высоты
+        contentWrapper.style.minHeight = 'auto';
+        activeTab.style.minHeight = 'auto';
+
+        // Устанавливаем минимальную высоту на основе контента
+        const contentHeight = activeTab.scrollHeight;
+        console.log('📏 Высота контента:', contentHeight, 'px');
+
+        // Добавляем немного отступа для комфорта
+        const paddingBottom = 40;
+        contentWrapper.style.minHeight = `${contentHeight + paddingBottom}px`;
+
+        // Убеждаемся что контент полностью видим
+        activeTab.style.height = 'auto';
+        activeTab.style.overflow = 'visible';
+    }
+}
 
 /* === Показать активную вкладку === */
 function showActiveTabContent() {
@@ -46,6 +71,8 @@ function showActiveTabContent() {
     if (activeTab) {
         activeTab.style.display = 'block';
         activeTab.style.opacity = '1';
+        activeTab.style.height = 'auto'; // ВАЖНО: разрешаем динамическую высоту
+        activeTab.style.overflow = 'visible'; // ВАЖНО: показываем весь контент
         console.log('📋 Активная вкладка показана:', activeTab.id);
     }
 
@@ -55,6 +82,9 @@ function showActiveTabContent() {
             tab.style.display = 'none';
         }
     });
+
+    // Подстраиваем высоту после показа контента
+    setTimeout(adjustContainerHeight, 100);
 }
 
 /* === Кеширование DOM элементов === */
@@ -99,6 +129,8 @@ function switchTab(tabId) {
             content.classList.add('active');
             content.style.display = 'block';
             content.style.opacity = '1';
+            content.style.height = 'auto'; // ВАЖНО: динамическая высота
+            content.style.overflow = 'visible'; // ВАЖНО: показываем весь контент
             console.log('✅ Показана вкладка:', tabId);
         } else {
             // Скрываем неактивные вкладки
@@ -113,6 +145,9 @@ function switchTab(tabId) {
     if (tabId === 'orders' && orders.length === 0) {
         loadOrders();
     }
+
+    // ВАЖНО: Подстраиваем высоту после смены вкладки
+    setTimeout(adjustContainerHeight, 300);
 }
 
 /* === Загрузка и отображение заказов === */
@@ -158,6 +193,9 @@ async function loadOrders() {
         // Обновляем статистику
         updateStats();
 
+        // ВАЖНО: Подстраиваем высоту после загрузки заказов
+        setTimeout(adjustContainerHeight, 100);
+
     } catch (error) {
         console.error('❌ Ошибка загрузки заказов:', error);
 
@@ -168,6 +206,9 @@ async function loadOrders() {
         updateStats();
 
         showNotification('Показаны демо-данные (сервер недоступен)', 'info');
+
+        // ВАЖНО: Подстраиваем высоту после ошибки
+        setTimeout(adjustContainerHeight, 100);
     }
 }
 
@@ -222,6 +263,9 @@ function renderOrders() {
             ` : ''}
         </div>
     `).join('');
+
+    // ВАЖНО: Подстраиваем высоту после рендера заказов
+    setTimeout(adjustContainerHeight, 100);
 }
 
 // Создаем демо-заказы для показа интерфейса
@@ -253,6 +297,22 @@ function createDemoOrders() {
             ],
             delivery: {
                 type: 'ПВЗ СДЭК'
+            }
+        },
+        // Добавляем еще несколько демо-заказов для тестирования прокрутки
+        {
+            id: 'CG-Demo-003',
+            cdekNumber: 'CG-240105-29',
+            status: 'paid',
+            amount: 1500,
+            createdAt: new Date(Date.now() - 864000000).toISOString(), // 10 дней назад
+            items: [
+                { name: 'Карта памяти 8 ГБ', cost: 500 },
+                { name: 'Карта памяти 8 ГБ', cost: 500 },
+                { name: 'Карта памяти 8 ГБ', cost: 500 }
+            ],
+            delivery: {
+                type: 'Постамат СДЭК'
             }
         }
     ];
@@ -349,6 +409,9 @@ function fillUserInfoForm() {
             element.value = userInfo[fieldId];
         }
     });
+
+    // ВАЖНО: Подстраиваем высоту после заполнения формы
+    setTimeout(adjustContainerHeight, 100);
 }
 
 function saveUserInfo() {
@@ -383,6 +446,9 @@ function loadSettings() {
                 element.checked = settings[settingId];
             }
         });
+
+        // ВАЖНО: Подстраиваем высоту после загрузки настроек
+        setTimeout(adjustContainerHeight, 100);
     } catch (error) {
         console.error('❌ Ошибка загрузки настроек:', error);
     }
@@ -426,6 +492,11 @@ function initEventListeners() {
             e.preventDefault();
             saveUserInfo();
         });
+
+        // Подстраиваем высоту при изменении в форме
+        DOM.userInfoForm.addEventListener('input', debounce(() => {
+            adjustContainerHeight();
+        }, 300));
     }
 
     // Сохранение настроек при изменении переключателей
@@ -436,7 +507,11 @@ function initEventListeners() {
     settingToggles.forEach(toggleId => {
         const element = document.getElementById(toggleId);
         if (element) {
-            element.addEventListener('change', saveSettings);
+            element.addEventListener('change', () => {
+                saveSettings();
+                // Подстраиваем высоту при изменении настроек
+                setTimeout(adjustContainerHeight, 100);
+            });
         }
     });
 
@@ -445,6 +520,9 @@ function initEventListeners() {
 
     // Загружаем настройки
     loadSettings();
+
+    // Слушаем изменения размера окна для подстройки высоты
+    window.addEventListener('resize', debounce(adjustContainerHeight, 300));
 
     console.log('🔗 Обработчики событий настроены');
 }
@@ -487,6 +565,9 @@ function setupActionButtons() {
                     updateStats();
                     DOM.noOrdersMessage.style.display = 'block';
                     showNotification('История заказов очищена', 'success');
+
+                    // ВАЖНО: Подстраиваем высоту после очистки
+                    setTimeout(adjustContainerHeight, 100);
                 }
             );
         });
@@ -787,8 +868,22 @@ function removeNotification(notification) {
     }, 300);
 }
 
+/* === Утилита debounce === */
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
 /* === Глобальные функции === */
 window.loadOrders = loadOrders;
 window.switchTab = switchTab;
+window.adjustContainerHeight = adjustContainerHeight; // Экспортируем для возможности вызова извне
 
 console.log('🎉 Профиль полностью готов к работе!');

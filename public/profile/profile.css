@@ -1,4 +1,27 @@
-/* File: public/profile/profile.css - ПОТРЯСАЮЩИЙ НОВЫЙ ДИЗАЙН */
+/* File: public/profile/profile.css - APPLE LIQUID GLASS DESIGN */
+
+/* === Фирменные цвета clip & go + Apple Glass эффекты === */
+:root {
+    --clip-blue: #1e6bbf;
+    --clip-light-blue: #4db8e8;
+    --clip-white: #ffffff;
+    --clip-gray: #6c757d;
+    --clip-black: #000000;
+    --clip-light-gray: #f8f9fa;
+
+    /* Apple Liquid Glass эффекты */
+    --glass-blur: blur(20px);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.18);
+    --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    --glass-bg: rgba(255, 255, 255, 0.25);
+    --glass-dark-bg: rgba(0, 0, 0, 0.1);
+
+    /* Современные тени */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.16);
+}
 
 /* === Сброс и базовые стили === */
 * {
@@ -8,108 +31,527 @@
 }
 
 body {
-    font-family: 'Montserrat', sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #333;
+    font-family: -apple-system, BlinkMacSystemFont, 'Montserrat', 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, var(--clip-blue) 0%, var(--clip-light-blue) 50%, #667eea 100%);
+    color: #1d1d1f;
     overflow-x: hidden;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* === Основной контейнер === */
 .profile-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 140px 20px 200px; /* Огромный нижний отступ! */
-    min-height: calc(100vh + 300px); /* Дополнительная высота */
+    padding: 140px 20px 60px;
+    position: relative;
 }
 
-/* === Приветственная шапка профиля === */
+/* === Hero секция в стиле Liquid Glass === */
 .profile-hero {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    padding: 40px;
-    margin-bottom: 30px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 30px;
-    animation: slideUp 0.8s ease-out;
+    border-radius: 16px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+    backdrop-filter: blur(10px);
 }
 
-@keyframes slideUp {
+.action-btn.primary {
+    background: rgba(30, 107, 191, 0.3);
+    color: var(--clip-white);
+    border-color: rgba(30, 107, 191, 0.4);
+}
+
+.action-btn.primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(30, 107, 191, 0.3);
+    background: rgba(30, 107, 191, 0.4);
+}
+
+.action-btn.secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.action-btn.secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-3px);
+}
+
+.action-btn.danger {
+    background: rgba(244, 67, 54, 0.2);
+    color: #ff6b6b;
+    border-color: rgba(244, 67, 54, 0.3);
+}
+
+.action-btn.danger:hover {
+    background: rgba(244, 67, 54, 0.3);
+    border-color: rgba(244, 67, 54, 0.4);
+    transform: translateY(-3px);
+}
+
+/* === Liquid Glass footer === */
+.modern-footer {
+    margin-top: 80px;
+    padding: 48px 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: var(--glass-blur);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px 24px 0 0;
+    position: relative;
+}
+
+.modern-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--clip-white);
+}
+
+.footer-brand {
+    font-size: 1.3em;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.95em;
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.footer-links a:hover {
+    color: var(--clip-white);
+}
+
+.footer-year {
+    font-size: 0.9em;
+    opacity: 0.7;
+    font-weight: 500;
+}
+
+/* === Адаптивный дизайн === */
+@media (max-width: 1024px) {
+    .orders-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 140px 16px 40px;
+    }
+
+    .profile-hero {
+        flex-direction: column;
+        text-align: center;
+        gap: 28px;
+        padding: 36px 24px;
+        margin-bottom: 24px;
+        border-radius: 24px;
+    }
+
+    .profile-welcome h1 {
+        font-size: 2.2em;
+    }
+
+    .profile-stats-modern {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        width: 100%;
+    }
+
+    .stat-modern {
+        min-width: 110px;
+        padding: 20px;
+    }
+
+    .stat-number {
+        font-size: 1.6em;
+    }
+
+    .tab-nav {
+        padding: 4px;
+        border-radius: 16px;
+    }
+
+    .tab-button {
+        padding: 14px 18px;
+        flex-direction: column;
+        gap: 6px;
+        border-radius: 12px;
+    }
+
+    .tab-text {
+        font-size: 0.95em;
+        font-weight: 600;
+    }
+
+    .section-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .section-header h2 {
+        font-size: 1.7em;
+    }
+
+    .orders-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .order-card-modern {
+        padding: 24px;
+        border-radius: 20px;
+        min-height: 280px;
+    }
+
+    .order-header-modern {
+        margin-bottom: 20px;
+    }
+
+    .order-number-modern {
+        font-size: 1.2em;
+    }
+
+    .order-total-modern {
+        margin: 0 -24px -24px;
+        padding: 20px 24px;
+    }
+
+    .total-amount {
+        font-size: 1.4em;
+    }
+
+    .modern-card {
+        padding: 24px;
+        margin-bottom: 20px;
+        border-radius: 20px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .settings-grid {
+        gap: 20px;
+        margin-bottom: 28px;
+    }
+
+    .setting-item-modern {
+        padding: 18px 20px;
+        border-radius: 14px;
+    }
+
+    .action-buttons {
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+    }
+
+    .modern-footer {
+        margin-top: 60px;
+        padding: 36px 0;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .content-wrapper {
+        margin-bottom: 32px;
+    }
+
+    .tab-content {
+        padding-bottom: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-hero {
+        padding: 28px 20px;
+        border-radius: 20px;
+    }
+
+    .profile-welcome h1 {
+        font-size: 1.9em;
+    }
+
+    .profile-welcome p {
+        font-size: 1.1em;
+    }
+
+    .profile-stats-modern {
+        gap: 12px;
+    }
+
+    .stat-modern {
+        min-width: 95px;
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .stat-number {
+        font-size: 1.4em;
+    }
+
+    .stat-label {
+        font-size: 0.8em;
+    }
+
+    .tab-button {
+        padding: 12px 14px;
+        border-radius: 10px;
+    }
+
+    .tab-text {
+        font-size: 0.9em;
+    }
+
+    .order-card-modern {
+        padding: 20px;
+        border-radius: 18px;
+        min-height: 260px;
+    }
+
+    .order-total-modern {
+        margin: 0 -20px -20px;
+        padding: 18px 20px;
+        border-radius: 0 0 18px 18px;
+    }
+
+    .modern-card {
+        padding: 20px;
+        border-radius: 18px;
+    }
+
+    .setting-item-modern {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 16px 18px;
+    }
+
+    .modern-footer {
+        border-radius: 18px 18px 0 0;
+    }
+}
+
+/* === Продвинутые анимации === */
+@keyframes glassShimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.order-card-modern {
+    animation: slideInRight 0.6s ease-out;
+}
+
+.order-card-modern:nth-child(even) {
+    animation-delay: 0.1s;
+}
+
+.order-card-modern:nth-child(odd) {
+    animation-delay: 0.2s;
+}
+
+.order-card-modern:nth-child(3n) {
+    animation-delay: 0.3s;
+}
+
+@keyframes slideInRight {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateX(40px) scale(0.95);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateX(0) scale(1);
+    }
+}
+
+/* === Скролл анимации === */
+.fade-in-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-in-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* === Производительность === */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .order-card-modern {
+        animation: none;
+    }
+
+    .avatar-circle {
+        animation: none;
+    }
+}
+
+/* === Дополнительные Glass эффекты === */
+.modern-card:hover,
+.order-card-modern:hover {
+    backdrop-filter: blur(25px);
+}
+
+.tab-button.active {
+    backdrop-filter: blur(15px);
+}
+
+.save-button:hover,
+.refresh-btn:hover,
+.cta-button:hover {
+    backdrop-filter: blur(25px);
+}: var(--glass-border);
+border-radius: 28px;
+padding: 48px;
+margin-bottom: 32px;
+box-shadow: var(--glass-shadow);
+display: flex;
+align-items: center;
+gap: 40px;
+animation: glassAppear 1s ease-out;
+position: relative;
+overflow: hidden;
+}
+
+.profile-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+}
+
+@keyframes glassAppear {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+        backdrop-filter: blur(0px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        backdrop-filter: var(--glass-blur);
     }
 }
 
 .profile-avatar {
     flex-shrink: 0;
+    position: relative;
 }
 
 .avatar-circle {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    width: 88px;
+    height: 88px;
+    background: linear-gradient(135deg, var(--clip-blue), var(--clip-light-blue));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    animation: avatarPulse 3s ease-in-out infinite;
+    box-shadow: 0 8px 32px rgba(30, 107, 191, 0.4);
+    animation: avatarFloat 4s ease-in-out infinite;
+    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-@keyframes avatarPulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+@keyframes avatarFloat {
+    0%, 100% {
+        transform: translateY(0px) scale(1);
+    }
+    50% {
+        transform: translateY(-4px) scale(1.02);
+    }
 }
 
 .avatar-text {
-    font-size: 2em;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-}
-
-.profile-welcome {
-    flex: 1;
+    font-size: 2.2em;
+    color: var(--clip-white);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 }
 
 .profile-welcome h1 {
-    font-size: 2.5em;
+    font-size: 2.8em;
     font-weight: 700;
-    margin-bottom: 10px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    letter-spacing: -0.02em;
 }
 
 .profile-welcome p {
-    font-size: 1.1em;
-    color: #666;
+    font-size: 1.2em;
+    color: rgba(255, 255, 255, 0.8);
     font-weight: 500;
+    letter-spacing: -0.01em;
 }
 
-/* === Современная статистика === */
+/* === Современная статистика в Glass стиле === */
 .profile-stats-modern {
     display: flex;
-    gap: 20px;
+    gap: 24px;
     flex-shrink: 0;
 }
 
 .stat-modern {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 16px;
-    padding: 20px;
-    min-width: 120px;
-    text-align: center;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: var(--glass-blur);
     border: 1px solid rgba(255, 255, 255, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 20px;
+    padding: 24px;
+    min-width: 130px;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
@@ -121,8 +563,8 @@ body {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transition: left 0.5s ease;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease;
 }
 
 .stat-modern:hover::before {
@@ -130,105 +572,120 @@ body {
 }
 
 .stat-modern:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .stat-icon {
-    font-size: 1.8em;
-    margin-bottom: 8px;
-    opacity: 0.8;
+    font-size: 2em;
+    margin-bottom: 12px;
+    opacity: 0.9;
 }
 
 .stat-number {
-    font-size: 1.8em;
+    font-size: 2em;
     font-weight: 700;
-    color: #667eea;
-    margin-bottom: 4px;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
 }
 
 .stat-label {
-    font-size: 0.85em;
-    color: #666;
-    font-weight: 500;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
-/* === Современные вкладки === */
+/* === Liquid Glass вкладки === */
 .modern-tabs {
     position: relative;
-    margin-bottom: 30px;
+    margin-bottom: 32px;
 }
 
 .tab-nav {
     display: flex;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 16px;
-    padding: 8px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: 20px;
+    padding: 6px;
+    box-shadow: var(--shadow-lg);
     position: relative;
     overflow: hidden;
+}
+
+.tab-nav::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
 }
 
 .tab-button {
     flex: 1;
     background: none;
     border: none;
-    padding: 16px 20px;
-    border-radius: 12px;
+    padding: 18px 24px;
+    border-radius: 14px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    font-weight: 500;
-    color: #666;
-    transition: all 0.3s ease;
+    gap: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     z-index: 2;
+    font-size: 1.05em;
 }
 
 .tab-button.active {
-    color: white;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    color: var(--clip-white);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.tab-button:not(.active):hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .tab-icon {
-    font-size: 1.1em;
+    font-size: 1.2em;
 }
 
 .tab-text {
-    font-size: 1.1em; /* Увеличили размер текста вкладок! */
-    font-weight: 600; /* Сделали жирнее */
+    font-size: 1.05em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
 /* === Контент === */
 .content-wrapper {
     position: relative;
-    margin-bottom: 120px; /* Увеличили отступ снизу до 120px */
+    margin-bottom: 40px;
 }
 
 .tab-content {
     display: none;
-    animation: fadeInContent 0.4s ease-out;
-    min-height: 600px; /* Увеличили минимальную высоту */
-    padding-bottom: 80px; /* Увеличили отступ снизу */
+    animation: contentFadeIn 0.5s ease-out;
+    padding-bottom: 20px;
 }
 
 .tab-content.active {
     display: block;
 }
 
-/* ВАЖНО: Показываем первую вкладку по умолчанию */
-.tab-content:first-child {
-    display: block;
-}
-
-@keyframes fadeInContent {
+@keyframes contentFadeIn {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -244,91 +701,66 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 28px;
 }
 
 .section-header h2 {
-    font-size: 1.8em;
-    font-weight: 600;
-    color: white;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-size: 2em;
+    font-weight: 700;
+    color: var(--clip-white);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    letter-spacing: -0.02em;
 }
 
 .refresh-btn {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 20px;
-    background: rgba(255, 255, 255, 0.95);
-    color: #667eea;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 500;
-    backdrop-filter: blur(20px);
-    transition: all 0.3s ease;
+    padding: 14px 24px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: var(--glass-blur);
+    color: var(--clip-white);
     border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.95em;
 }
 
 .refresh-btn:hover {
-    background: white;
+    background: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
 }
 
 .refresh-icon {
-    transition: transform 0.3s ease;
+    transition: transform 0.4s ease;
 }
 
 .refresh-btn:hover .refresh-icon {
     transform: rotate(180deg);
 }
 
-/* === Прокручиваемый контейнер заказов === */
-.orders-scroll-container {
-    max-height: 600px;
-    overflow-y: auto;
-    padding-right: 10px;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(102, 126, 234, 0.3) transparent;
-}
-
-.orders-scroll-container::-webkit-scrollbar {
-    width: 6px;
-}
-
-.orders-scroll-container::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 3px;
-}
-
-.orders-scroll-container::-webkit-scrollbar-thumb {
-    background: rgba(102, 126, 234, 0.3);
-    border-radius: 3px;
-    transition: background 0.3s ease;
-}
-
-.orders-scroll-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(102, 126, 234, 0.5);
-}
-
 /* === Сетка заказов === */
 .orders-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 24px;
 }
 
-/* === Современные карточки заказов === */
+/* === УЛУЧШЕННЫЕ карточки заказов в Glass стиле === */
 .order-card-modern {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 25px;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    min-height: 320px; /* Увеличили минимальную высоту */
 }
 
 .order-card-modern::before {
@@ -337,75 +769,106 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
+    height: 3px;
+    background: linear-gradient(135deg, var(--clip-blue), var(--clip-light-blue));
+    border-radius: 24px 24px 0 0;
+}
+
+.order-card-modern::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    border-radius: 24px 24px 0 0;
 }
 
 .order-card-modern:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    transform: translateY(-8px);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .order-header-modern {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .order-number-modern {
-    font-size: 1.1em;
+    font-size: 1.3em; /* Увеличили размер */
     font-weight: 700;
-    color: #667eea;
-    margin-bottom: 5px;
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
 }
 
 .order-date-modern {
-    font-size: 0.85em;
-    color: #666;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
 }
 
 .order-status-modern {
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.8em;
-    font-weight: 600;
+    padding: 8px 16px; /* Увеличили padding */
+    border-radius: 12px;
+    font-size: 0.85em;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .order-status-modern.created {
-    background: linear-gradient(135deg, #4CAF50, #45a049);
-    color: white;
+    background: rgba(76, 175, 80, 0.3);
+    color: #4CAF50;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
 }
 
 .order-status-modern.paid {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
+    background: rgba(30, 107, 191, 0.3);
+    color: var(--clip-blue);
+    box-shadow: 0 4px 12px rgba(30, 107, 191, 0.2);
 }
 
 .order-status-modern.failed {
-    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-    color: white;
+    background: rgba(244, 67, 54, 0.3);
+    color: #f44336;
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
 }
 
 .order-items-modern {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .order-items-title {
-    font-size: 0.9em;
-    color: #666;
-    margin-bottom: 10px;
-    font-weight: 500;
+    font-size: 1em; /* Увеличили размер */
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
 }
 
 .order-item-modern {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 12px 0; /* Увеличили padding */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    transition: background 0.2s ease;
+}
+
+.order-item-modern:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding-left: 12px;
+    padding-right: 12px;
 }
 
 .order-item-modern:last-child {
@@ -413,52 +876,60 @@ body {
 }
 
 .item-name-modern {
-    font-weight: 500;
-    color: #333;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1em; /* Увеличили размер */
 }
 
 .item-price-modern {
-    font-weight: 600;
-    color: #667eea;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.05em; /* Увеличили размер */
 }
 
 .order-total-modern {
     text-align: right;
-    padding-top: 15px;
-    border-top: 2px solid #f0f0f0;
+    padding-top: 20px;
+    border-top: 2px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 -32px -32px;
+    padding: 24px 32px;
+    border-radius: 0 0 24px 24px;
 }
 
 .total-label {
-    font-size: 0.9em;
-    color: #666;
-    margin-bottom: 5px;
+    font-size: 1em; /* Увеличили размер */
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 8px;
+    font-weight: 500;
 }
 
 .total-amount {
-    font-size: 1.3em;
+    font-size: 1.6em; /* Значительно увеличили */
     font-weight: 700;
-    color: #667eea;
+    color: rgba(255, 255, 255, 0.95);
+    letter-spacing: -0.02em;
 }
 
-/* === Современная загрузка === */
+/* === Загрузка === */
 .loading-modern {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 60px 20px;
-    color: white;
+    padding: 80px 20px;
+    color: var(--clip-white);
     text-align: center;
 }
 
 .spinner-modern {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     border: 4px solid rgba(255, 255, 255, 0.2);
-    border-top: 4px solid white;
+    border-top: 4px solid var(--clip-white);
     border-radius: 50%;
     animation: spin 1s linear infinite;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 @keyframes spin {
@@ -466,114 +937,128 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* === Современное сообщение об отсутствии заказов === */
+/* === Сообщение об отсутствии заказов === */
 .no-orders-modern {
     text-align: center;
-    padding: 80px 20px;
-    color: white;
+    padding: 100px 20px;
+    color: var(--clip-white);
 }
 
 .no-orders-illustration {
     position: relative;
-    margin-bottom: 30px;
+    margin-bottom: 32px;
     display: inline-block;
 }
 
 .empty-box {
-    font-size: 4em;
+    font-size: 5em;
     opacity: 0.8;
     animation: float 3s ease-in-out infinite;
 }
 
 @keyframes float {
     0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+    50% { transform: translateY(-12px); }
 }
 
 .empty-sparkles {
     position: absolute;
-    top: -10px;
-    right: -10px;
-    font-size: 1.5em;
+    top: -15px;
+    right: -15px;
+    font-size: 1.8em;
     animation: sparkle 2s ease-in-out infinite;
 }
 
 @keyframes sparkle {
     0%, 100% { opacity: 0.3; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.2); }
+    50% { opacity: 1; transform: scale(1.3); }
 }
 
 .no-orders-modern h3 {
-    font-size: 1.8em;
-    margin-bottom: 15px;
-    font-weight: 600;
+    font-size: 2em;
+    margin-bottom: 16px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
 }
 
 .no-orders-modern p {
-    font-size: 1.1em;
-    margin-bottom: 30px;
+    font-size: 1.2em;
+    margin-bottom: 32px;
     opacity: 0.9;
 }
 
 .cta-button {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 16px 32px;
-    background: rgba(255, 255, 255, 0.95);
-    color: #667eea;
+    gap: 12px;
+    padding: 18px 36px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: var(--glass-blur);
+    color: var(--clip-white);
     text-decoration: none;
-    border-radius: 50px;
+    border-radius: 16px;
     font-weight: 600;
-    backdrop-filter: blur(20px);
-    transition: all 0.3s ease;
+    font-size: 1.1em;
     border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
 }
 
 .cta-button:hover {
-    background: white;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(255, 255, 255, 0.2);
 }
 
-/* === Современные карточки === */
+/* === Glass карточки === */
 .modern-card {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 30px;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    margin-bottom: 28px;
 }
 
 .modern-card::before {
     content: '';
     position: absolute;
     top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+}
+
+.modern-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-    transition: left 0.5s ease;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s ease;
 }
 
-.modern-card:hover::before {
+.modern-card:hover::after {
     left: 100%;
 }
 
 .modern-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    background: rgba(255, 255, 255, 0.35);
 }
 
 .card-header-modern {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 25px;
+    margin-bottom: 28px;
     position: relative;
 }
 
@@ -581,43 +1066,37 @@ body {
 .card-header-modern h3 {
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-weight: 600;
-    color: #333;
+    gap: 12px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.95);
     margin: 0;
+    letter-spacing: -0.02em;
 }
 
 .card-header-modern h2 {
-    font-size: 1.5em;
+    font-size: 1.6em;
 }
 
 .card-header-modern h3 {
-    font-size: 1.3em;
+    font-size: 1.4em;
 }
 
 .section-icon {
-    font-size: 1.2em;
-    opacity: 0.8;
-}
-
-.header-decoration {
-    width: 40px;
-    height: 2px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border-radius: 1px;
+    font-size: 1.3em;
+    opacity: 0.9;
 }
 
 /* === Современная форма === */
 .modern-form {
     position: relative;
-    margin-bottom: 80px; /* Огромный отступ снизу для формы */
+    margin-bottom: 24px;
 }
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 60px; /* Увеличили отступ снизу */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
 }
 
 .form-group-modern {
@@ -632,95 +1111,103 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #333;
-    font-size: 0.95em;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1em;
 }
 
 .label-icon {
-    font-size: 1em;
-    opacity: 0.7;
+    font-size: 1.1em;
+    opacity: 0.8;
 }
 
 .form-group-modern input {
     width: 100%;
-    padding: 15px 18px;
-    border: 2px solid #e0e0e0;
-    border-radius: 12px;
+    padding: 16px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
     font-size: 1em;
-    background: #fafafa;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    color: rgba(255, 255, 255, 0.95);
     transition: all 0.3s ease;
     font-family: inherit;
 }
 
+.form-group-modern input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
 .form-group-modern input:focus {
     outline: none;
-    border-color: #667eea;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    transform: translateY(-1px);
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
 .form-group-modern input:valid {
-    border-color: #4CAF50;
+    border-color: rgba(76, 175, 80, 0.5);
 }
 
 .save-button {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 16px 32px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-size: 1em;
+    gap: 12px;
+    padding: 18px 36px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: var(--glass-blur);
+    color: var(--clip-white);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 16px;
+    font-size: 1.1em;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-    margin-bottom: 60px; /* Огромный отступ снизу для кнопки */
+    margin-bottom: 24px;
 }
 
 .save-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.3);
 }
 
 .save-button:active {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
 }
 
-/* === Сетка настроек === */
+/* === Настройки === */
 .settings-grid {
     display: grid;
-    gap: 25px;
-    margin-bottom: 100px; /* Огромный отступ снизу */
+    gap: 28px;
+    margin-bottom: 32px;
 }
 
 .settings-list {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    margin-bottom: 50px; /* Увеличили отступ снизу */
+    margin-bottom: 24px;
 }
 
 .setting-item-modern {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 12px;
-    border: 1px solid #e9ecef;
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     transition: all 0.3s ease;
 }
 
 .setting-item-modern:hover {
-    background: white;
-    border-color: #667eea;
-    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateX(8px);
 }
 
 .setting-info {
@@ -729,23 +1216,23 @@ body {
 
 .setting-title {
     font-weight: 600;
-    color: #333;
+    color: rgba(255, 255, 255, 0.95);
     margin-bottom: 4px;
-    font-size: 1em;
+    font-size: 1.05em;
 }
 
 .setting-desc {
-    font-size: 0.85em;
-    color: #666;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.7);
     line-height: 1.4;
 }
 
-/* === Современные переключатели === */
+/* === Liquid переключатели === */
 .modern-toggle {
     position: relative;
     display: inline-block;
-    width: 54px;
-    height: 30px;
+    width: 58px;
+    height: 32px;
     cursor: pointer;
 }
 
@@ -762,336 +1249,48 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: #ccc;
-    border-radius: 30px;
-    transition: all 0.3s ease;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 32px;
+    transition: all 0.4s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .toggle-slider:before {
     position: absolute;
     content: "";
-    height: 24px;
-    width: 24px;
+    height: 26px;
+    width: 26px;
     left: 3px;
     bottom: 3px;
-    background: white;
+    background: var(--clip-white);
     border-radius: 50%;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .modern-toggle input:checked + .toggle-slider {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(102, 126, 234, 0.2);
+    background: rgba(30, 107, 191, 0.3);
+    border-color: rgba(30, 107, 191, 0.5);
 }
 
 .modern-toggle input:checked + .toggle-slider:before {
-    transform: translateX(24px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transform: translateX(26px);
+    background: var(--clip-blue);
+    box-shadow: 0 4px 12px rgba(30, 107, 191, 0.4);
 }
 
 /* === Кнопки действий === */
 .action-buttons {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-bottom: 80px; /* Огромный отступ снизу */
+    gap: 16px;
+    margin-bottom: 32px;
 }
 
 .action-btn {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 20px;
-    border: none;
-    border-radius: 12px;
-    font-size: 0.95em;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: left;
-}
-
-.action-btn.primary {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-}
-
-.action-btn.primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-}
-
-.action-btn.secondary {
-    background: #f8f9fa;
-    color: #667eea;
-    border: 2px solid #e9ecef;
-}
-
-.action-btn.secondary:hover {
-    background: white;
-    border-color: #667eea;
-    transform: translateY(-2px);
-}
-
-.action-btn.danger {
-    background: #fff5f5;
-    color: #e53e3e;
-    border: 2px solid #fed7d7;
-}
-
-.action-btn.danger:hover {
-    background: #ffe5e5;
-    border-color: #e53e3e;
-    transform: translateY(-2px);
-}
-
-/* === Современный footer === */
-.modern-footer {
-    margin-top: 150px; /* Огромный отступ сверху */
-    padding: 60px 0; /* Увеличили вертикальные отступы */
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    clear: both; /* Очищаем флоаты */
-    position: relative; /* Добавили для надежности */
-}
-
-.footer-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: white;
-}
-
-.footer-brand {
-    font-size: 1.2em;
-    font-weight: 600;
-}
-
-.footer-links a {
-    color: rgba(255, 255, 255, 0.8);
-    text-decoration: none;
-    font-size: 0.9em;
-    transition: color 0.3s ease;
-}
-
-.footer-links a:hover {
-    color: white;
-}
-
-.footer-year {
-    font-size: 0.9em;
-    opacity: 0.7;
-}
-
-/* === Адаптивный дизайн === */
-@media (max-width: 768px) {
-    .profile-container {
-        padding: 140px 15px 150px; /* Огромный нижний отступ для мобильных */
-    }
-
-    .profile-hero {
-        flex-direction: column;
-        text-align: center;
-        gap: 20px;
-        padding: 30px 20px;
-        margin-bottom: 25px;
-    }
-
-    .profile-welcome h1 {
-        font-size: 2em;
-    }
-
-    .profile-stats-modern {
-        flex-direction: row;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .stat-modern {
-        min-width: 100px;
-        padding: 15px;
-    }
-
-    .stat-number {
-        font-size: 1.5em;
-    }
-
-    .tab-nav {
-        padding: 6px;
-    }
-
-    .tab-button {
-        padding: 12px 16px;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .tab-text {
-        font-size: 1em; /* Увеличили для мобильных тоже */
-        font-weight: 600;
-    }
-
-    .section-header {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-    }
-
-    .orders-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .orders-scroll-container {
-        max-height: 500px;
-        margin-bottom: 50px; /* Увеличили отступ для мобильных */
-    }
-
-    .order-card-modern {
-        padding: 20px;
-    }
-
-    .modern-card {
-        padding: 20px;
-        margin-bottom: 40px; /* Увеличили отступ между карточками */
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .settings-grid {
-        gap: 20px;
-        margin-bottom: 80px; /* Большой отступ на мобильных */
-    }
-
-    .setting-item-modern {
-        padding: 15px;
-    }
-
-    .action-buttons {
-        gap: 12px;
-        margin-bottom: 60px; /* Увеличили отступ для мобильных */
-    }
-
-    .footer-content {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-
-    .modern-footer {
-        margin-top: 100px; /* Увеличили для мобильных */
-    }
-
-    .content-wrapper {
-        margin-bottom: 80px; /* Увеличили для мобильных */
-    }
-
-    .tab-content {
-        padding-bottom: 60px; /* Увеличили для мобильных */
-    }
-}
-
-@media (max-width: 480px) {
-    .profile-hero {
-        padding: 25px 15px;
-    }
-
-    .profile-welcome h1 {
-        font-size: 1.8em;
-    }
-
-    .profile-stats-modern {
-        gap: 10px;
-    }
-
-    .stat-modern {
-        min-width: 90px;
-        padding: 12px;
-    }
-
-    .stat-number {
-        font-size: 1.3em;
-    }
-
-    .stat-label {
-        font-size: 0.75em;
-    }
-
-    .tab-button {
-        padding: 10px 12px;
-    }
-
-    .orders-scroll-container {
-        max-height: 400px;
-    }
-
-    .order-card-modern {
-        padding: 15px;
-    }
-
-    .modern-card {
-        padding: 15px;
-    }
-
-    .setting-item-modern {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-    }
-}
-
-/* === Анимации и эффекты === */
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.order-card-modern {
-    animation: slideInRight 0.5s ease-out;
-}
-
-.order-card-modern:nth-child(even) {
-    animation-delay: 0.1s;
-}
-
-.order-card-modern:nth-child(odd) {
-    animation-delay: 0.2s;
-}
-
-/* === Скролл анимации === */
-.fade-in-on-scroll {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.fade-in-on-scroll.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* === Производительность === */
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-}
+    gap: 12px;
+    padding: 16px 24px;
+    border
