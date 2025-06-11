@@ -5,92 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>clip & go • Профиль</title>
 
-    <!-- Montserrat -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 
-    <!-- Глобальные стили -->
+    <!-- Styles -->
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/responsive.css" media="(max-width:768px)" />
     <link rel="stylesheet" href="/css/header.css" />
-
-    <!-- Локальные стили профиля -->
     <link rel="stylesheet" href="/profile/profile.css" />
+
+    <!-- Meta -->
+    <meta name="theme-color" content="#4A90E2" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 </head>
 
 <body>
-<!-- Общий header -->
+<!-- Header -->
 <div id="header-container"></div>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        fetch('/header.html')
-            .then(r => r.text())
-            .then(html => {
-                document.getElementById('header-container').innerHTML = html;
-
-                const hdr = document.getElementById('site-header');
-                if (hdr) {
-                    hdr.classList.add('scrolled'); // шапка всегда белая на странице профиля
-                }
-
-                // ВАЖНО: Ждем загрузки CartManager и обновляем счетчик
-                const waitForCartManager = () => {
-                    if (window.CartManager) {
-                        console.log('[Header] CartManager найден, обновляем счетчик корзины');
-                        window.CartManager.updateCartCounter();
-                    } else {
-                        console.log('[Header] Ожидание CartManager...');
-                        setTimeout(waitForCartManager, 50);
-                    }
-                };
-
-                // Начинаем ожидание через небольшую задержку
-                setTimeout(waitForCartManager, 100);
-            })
-            .catch(console.error);
-    });
-</script>
 
 <main class="profile-container">
-    <!-- Приветственная шапка профиля -->
+    <!-- Hero Section -->
     <div class="profile-hero">
         <div class="profile-avatar">
             <div class="avatar-circle">
                 <span class="avatar-text">👤</span>
             </div>
         </div>
+
         <div class="profile-welcome">
             <h1>Добро пожаловать!</h1>
-            <p>Управляйте заказами и настройками аккаунта</p>
+            <p>Элегантный профиль в стиле благородного дизайна</p>
         </div>
 
-        <!-- Красивая статистика -->
         <div class="profile-stats-modern">
             <div class="stat-modern">
-                <div class="stat-icon">📦</div>
-                <div class="stat-content">
-                    <div class="stat-number" id="totalOrders">0</div>
-                    <div class="stat-label">Заказов</div>
-                </div>
+                <span class="stat-icon">📦</span>
+                <div class="stat-number" id="totalOrders">0</div>
+                <div class="stat-label">Заказов</div>
             </div>
             <div class="stat-modern">
-                <div class="stat-icon">⭐</div>
-                <div class="stat-content">
-                    <div class="stat-number" id="memberSince">2024</div>
-                    <div class="stat-label">С нами с</div>
-                </div>
+                <span class="stat-icon">⭐</span>
+                <div class="stat-number" id="memberSince">2024</div>
+                <div class="stat-label">С нами с</div>
             </div>
             <div class="stat-modern">
-                <div class="stat-icon">🎯</div>
-                <div class="stat-content">
-                    <div class="stat-number" id="orderStatus">—</div>
-                    <div class="stat-label">Статус</div>
-                </div>
+                <span class="stat-icon">🎯</span>
+                <div class="stat-number" id="orderStatus">—</div>
+                <div class="stat-label">Статус</div>
             </div>
         </div>
     </div>
 
-    <!-- Современное меню вкладок -->
+    <!-- Modern Tabs -->
     <div class="modern-tabs">
         <div class="tab-nav">
             <button class="tab-button active" data-tab="orders">
@@ -106,23 +74,20 @@
                 <span class="tab-text">Настройки</span>
             </button>
         </div>
-
-        <div class="tab-indicator"></div>
     </div>
 
-    <!-- Контейнер контента -->
+    <!-- Content -->
     <div class="content-wrapper">
-        <!-- Вкладка "Мои заказы" -->
+        <!-- Orders Tab -->
         <div id="orders" class="tab-content active">
             <div class="section-header">
                 <h2>История заказов</h2>
                 <button id="refreshOrdersBtn" class="refresh-btn">
                     <span class="refresh-icon">🔄</span>
-                    Обновить
+                    <span>Обновить</span>
                 </button>
             </div>
 
-            <!-- Прокручиваемый контейнер заказов -->
             <div class="orders-scroll-container">
                 <div id="ordersContainer" class="orders-grid">
                     <div class="loading-modern" id="ordersLoading">
@@ -140,83 +105,87 @@
                     <p>Но это легко исправить! Выберите что-то интересное</p>
                     <a href="/index.html" class="cta-button">
                         <span>🛒</span>
-                        Начать покупки
+                        <span>Начать покупки</span>
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Вкладка "Профиль" -->
+        <!-- Profile Tab -->
         <div id="info" class="tab-content">
             <div class="modern-card">
                 <div class="card-header-modern">
                     <h2>
                         <span class="section-icon">👤</span>
-                        Личная информация
+                        <span>Личная информация</span>
                     </h2>
-                    <div class="header-decoration"></div>
                 </div>
 
                 <form id="userInfoForm" class="modern-form">
                     <div class="form-grid">
-                        <div class="form-group-modern">
+                        <div class="form-group-modern full-width">
                             <label for="userFullName">
                                 <span class="label-icon">🏷️</span>
-                                Полное имя
+                                <span>Полное имя</span>
                             </label>
-                            <input type="text" id="userFullName" placeholder="Иван Иванов">
+                            <input type="text" id="userFullName" placeholder="Иван Иванов" autocomplete="name">
                         </div>
 
                         <div class="form-group-modern">
                             <label for="userPhone">
                                 <span class="label-icon">📱</span>
-                                Телефон
+                                <span>Телефон</span>
                             </label>
-                            <input type="tel" id="userPhone" placeholder="+7 999 000 11 22">
+                            <input type="tel" id="userPhone" placeholder="+7 999 000 11 22" autocomplete="tel">
                         </div>
 
-                        <div class="form-group-modern full-width">
+                        <div class="form-group-modern">
                             <label for="userEmail">
                                 <span class="label-icon">📧</span>
-                                Email
+                                <span>Email</span>
                             </label>
-                            <input type="email" id="userEmail" placeholder="your@email.com">
+                            <input type="email" id="userEmail" placeholder="your@email.com" autocomplete="email">
                         </div>
 
                         <div class="form-group-modern">
                             <label for="userCity">
                                 <span class="label-icon">🏙️</span>
-                                Город
+                                <span>Город</span>
                             </label>
-                            <input type="text" id="userCity" placeholder="Москва">
+                            <input type="text" id="userCity" placeholder="Москва" autocomplete="address-level2">
                         </div>
 
                         <div class="form-group-modern">
                             <label for="userBirthday">
                                 <span class="label-icon">🎂</span>
-                                День рождения
+                                <span>День рождения</span>
                             </label>
-                            <input type="date" id="userBirthday">
+                            <input type="date" id="userBirthday" autocomplete="bday">
                         </div>
                     </div>
 
                     <button type="submit" class="save-button">
                         <span>💾</span>
-                        Сохранить изменения
+                        <span>Сохранить изменения</span>
                     </button>
                 </form>
+
+                <div class="info-tip">
+                    <strong>💡 Совет:</strong>
+                    Заполните все поля для лучшего опыта использования.
+                </div>
             </div>
         </div>
 
-        <!-- Вкладка "Настройки" -->
+        <!-- Settings Tab -->
         <div id="settings" class="tab-content">
             <div class="settings-grid">
-                <!-- Уведомления -->
+                <!-- Notifications -->
                 <div class="modern-card">
                     <div class="card-header-modern">
                         <h3>
                             <span class="section-icon">🔔</span>
-                            Уведомления
+                            <span>Уведомления</span>
                         </h3>
                     </div>
 
@@ -224,7 +193,7 @@
                         <div class="setting-item-modern">
                             <div class="setting-info">
                                 <div class="setting-title">📧 Email-уведомления</div>
-                                <div class="setting-desc">О статусе заказов и акциях</div>
+                                <div class="setting-desc">Информация о заказах и акциях</div>
                             </div>
                             <label class="modern-toggle">
                                 <input type="checkbox" id="emailNotifications" checked>
@@ -246,22 +215,33 @@
                         <div class="setting-item-modern">
                             <div class="setting-info">
                                 <div class="setting-title">🎁 Рекламные рассылки</div>
-                                <div class="setting-desc">Скидки и специальные предложения</div>
+                                <div class="setting-desc">Скидки и предложения</div>
                             </div>
                             <label class="modern-toggle">
                                 <input type="checkbox" id="marketingEmails">
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
+
+                        <div class="setting-item-modern">
+                            <div class="setting-info">
+                                <div class="setting-title">🌙 Темная тема</div>
+                                <div class="setting-desc">Переключение темы интерфейса</div>
+                            </div>
+                            <label class="modern-toggle">
+                                <input type="checkbox" id="darkMode">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Приватность -->
+                <!-- Privacy -->
                 <div class="modern-card">
                     <div class="card-header-modern">
                         <h3>
                             <span class="section-icon">🔒</span>
-                            Приватность
+                            <span>Приватность</span>
                         </h3>
                     </div>
 
@@ -287,33 +267,53 @@
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
+
+                        <div class="setting-item-modern">
+                            <div class="setting-info">
+                                <div class="setting-title">🔐 Двухфакторная аутентификация</div>
+                                <div class="setting-desc">Дополнительная защита</div>
+                            </div>
+                            <label class="modern-toggle">
+                                <input type="checkbox" id="twoFactorAuth">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Действия -->
+                <!-- Actions -->
                 <div class="modern-card">
                     <div class="card-header-modern">
                         <h3>
                             <span class="section-icon">🔧</span>
-                            Действия
+                            <span>Действия с данными</span>
                         </h3>
                     </div>
 
                     <div class="action-buttons">
                         <button id="clearCartBtn" class="action-btn secondary">
                             <span>🛒</span>
-                            Очистить корзину
+                            <span>Очистить корзину</span>
                         </button>
 
                         <button id="exportDataBtn" class="action-btn primary">
                             <span>📥</span>
-                            Экспорт данных
+                            <span>Экспорт данных</span>
                         </button>
 
                         <button id="clearHistoryBtn" class="action-btn danger">
                             <span>🗑️</span>
-                            Очистить историю
+                            <span>Очистить историю</span>
                         </button>
+                    </div>
+
+                    <div class="version-info">
+                        <div class="app-version">
+                            <strong>clip & go</strong> v2.0
+                        </div>
+                        <div class="build-info">
+                            Благородный дизайн • Сборка 2025.01
+                        </div>
                     </div>
                 </div>
             </div>
@@ -321,7 +321,7 @@
     </div>
 </main>
 
-<!-- Красивый footer -->
+<!-- Footer -->
 <footer class="modern-footer">
     <div class="footer-content">
         <div class="footer-brand">
@@ -331,15 +331,118 @@
             <a href="/Policy/privacy-cookie-policy.html">Политика конфиденциальности</a>
         </div>
         <div class="footer-year">
-            © 2025
+            © 2025 • Благородный дизайн
         </div>
     </div>
 </footer>
 
-<!-- Скрипты -->
+<!-- Scripts -->
 <script src="/js/cart-manager.js"></script>
 <script src="/js/script.js"></script>
 <script src="/js/mobile-header.js"></script>
 <script src="/profile/profile.js"></script>
+
+<!-- Initialization Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Header initialization
+        fetch('/header.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('header-container').innerHTML = html;
+                const header = document.getElementById('site-header');
+                if (header) {
+                    header.classList.add('scrolled');
+                }
+
+                // Cart manager initialization
+                const waitForCartManager = () => {
+                    if (window.CartManager) {
+                        window.CartManager.updateCartCounter();
+                    } else {
+                        setTimeout(waitForCartManager, 50);
+                    }
+                };
+                setTimeout(waitForCartManager, 100);
+            })
+            .catch(console.error);
+
+        // Tactile feedback for iOS devices
+        if ('vibrate' in navigator) {
+            const buttons = document.querySelectorAll('.action-btn, .save-button, .refresh-btn, .cta-button');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => navigator.vibrate(10));
+            });
+
+            const toggles = document.querySelectorAll('.modern-toggle input');
+            toggles.forEach(toggle => {
+                toggle.addEventListener('change', () => navigator.vibrate(25));
+            });
+
+            const dangerButtons = document.querySelectorAll('.action-btn.danger');
+            dangerButtons.forEach(btn => {
+                btn.addEventListener('click', () => navigator.vibrate([50, 10, 50]));
+            });
+        }
+
+        // Smooth scrolling support
+        if (CSS.supports('scroll-behavior', 'smooth')) {
+            document.documentElement.style.scrollBehavior = 'smooth';
+        }
+
+        // Prevent zoom on iOS double tap for inputs
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                input.focus();
+            });
+        });
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for animations
+        const animatedElements = document.querySelectorAll('.fade-in-on-scroll, .modern-card, .order-card-modern');
+        animatedElements.forEach(el => observer.observe(el));
+
+        // Animated statistics counter
+        setTimeout(() => {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach((stat) => {
+                const finalValue = parseInt(stat.textContent) || 0;
+                if (finalValue === 0) return;
+
+                let currentValue = 0;
+                const increment = finalValue / 30;
+
+                const timer = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= finalValue) {
+                        stat.textContent = finalValue;
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = Math.floor(currentValue);
+                    }
+                }, 16);
+            });
+        }, 500);
+
+        console.log('✨ Благородный профиль загружен успешно!');
+    });
+</script>
+
 </body>
 </html>
