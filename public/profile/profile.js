@@ -1,5 +1,4 @@
-/* === LIQUID GLASS PROFILE.JS - ФИНАЛЬНАЯ ВЕРСИЯ === */
-/* Полностью исправленная логика с улучшенными анимациями */
+/* === LIQUID GLASS PROFILE.JS - ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ВЕРСИЯ === */
 
 /* === Состояние приложения === */
 let currentTab = 'orders';
@@ -31,11 +30,31 @@ document.addEventListener('DOMContentLoaded', () => {
     updateCartBadge();
     initLiquidAnimations();
 
-    // Загружаем первую вкладку
+    // Принудительно показываем первую вкладку и загружаем данные
     setTimeout(() => {
+        // Показываем вкладку "Заказы"
+        const firstTab = document.getElementById('orders');
+        if (firstTab) {
+            firstTab.style.display = 'block';
+            firstTab.style.visibility = 'visible';
+            firstTab.style.opacity = '1';
+            firstTab.classList.add('active');
+            console.log('🎯 Первая вкладка принудительно активирована');
+        }
+
+        // Загружаем заказы
         loadOrders();
-        updateTabIndicator();
-    }, 100);
+        updateTabIndicator(0);
+
+        // Убеждаемся что контент видимый
+        document.querySelectorAll('.tab-content').forEach(content => {
+            if (content.id === 'orders') {
+                content.style.position = 'relative';
+                content.style.zIndex = '10';
+            }
+        });
+
+    }, 200);
 
     console.log('✨ Liquid Glass Profile готов!');
 });
@@ -79,15 +98,23 @@ function switchLiquidTab(tabId, index) {
     DOM.tabContents.forEach(content => {
         content.classList.remove('active');
         content.style.display = 'none';
+        content.style.opacity = '0';
+        content.style.visibility = 'hidden';
     });
 
     // Показываем нужную вкладку с анимацией
     const targetTab = document.getElementById(tabId);
     if (targetTab) {
         targetTab.style.display = 'block';
+        targetTab.style.visibility = 'visible';
+        targetTab.style.position = 'relative';
+        targetTab.style.zIndex = '1';
+
         // Форсируем reflow для анимации
-        void targetTab.offsetWidth;
-        targetTab.classList.add('active');
+        requestAnimationFrame(() => {
+            targetTab.style.opacity = '1';
+            targetTab.classList.add('active');
+        });
     }
 
     currentTab = tabId;
@@ -99,24 +126,33 @@ function switchLiquidTab(tabId, index) {
     if (tabId === 'orders' && orders.length === 0) {
         loadOrders();
     }
+
+    console.log('✅ Вкладка переключена на:', tabId);
 }
 
 /* === Liquid Glass индикатор активной вкладки === */
 function updateTabIndicator(index = 0) {
-    if (!DOM.tabNav) return;
+    if (!DOM.tabNav || !DOM.tabButtons || DOM.tabButtons.length === 0) return;
 
     const activeButton = DOM.tabButtons[index];
     if (!activeButton) return;
 
-    const navRect = DOM.tabNav.getBoundingClientRect();
-    const btnRect = activeButton.getBoundingClientRect();
+    try {
+        // Вычисляем позицию и ширину
+        const buttonRect = activeButton.getBoundingClientRect();
+        const navRect = DOM.tabNav.getBoundingClientRect();
 
-    const left = btnRect.left - navRect.left;
-    const width = btnRect.width;
+        const left = Math.max(0, buttonRect.left - navRect.left);
+        const width = Math.max(0, buttonRect.width);
 
-    // Обновляем позицию псевдоэлемента через CSS переменные
-    DOM.tabNav.style.setProperty('--indicator-left', `${left}px`);
-    DOM.tabNav.style.setProperty('--indicator-width', `${width}px`);
+        // Обновляем CSS переменные
+        document.documentElement.style.setProperty('--indicator-left', `${left}px`);
+        document.documentElement.style.setProperty('--indicator-width', `${width}px`);
+
+        console.log(`Индикатор обновлен: left=${left}px, width=${width}px`);
+    } catch (error) {
+        console.error('Ошибка обновления индикатора:', error);
+    }
 }
 
 /* === Загрузка заказов с Liquid Glass анимацией === */
@@ -132,17 +168,11 @@ async function loadOrders() {
 
     try {
         // Эмулируем загрузку
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
-        const response = await fetch('/api/orders').catch(() => null);
-
-        if (response && response.ok) {
-            orders = await response.json();
-            console.log('📋 Получено заказов:', orders.length);
-        } else {
-            // Демо данные
-            orders = createDemoOrders();
-        }
+        // Всегда используем демо данные для демонстрации
+        orders = createDemoOrders();
+        console.log('📋 Загружены демо заказы:', orders.length);
 
         DOM.ordersLoading.style.display = 'none';
 
@@ -157,6 +187,8 @@ async function loadOrders() {
     } catch (error) {
         console.error('❌ Ошибка загрузки:', error);
         DOM.ordersLoading.style.display = 'none';
+
+        // В случае ошибки показываем демо данные
         orders = createDemoOrders();
         renderLiquidOrders();
         updateStats();
@@ -167,7 +199,28 @@ async function loadOrders() {
 function renderLiquidOrders() {
     if (!DOM.ordersContainer) return;
 
-    DOM.ordersContainer.innerHTML = orders.map((order, index) => `
+    // Очищаем контейнер
+    DOM.ordersContainer.innerHTML = '';
+
+    if (orders.length === 0) {
+        DOM.ordersContainer.innerHTML = `
+            <div class="no-orders-modern">
+                <div class="no-orders-illustration">
+                    <div class="empty-box">📦</div>
+                    <div class="empty-sparkles">✨</div>
+                </div>
+                <h3>Пока заказов нет</h3>
+                <p>Но это легко исправить! Выберите что-то интересное</p>
+                <a href="/index.html" class="cta-button">
+                    <span>🛒</span>
+                    <span>Начать покупки</span>
+                </a>
+            </div>
+        `;
+        return;
+    }
+
+    const ordersHTML = orders.map((order, index) => `
         <div class="order-card-modern" style="animation-delay: ${index * 0.1}s">
             <div class="order-header-modern">
                 <div>
@@ -204,39 +257,53 @@ function renderLiquidOrders() {
         </div>
     `).join('');
 
+    DOM.ordersContainer.innerHTML = ordersHTML;
+
     // Добавляем интерактивность
     document.querySelectorAll('.order-card-modern').forEach(card => {
-        card.addEventListener('click', function() {
+        card.addEventListener('click', function(event) {
             createLiquidRipple(this, event);
         });
     });
+
+    console.log('✅ Заказы отрендерены:', orders.length);
 }
 
 /* === Liquid Glass ripple эффект === */
 function createLiquidRipple(element, event) {
-    const ripple = document.createElement('div');
-    const rect = element.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const x = event.clientX - rect.left - size / 2;
-    const y = event.clientY - rect.top - size / 2;
+    if (!element || !event) return;
 
-    ripple.style.cssText = `
-        position: absolute;
-        width: ${size}px;
-        height: ${size}px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
-        transform: translate(${x}px, ${y}px) scale(0);
-        animation: liquidRipple 0.6s ease-out;
-        pointer-events: none;
-        z-index: 100;
-    `;
+    try {
+        const ripple = document.createElement('div');
+        const rect = element.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = event.clientX - rect.left - size / 2;
+        const y = event.clientY - rect.top - size / 2;
 
-    element.style.position = 'relative';
-    element.style.overflow = 'hidden';
-    element.appendChild(ripple);
+        ripple.style.cssText = `
+            position: absolute;
+            width: ${size}px;
+            height: ${size}px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
+            transform: translate(${x}px, ${y}px) scale(0);
+            animation: liquidRipple 0.6s ease-out;
+            pointer-events: none;
+            z-index: 100;
+        `;
 
-    ripple.addEventListener('animationend', () => ripple.remove());
+        element.style.position = 'relative';
+        element.style.overflow = 'hidden';
+        element.appendChild(ripple);
+
+        ripple.addEventListener('animationend', () => {
+            if (ripple.parentNode) {
+                ripple.parentNode.removeChild(ripple);
+            }
+        });
+    } catch (error) {
+        console.error('Ошибка создания ripple:', error);
+    }
 }
 
 /* === Создание демо заказов === */
@@ -533,7 +600,7 @@ function setupActionButtons() {
                     orders = [];
                     renderLiquidOrders();
                     updateStats();
-                    DOM.noOrdersMessage.style.display = 'block';
+                    if (DOM.noOrdersMessage) DOM.noOrdersMessage.style.display = 'block';
                     showLiquidNotification('История очищена', 'success');
                 }
             );
@@ -557,30 +624,40 @@ function addLiquidHoverEffects() {
 
 /* === Liquid Glass свечение === */
 function createLiquidGlow(element, event) {
-    const glow = document.createElement('div');
-    const rect = element.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
+    if (!element || !event) return;
 
-    glow.style.cssText = `
-        position: absolute;
-        width: 100px;
-        height: 100px;
-        background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        left: ${x}px;
-        top: ${y}px;
-        pointer-events: none;
-        animation: liquidGlow 1s ease-out forwards;
-        z-index: 100;
-    `;
+    try {
+        const glow = document.createElement('div');
+        const rect = element.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
 
-    element.style.position = 'relative';
-    element.style.overflow = 'hidden';
-    element.appendChild(glow);
+        glow.style.cssText = `
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            left: ${x}px;
+            top: ${y}px;
+            pointer-events: none;
+            animation: liquidGlow 1s ease-out forwards;
+            z-index: 100;
+        `;
 
-    glow.addEventListener('animationend', () => glow.remove());
+        element.style.position = 'relative';
+        element.style.overflow = 'hidden';
+        element.appendChild(glow);
+
+        glow.addEventListener('animationend', () => {
+            if (glow.parentNode) {
+                glow.parentNode.removeChild(glow);
+            }
+        });
+    } catch (error) {
+        console.error('Ошибка создания glow:', error);
+    }
 }
 
 /* === Экспорт данных === */
@@ -648,10 +725,10 @@ function showLiquidConfirm(title, message, onConfirm) {
         }
         
         .liquid-dialog {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(32px);
             -webkit-backdrop-filter: blur(32px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.8);
             border-radius: 24px;
             overflow: hidden;
             max-width: 400px;
@@ -734,6 +811,17 @@ function showLiquidConfirm(title, message, onConfirm) {
                 opacity: 1;
             }
         }
+        
+        @keyframes liquidFadeOut {
+            to { opacity: 0; }
+        }
+        
+        @keyframes liquidSlideDown {
+            to {
+                transform: translateY(40px) scale(0.95);
+                opacity: 0;
+            }
+        }
     `;
 
     document.head.appendChild(style);
@@ -747,8 +835,12 @@ function showLiquidConfirm(title, message, onConfirm) {
         overlay.style.animation = 'liquidFadeOut 0.3s ease forwards';
         overlay.querySelector('.liquid-dialog').style.animation = 'liquidSlideDown 0.3s ease forwards';
         setTimeout(() => {
-            document.body.removeChild(overlay);
-            document.head.removeChild(style);
+            if (document.body.contains(overlay)) {
+                document.body.removeChild(overlay);
+            }
+            if (document.head.contains(style)) {
+                document.head.removeChild(style);
+            }
         }, 300);
     }
 
@@ -790,18 +882,18 @@ function initLiquidAnimations() {
         observer.observe(el);
     });
 
-    // Добавляем CSS для ripple эффекта
+    // Добавляем CSS для анимаций
     if (!document.getElementById('liquid-animations')) {
         const style = document.createElement('style');
         style.id = 'liquid-animations';
         style.textContent = `
             @keyframes liquidRipple {
                 0% {
-                    transform: translate(-50%, -50%) scale(0);
+                    transform: scale(0);
                     opacity: 1;
                 }
                 100% {
-                    transform: translate(-50%, -50%) scale(4);
+                    transform: scale(4);
                     opacity: 0;
                 }
             }
@@ -818,23 +910,6 @@ function initLiquidAnimations() {
                     opacity: 0;
                     transform: translate(-50%, -50%) scale(2);
                 }
-            }
-            
-            @keyframes liquidFadeOut {
-                to { opacity: 0; }
-            }
-            
-            @keyframes liquidSlideDown {
-                to {
-                    transform: translateY(40px) scale(0.95);
-                    opacity: 0;
-                }
-            }
-            
-            /* Индикатор вкладки */
-            .tab-nav::before {
-                left: var(--indicator-left, 6px);
-                width: var(--indicator-width, 0);
             }
         `;
         document.head.appendChild(style);
@@ -935,6 +1010,8 @@ function showLiquidNotification(message, type = 'info', duration = 4000) {
 }
 
 function removeNotification(notification) {
+    if (!notification || !notification.parentNode) return;
+
     notification.style.transform = 'translateX(400px)';
     setTimeout(() => {
         if (notification.parentNode) {
