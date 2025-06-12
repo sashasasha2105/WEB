@@ -1,7 +1,7 @@
-/* === LIQUID GLASS PROFILE.CSS - ИСПРАВЛЕННАЯ ВЕРСИЯ === */
+/* === PROFILE.CSS - ОСНОВНЫЕ СТИЛИ === */
 
 :root {
-    /* Liquid Glass цветовая палитра - только синие тона */
+    /* Liquid Glass цветовая палитра */
     --liquid-primary: #007AFF;
     --liquid-secondary: #2196F3;
     --liquid-tertiary: #4285F4;
@@ -10,11 +10,10 @@
     --liquid-warning: #FF9500;
     --liquid-error: #FF3B30;
 
-    /* Liquid Glass градиенты - только синие тона */
+    /* Liquid Glass градиенты */
     --liquid-gradient-1: linear-gradient(135deg, #007AFF 0%, #2196F3 50%, #4285F4 100%);
     --liquid-gradient-2: linear-gradient(135deg, #2196F3 0%, #4285F4 50%, #1976D2 100%);
     --liquid-gradient-3: linear-gradient(135deg, #4285F4 0%, #1976D2 50%, #0D47A1 100%);
-    --liquid-gradient-soft: linear-gradient(135deg, rgba(0, 122, 255, 0.08) 0%, rgba(33, 150, 243, 0.08) 50%, rgba(66, 133, 244, 0.08) 100%);
 
     /* Liquid Glass материалы */
     --liquid-glass-ultra-thin: rgba(255, 255, 255, 0.25);
@@ -22,7 +21,6 @@
     --liquid-glass-regular: rgba(255, 255, 255, 0.45);
     --liquid-glass-medium: rgba(255, 255, 255, 0.55);
     --liquid-glass-thick: rgba(255, 255, 255, 0.65);
-    --liquid-glass-ultra-thick: rgba(255, 255, 255, 0.75);
 
     /* Темные стекла для контраста */
     --liquid-glass-dark: rgba(0, 0, 0, 0.05);
@@ -35,48 +33,36 @@
     --liquid-blur-medium: blur(24px);
     --liquid-blur-heavy: blur(32px);
     --liquid-blur-extreme: blur(48px);
-    --liquid-blur-max: blur(64px);
 
     /* Liquid тени */
     --liquid-shadow-subtle: 0 4px 24px rgba(0, 0, 0, 0.04);
     --liquid-shadow-regular: 0 8px 32px rgba(0, 0, 0, 0.06);
     --liquid-shadow-elevated: 0 16px 48px rgba(0, 0, 0, 0.08);
     --liquid-shadow-floating: 0 24px 64px rgba(0, 0, 0, 0.12);
-    --liquid-shadow-colorful: 0 20px 60px rgba(88, 86, 214, 0.15);
 
     /* Liquid анимации */
     --liquid-timing: cubic-bezier(0.4, 0.0, 0.2, 1);
     --liquid-timing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --liquid-timing-smooth: cubic-bezier(0.23, 1, 0.32, 1);
 
-    /* Улучшенная типографика для читаемости */
+    /* Типографика */
     --liquid-text-primary: rgba(0, 0, 0, 0.95);
     --liquid-text-secondary: rgba(0, 0, 0, 0.8);
     --liquid-text-tertiary: rgba(0, 0, 0, 0.6);
     --liquid-text-muted: rgba(0, 0, 0, 0.4);
 
-    /* На темном фоне */
-    --liquid-text-light-primary: rgba(255, 255, 255, 0.95);
-    --liquid-text-light-secondary: rgba(255, 255, 255, 0.85);
-    --liquid-text-light-tertiary: rgba(255, 255, 255, 0.65);
-
-    /* Liquid отступы и радиусы */
+    /* Liquid радиусы */
     --liquid-radius-small: 16px;
     --liquid-radius-medium: 24px;
     --liquid-radius-large: 32px;
     --liquid-radius-xl: 40px;
 
-    /* Z-индексы для правильного наложения */
+    /* Z-индексы */
     --z-background: -1;
     --z-base: 1;
     --z-card: 10;
     --z-overlay: 100;
     --z-modal: 1000;
-    --z-tooltip: 10000;
-
-    /* Переменные для индикатора вкладок */
-    --indicator-left: 6px;
-    --indicator-width: 0px;
 }
 
 /* === Глобальные стили === */
@@ -86,9 +72,9 @@
     box-sizing: border-box;
 }
 
-*::before,
-*::after {
-    box-sizing: border-box;
+html {
+    height: 100%;
+    overflow-x: hidden;
 }
 
 body {
@@ -103,9 +89,11 @@ body {
     text-rendering: optimizeLegibility;
     line-height: 1.5;
     position: relative;
+    display: flex;
+    flex-direction: column;
 }
 
-/* === Liquid Glass анимированный фон === */
+/* === Анимированный фон === */
 body::before {
     content: '';
     position: fixed;
@@ -121,7 +109,6 @@ body::before {
     pointer-events: none;
 }
 
-/* Liquid Glass движущиеся блобы */
 body::after {
     content: '';
     position: fixed;
@@ -149,30 +136,28 @@ body::after {
     }
 }
 
-/* Убираем любые перекрывающие фоны у контейнеров */
+/* === Основной контейнер === */
 .profile-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 140px 24px 80px;
+    padding: 140px 24px 60px;
     position: relative;
-    min-height: 100vh;
     z-index: var(--z-base);
-    background: transparent !important;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-/* === Liquid Glass Hero секция === */
+/* === Hero секция === */
 .profile-hero {
-    background: var(--liquid-glass-ultra-thick);
+    background: rgba(255, 255, 255, 0.85) !important;
     backdrop-filter: var(--liquid-blur-heavy);
     -webkit-backdrop-filter: var(--liquid-blur-heavy);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.9);
     border-radius: var(--liquid-radius-large);
     padding: 48px;
     margin-bottom: 32px;
-    box-shadow:
-            var(--liquid-shadow-elevated),
-            inset 0 1px 0 rgba(255, 255, 255, 0.9),
-            inset 0 -1px 0 rgba(0, 0, 0, 0.02);
+    box-shadow: var(--liquid-shadow-elevated);
     display: grid;
     grid-template-columns: auto 1fr auto;
     align-items: center;
@@ -182,7 +167,6 @@ body::after {
     animation: liquidEntry 1s var(--liquid-timing-smooth);
 }
 
-/* Liquid Glass переливающийся эффект */
 .profile-hero::before {
     content: '';
     position: absolute;
@@ -191,10 +175,11 @@ body::after {
     width: 300%;
     height: 300%;
     background:
-            radial-gradient(circle at 20% 50%, rgba(30, 60, 114, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 50%, rgba(100, 181, 246, 0.08) 0%, transparent 50%);
+            radial-gradient(circle at 20% 50%, rgba(30, 60, 114, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 80% 50%, rgba(100, 181, 246, 0.06) 0%, transparent 50%);
     animation: liquidShimmer 15s ease-in-out infinite;
     pointer-events: none;
+    z-index: -1;
 }
 
 @keyframes liquidShimmer {
@@ -221,7 +206,7 @@ body::after {
     }
 }
 
-/* === Liquid Glass аватар === */
+/* === Аватар === */
 .profile-avatar {
     position: relative;
 }
@@ -234,15 +219,12 @@ body::after {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow:
-            var(--liquid-shadow-elevated),
-            inset 0 2px 4px rgba(255, 255, 255, 0.5);
+    box-shadow: var(--liquid-shadow-elevated);
     position: relative;
     overflow: hidden;
     animation: liquidPulse 8s ease-in-out infinite;
 }
 
-/* Liquid Glass отражение */
 .avatar-circle::before {
     content: '';
     position: absolute;
@@ -254,40 +236,33 @@ body::after {
             radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8) 0%, transparent 50%),
             radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
     animation: liquidRotate 10s linear infinite;
+    z-index: -1;
 }
 
 @keyframes liquidPulse {
     0%, 100% {
         transform: scale(1);
-        box-shadow:
-                var(--liquid-shadow-elevated),
-                inset 0 2px 4px rgba(255, 255, 255, 0.5);
+        box-shadow: var(--liquid-shadow-elevated);
     }
     50% {
         transform: scale(1.05);
-        box-shadow:
-                var(--liquid-shadow-floating),
-                inset 0 2px 8px rgba(255, 255, 255, 0.7);
+        box-shadow: var(--liquid-shadow-floating);
     }
 }
 
 @keyframes liquidRotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .avatar-text {
     font-size: 2.4em;
-    color: var(--liquid-text-light-primary);
+    color: white;
     z-index: 2;
     position: relative;
 }
 
-/* === Welcome секция с улучшенной читаемостью === */
+/* === Welcome секция === */
 .profile-welcome h1 {
     font-size: 2.8em;
     font-weight: 700;
@@ -302,12 +277,13 @@ body::after {
 
 .profile-welcome p {
     font-size: 1.2em;
-    color: var(--liquid-text-secondary);
-    font-weight: 500;
+    color: #1A237E !important;
+    font-weight: 600;
     letter-spacing: -0.01em;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
-/* === Liquid Glass статистика с улучшенной читаемостью === */
+/* === Статистика === */
 .profile-stats-modern {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -315,7 +291,7 @@ body::after {
 }
 
 .stat-modern {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: var(--liquid-blur-medium);
     -webkit-backdrop-filter: var(--liquid-blur-medium);
     border: 1px solid rgba(255, 255, 255, 0.9);
@@ -326,7 +302,7 @@ body::after {
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--liquid-shadow-regular);
 }
 
 .stat-modern::before {
@@ -339,6 +315,7 @@ body::after {
     background: radial-gradient(circle, rgba(33, 150, 243, 0.1) 0%, transparent 70%);
     opacity: 0;
     transition: opacity 0.4s var(--liquid-timing);
+    z-index: -1;
 }
 
 .stat-modern:hover::before {
@@ -347,10 +324,8 @@ body::after {
 
 .stat-modern:hover {
     transform: translateY(-8px) scale(1.05);
-    box-shadow:
-            0 12px 40px rgba(0, 0, 0, 0.1),
-            0 8px 20px rgba(33, 150, 243, 0.2);
-    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--liquid-shadow-floating);
+    background: rgba(255, 255, 255, 0.98) !important;
 }
 
 .stat-icon {
@@ -362,54 +337,36 @@ body::after {
 .stat-number {
     font-size: 2.2em;
     font-weight: 700;
-    color: #1A237E;
+    color: #1A237E !important;
     margin-bottom: 4px;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .stat-label {
     font-size: 0.9em;
-    color: #3F51B5;
+    color: #3F51B5 !important;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
-/* === Liquid Glass навигация вкладок === */
+/* === Навигация вкладок === */
 .modern-tabs {
     margin-bottom: 32px;
-    position: relative;
-    z-index: var(--z-card);
 }
 
 .tab-nav {
     display: flex;
-    background: var(--liquid-glass-ultra-thick);
+    background: rgba(255, 255, 255, 0.85) !important;
     backdrop-filter: var(--liquid-blur-heavy);
     -webkit-backdrop-filter: var(--liquid-blur-heavy);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.9);
     border-radius: var(--liquid-radius-medium);
     padding: 6px;
-    box-shadow:
-            var(--liquid-shadow-regular),
-            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    box-shadow: var(--liquid-shadow-regular);
     position: relative;
     overflow: hidden;
-}
-
-/* Liquid Glass индикатор активной вкладки */
-.tab-nav::before {
-    content: '';
-    position: absolute;
-    top: 6px;
-    left: var(--indicator-left);
-    width: var(--indicator-width);
-    height: calc(100% - 12px);
-    background: var(--liquid-gradient-soft);
-    border-radius: calc(var(--liquid-radius-medium) - 6px);
-    transition: all 0.4s var(--liquid-timing-smooth);
-    z-index: 0;
 }
 
 .tab-button {
@@ -424,25 +381,23 @@ body::after {
     justify-content: center;
     gap: 10px;
     font-weight: 600;
-    color: var(--liquid-text-tertiary);
+    color: #3F51B5 !important;
     transition: all 0.3s var(--liquid-timing);
     position: relative;
-    z-index: 1;
+    z-index: 2;
     font-size: 1em;
 }
 
 .tab-button.active {
-    color: var(--liquid-text-primary);
-    background: rgba(255, 255, 255, 0.5);
+    color: #1A237E !important;
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: var(--liquid-blur-light);
-    box-shadow:
-            0 4px 16px rgba(0, 0, 0, 0.04),
-            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    box-shadow: var(--liquid-shadow-subtle);
 }
 
 .tab-button:not(.active):hover {
-    color: var(--liquid-text-secondary);
-    background: rgba(255, 255, 255, 0.3);
+    color: #1A237E !important;
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .tab-icon {
@@ -452,94 +407,34 @@ body::after {
 /* === Контент вкладок === */
 .content-wrapper {
     position: relative;
-    min-height: auto;
-    margin-bottom: 32px;
-    background: transparent;
-    width: 100%;
-    overflow: visible;
+    min-height: 500px;
+    margin-bottom: 40px;
+    flex: 1;
 }
 
 .tab-content {
     display: none;
     opacity: 0;
-    animation: liquidContentFade 0.5s var(--liquid-timing) forwards;
-    position: relative;
-    z-index: var(--z-base);
-    background: transparent;
-    min-height: auto;
+    position: static;
     width: 100%;
-    overflow: visible;
+    min-height: 400px;
+    transition: opacity 0.3s var(--liquid-timing);
 }
 
 .tab-content.active {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    position: relative !important;
-    z-index: var(--z-base) !important;
-}
-
-/* Принудительные стили для заказов */
-#orders, #info, #settings {
-    background: transparent !important;
-    width: 100% !important;
-    min-height: auto !important;
-    overflow: visible !important;
-}
-
-#orders .orders-grid,
-#orders .no-orders-modern,
-#orders .loading-modern {
-    position: relative;
-    z-index: 10;
-    background: transparent;
-    width: 100%;
-}
-
-/* Исправляем адаптивность формы */
-.modern-form {
-    width: 100%;
-    overflow: visible;
-}
-
-/* Улучшаем отображение на всех экранах */
-@media (max-width: 768px) {
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
-    }
-
-    .modern-card {
-        padding: 24px 20px;
-        margin-bottom: 20px;
-    }
-}
-
-@media (max-width: 480px) {
-    .form-grid {
-        gap: 16px;
-    }
-
-    .modern-card {
-        padding: 20px 16px;
-    }
-
-    .form-group-modern input {
-        padding: 12px 16px;
-        font-size: 1em;
-    }
+    display: block;
+    opacity: 1;
+    animation: liquidContentFade 0.5s var(--liquid-timing) forwards;
 }
 
 @keyframes liquidContentFade {
     from {
         opacity: 0;
         transform: translateY(20px);
-        filter: blur(5px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
-        filter: blur(0);
     }
 }
 
@@ -556,8 +451,9 @@ body::after {
 .section-header h2 {
     font-size: 2.2em;
     font-weight: 700;
-    color: var(--liquid-text-primary);
+    color: #1A237E !important;
     letter-spacing: -0.02em;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .refresh-btn {
@@ -565,11 +461,11 @@ body::after {
     align-items: center;
     gap: 8px;
     padding: 12px 24px;
-    background: var(--liquid-glass-thick);
+    background: rgba(255, 255, 255, 0.8) !important;
     backdrop-filter: var(--liquid-blur-medium);
     -webkit-backdrop-filter: var(--liquid-blur-medium);
-    color: var(--liquid-text-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    color: #3F51B5 !important;
+    border: 1px solid rgba(255, 255, 255, 0.9);
     border-radius: var(--liquid-radius-small);
     cursor: pointer;
     font-weight: 600;
@@ -578,10 +474,10 @@ body::after {
 }
 
 .refresh-btn:hover {
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.95) !important;
     transform: translateY(-2px);
     box-shadow: var(--liquid-shadow-regular);
-    color: var(--liquid-text-primary);
+    color: #1A237E !important;
 }
 
 .refresh-icon {
@@ -592,23 +488,22 @@ body::after {
     transform: rotate(180deg);
 }
 
-/* === Liquid Glass карточки заказов === */
+/* === Карточки заказов === */
 .orders-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 24px;
+    margin-bottom: 40px;
 }
 
 .order-card-modern {
-    background: var(--liquid-glass-ultra-thick);
+    background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: var(--liquid-blur-heavy);
     -webkit-backdrop-filter: var(--liquid-blur-heavy);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.9);
     border-radius: var(--liquid-radius-medium);
     padding: 32px;
-    box-shadow:
-            var(--liquid-shadow-regular),
-            inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    box-shadow: var(--liquid-shadow-regular);
     transition: all 0.4s var(--liquid-timing);
     position: relative;
     overflow: hidden;
@@ -622,11 +517,11 @@ body::after {
     left: -50%;
     width: 200%;
     height: 200%;
-    background:
-            radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
     opacity: 0;
     transition: opacity 0.4s var(--liquid-timing);
     pointer-events: none;
+    z-index: -1;
 }
 
 .order-card-modern:hover::before {
@@ -635,10 +530,8 @@ body::after {
 
 .order-card-modern:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow:
-            var(--liquid-shadow-floating),
-            var(--liquid-shadow-colorful);
-    background: rgba(255, 255, 255, 0.85);
+    box-shadow: var(--liquid-shadow-floating);
+    background: rgba(255, 255, 255, 0.98) !important;
 }
 
 .order-header-modern {
@@ -653,16 +546,18 @@ body::after {
 .order-number-modern {
     font-size: 1.4em;
     font-weight: 700;
-    color: var(--liquid-text-primary);
+    color: #1A237E !important;
     margin-bottom: 6px;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .order-date-modern {
     font-size: 0.9em;
-    color: var(--liquid-text-tertiary);
+    color: #3F51B5 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
-/* === Liquid Glass статусы === */
+/* === Статусы заказов === */
 .order-status-modern {
     padding: 8px 16px;
     border-radius: var(--liquid-radius-small);
@@ -701,9 +596,10 @@ body::after {
 
 .order-items-title {
     font-size: 1.1em;
-    color: var(--liquid-text-secondary);
+    color: #3F51B5 !important;
     margin-bottom: 16px;
     font-weight: 600;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
 .order-item-modern {
@@ -720,16 +616,18 @@ body::after {
 
 .item-name-modern {
     font-weight: 500;
-    color: var(--liquid-text-primary);
+    color: #1A237E !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .item-price-modern {
     font-weight: 600;
-    color: var(--liquid-text-primary);
+    color: #1A237E !important;
     font-variant-numeric: tabular-nums;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
-/* === Liquid Glass итоговая сумма === */
+/* === Итоговая сумма === */
 .order-total-modern {
     text-align: right;
     padding-top: 20px;
@@ -738,8 +636,9 @@ body::after {
 
 .total-label {
     font-size: 0.9em;
-    color: var(--liquid-text-secondary);
+    color: #3F51B5 !important;
     margin-bottom: 4px;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
 .total-amount {
@@ -751,34 +650,32 @@ body::after {
     background-clip: text;
 }
 
-/* === Дополнительная информация === */
+/* === Информация о доставке === */
 .delivery-info-compact {
     margin-top: 20px;
     padding: 12px 16px;
-    background: var(--liquid-glass-thin);
+    background: rgba(255, 255, 255, 0.7);
     backdrop-filter: var(--liquid-blur-light);
     -webkit-backdrop-filter: var(--liquid-blur-light);
     border-radius: var(--liquid-radius-small);
-    color: var(--liquid-text-secondary);
+    color: #3F51B5 !important;
     font-size: 0.9em;
     line-height: 1.4;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
-/* === Liquid Glass формы === */
+/* === Карточки форм === */
 .modern-card {
-    background: var(--liquid-glass-ultra-thick);
+    background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: var(--liquid-blur-heavy);
     -webkit-backdrop-filter: var(--liquid-blur-heavy);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.9);
     border-radius: var(--liquid-radius-medium);
     padding: 32px;
-    box-shadow:
-            var(--liquid-shadow-regular),
-            inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    margin-bottom: 24px;
+    box-shadow: var(--liquid-shadow-regular);
+    margin-bottom: 32px;
     width: 100%;
-    min-height: auto;
-    overflow: visible;
+    position: relative;
 }
 
 .card-header-modern h2,
@@ -787,23 +684,22 @@ body::after {
     align-items: center;
     gap: 12px;
     font-weight: 700;
-    color: var(--liquid-text-primary);
+    color: #1A237E !important;
     margin: 0 0 24px 0;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
+/* === Формы === */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 24px;
     margin-bottom: 32px;
-    width: 100%;
-    overflow: visible;
 }
 
 .form-group-modern {
     position: relative;
     width: 100%;
-    min-height: auto;
 }
 
 .form-group-modern.full-width {
@@ -816,40 +712,38 @@ body::after {
     gap: 8px;
     margin-bottom: 10px;
     font-weight: 600;
-    color: var(--liquid-text-secondary);
+    color: #3F51B5 !important;
     font-size: 0.95em;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
 .form-group-modern input {
     width: 100%;
-    min-width: 0;
     padding: 14px 18px;
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: var(--liquid-radius-small);
     font-size: 1em;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.8) !important;
     backdrop-filter: var(--liquid-blur-light);
     -webkit-backdrop-filter: var(--liquid-blur-light);
-    color: var(--liquid-text-primary);
+    color: #1A237E !important;
     transition: all 0.3s var(--liquid-timing);
     font-family: inherit;
     box-sizing: border-box;
 }
 
 .form-group-modern input::placeholder {
-    color: var(--liquid-text-muted);
+    color: #8E8E93 !important;
 }
 
 .form-group-modern input:focus {
     outline: none;
     border-color: var(--liquid-primary);
-    background: rgba(255, 255, 255, 0.7);
-    box-shadow:
-            0 0 0 4px rgba(0, 122, 255, 0.1),
-            var(--liquid-shadow-subtle);
+    background: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1), var(--liquid-shadow-subtle);
 }
 
-/* === Liquid Glass кнопки === */
+/* === Кнопки === */
 .save-button,
 .action-btn {
     display: inline-flex;
@@ -865,12 +759,9 @@ body::after {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s var(--liquid-timing);
-    box-shadow:
-            var(--liquid-shadow-regular),
-            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    box-shadow: var(--liquid-shadow-regular);
     position: relative;
     overflow: hidden;
-    width: auto;
     min-width: 200px;
     margin-top: 10px;
 }
@@ -886,6 +777,7 @@ body::after {
     background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
     opacity: 0;
     transition: opacity 0.3s var(--liquid-timing);
+    z-index: -1;
 }
 
 .save-button:hover::before,
@@ -896,17 +788,15 @@ body::after {
 .save-button:hover,
 .action-btn:hover {
     transform: translateY(-2px);
-    box-shadow:
-            var(--liquid-shadow-elevated),
-            var(--liquid-shadow-colorful);
+    box-shadow: var(--liquid-shadow-floating);
 }
 
 .action-btn.secondary {
-    background: var(--liquid-glass-ultra-thick);
-    color: var(--liquid-text-primary);
+    background: rgba(255, 255, 255, 0.8) !important;
+    color: #1A237E !important;
     backdrop-filter: var(--liquid-blur-medium);
     -webkit-backdrop-filter: var(--liquid-blur-medium);
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.9);
 }
 
 .action-btn.danger {
@@ -917,17 +807,18 @@ body::after {
 .info-tip {
     margin-top: 20px;
     padding: 16px 20px;
-    background: var(--liquid-glass-thin);
+    background: rgba(255, 255, 255, 0.7);
     backdrop-filter: var(--liquid-blur-light);
     -webkit-backdrop-filter: var(--liquid-blur-light);
     border-radius: var(--liquid-radius-small);
-    color: var(--liquid-text-secondary);
+    color: #3F51B5 !important;
     font-size: 0.9em;
     line-height: 1.4;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
 .info-tip strong {
-    color: var(--liquid-text-primary);
+    color: #1A237E !important;
 }
 
 /* === Настройки === */
@@ -947,19 +838,20 @@ body::after {
     justify-content: space-between;
     align-items: center;
     padding: 20px;
-    background: var(--liquid-glass-medium);
+    background: rgba(255, 255, 255, 0.8) !important;
     backdrop-filter: var(--liquid-blur-light);
     -webkit-backdrop-filter: var(--liquid-blur-light);
     border-radius: var(--liquid-radius-small);
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.9);
     transition: all 0.3s var(--liquid-timing);
     cursor: pointer;
+    box-shadow: var(--liquid-shadow-subtle);
 }
 
 .setting-item-modern:hover {
-    background: var(--liquid-glass-thick);
+    background: rgba(255, 255, 255, 0.95) !important;
     transform: translateX(4px);
-    box-shadow: var(--liquid-shadow-subtle);
+    box-shadow: var(--liquid-shadow-regular);
 }
 
 .setting-info {
@@ -969,16 +861,18 @@ body::after {
 
 .setting-title {
     font-weight: 600;
-    color: var(--liquid-text-primary);
+    color: #1A237E !important;
     margin-bottom: 4px;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .setting-desc {
     font-size: 0.85em;
-    color: var(--liquid-text-tertiary);
+    color: #3F51B5 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
-/* === Liquid Glass Toggle Switch === */
+/* === Toggle Switch === */
 .modern-toggle {
     position: relative;
     display: inline-block;
@@ -1001,7 +895,7 @@ body::after {
     left: 0;
     right: 0;
     bottom: 0;
-    background: var(--liquid-glass-dark-medium);
+    background: rgba(0, 0, 0, 0.1);
     backdrop-filter: var(--liquid-blur-light);
     -webkit-backdrop-filter: var(--liquid-blur-light);
     border-radius: 32px;
@@ -1019,9 +913,7 @@ body::after {
     background: white;
     border-radius: 50%;
     transition: all 0.3s var(--liquid-timing-smooth);
-    box-shadow:
-            0 2px 8px rgba(0, 0, 0, 0.15),
-            inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .modern-toggle input:checked + .toggle-slider {
@@ -1045,24 +937,26 @@ body::after {
 .version-info {
     margin-top: 20px;
     padding: 16px;
-    background: var(--liquid-glass-thin);
+    background: rgba(255, 255, 255, 0.7);
     backdrop-filter: var(--liquid-blur-light);
     -webkit-backdrop-filter: var(--liquid-blur-light);
     border-radius: var(--liquid-radius-small);
     text-align: center;
-    color: var(--liquid-text-tertiary);
+    color: #3F51B5 !important;
     font-size: 0.85em;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
 .app-version {
     margin-bottom: 6px;
-    color: var(--liquid-text-secondary);
+    color: #1A237E !important;
     font-weight: 600;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .build-info {
     font-size: 0.8em;
-    color: var(--liquid-text-tertiary);
+    color: #3F51B5 !important;
 }
 
 /* === Состояния загрузки === */
@@ -1072,13 +966,14 @@ body::after {
     align-items: center;
     justify-content: center;
     padding: 80px 20px;
-    color: var(--liquid-text-secondary);
+    color: #3F51B5 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
 .spinner-modern {
     width: 48px;
     height: 48px;
-    border: 3px solid var(--liquid-glass-thick);
+    border: 3px solid rgba(255, 255, 255, 0.3);
     border-top: 3px solid var(--liquid-primary);
     border-radius: 50%;
     animation: liquidSpin 1s linear infinite;
@@ -1093,7 +988,8 @@ body::after {
 .no-orders-modern {
     text-align: center;
     padding: 80px 20px;
-    color: var(--liquid-text-secondary);
+    color: #3F51B5 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
 .no-orders-illustration {
@@ -1137,13 +1033,14 @@ body::after {
 .no-orders-modern h3 {
     font-size: 1.8em;
     margin-bottom: 12px;
-    color: var(--liquid-text-primary);
+    color: #1A237E !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .no-orders-modern p {
     font-size: 1.1em;
     margin-bottom: 24px;
-    color: var(--liquid-text-secondary);
+    color: #3F51B5 !important;
 }
 
 .cta-button {
@@ -1162,19 +1059,18 @@ body::after {
 
 .cta-button:hover {
     transform: translateY(-2px);
-    box-shadow:
-            var(--liquid-shadow-elevated),
-            var(--liquid-shadow-colorful);
+    box-shadow: var(--liquid-shadow-floating);
 }
 
-/* === Liquid Glass Footer === */
+/* === Футер === */
 .modern-footer {
-    margin-top: 80px;
+    margin-top: auto;
     padding: 48px 0;
-    background: var(--liquid-glass-thick);
+    background: rgba(255, 255, 255, 0.85) !important;
     backdrop-filter: var(--liquid-blur-heavy);
     -webkit-backdrop-filter: var(--liquid-blur-heavy);
-    border-top: 1px solid rgba(255, 255, 255, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.9);
+    flex-shrink: 0;
 }
 
 .footer-content {
@@ -1191,22 +1087,25 @@ body::after {
 .footer-brand {
     font-size: 1.2em;
     font-weight: 700;
-    color: var(--liquid-text-primary);
+    color: #1A237E !important;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 .footer-links a {
-    color: var(--liquid-text-secondary);
+    color: #3F51B5 !important;
     text-decoration: none;
     transition: color 0.3s var(--liquid-timing);
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
 .footer-links a:hover {
-    color: var(--liquid-primary);
+    color: #1A237E !important;
 }
 
 .footer-year {
     font-size: 0.9em;
-    color: var(--liquid-text-tertiary);
+    color: #3F51B5 !important;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.6);
 }
 
 /* === Адаптивный дизайн === */
@@ -1220,15 +1119,11 @@ body::after {
         text-align: center;
         gap: 24px;
     }
-
-    .profile-stats-modern {
-        justify-content: center;
-    }
 }
 
 @media (max-width: 768px) {
     .profile-container {
-        padding: 120px 16px 60px;
+        padding: 120px 16px 40px;
     }
 
     .profile-hero {
@@ -1244,7 +1139,6 @@ body::after {
 
     .profile-stats-modern {
         gap: 12px;
-        justify-content: center;
     }
 
     .stat-modern {
@@ -1266,11 +1160,6 @@ body::after {
         padding: 14px 20px;
     }
 
-    /* Скрываем индикатор на мобильных */
-    .tab-nav::before {
-        display: none;
-    }
-
     .orders-grid {
         grid-template-columns: 1fr;
         gap: 16px;
@@ -1281,14 +1170,13 @@ body::after {
     }
 
     .form-grid {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: 1fr;
         gap: 20px;
     }
 
     .modern-card {
-        padding: 24px 20px !important;
+        padding: 24px 20px;
         margin-bottom: 20px;
-        overflow: visible !important;
     }
 
     .setting-item-modern {
@@ -1309,6 +1197,18 @@ body::after {
     .footer-content {
         flex-direction: column;
         text-align: center;
+    }
+
+    /* Обеспечиваем что футер остается внизу на мобильных */
+    body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modern-footer {
+        margin-top: auto;
+        flex-shrink: 0;
     }
 }
 
@@ -1355,29 +1255,41 @@ body::after {
     }
 
     .modern-card {
-        padding: 24px 20px;
+        padding: 20px 16px;
     }
 
     .card-header-modern h2,
     .card-header-modern h3 {
         font-size: 1.4em;
     }
-}
 
-/* === Улучшения производительности === */
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+    /* Дополнительно убеждаемся что футер внизу */
+    body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .profile-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .content-wrapper {
+        flex: 1;
+    }
+
+    .modern-footer {
+        margin-top: auto;
+        flex-shrink: 0;
     }
 }
 
-/* === Поддержка темной темы === */
+/* === Темная тема === */
 @media (prefers-color-scheme: dark) {
     body {
         background: linear-gradient(135deg, #0f1419 0%, #1a2332 25%, #2c4665 50%, #4a6fa5 75%, #6ba3d6 100%);
-        background-attachment: fixed;
     }
 
     body::before {
@@ -1387,23 +1299,69 @@ body::after {
                 radial-gradient(circle at 40% 40%, rgba(116, 185, 255, 0.15) 0%, transparent 50%);
     }
 
-    body::after {
-        background:
-                radial-gradient(circle at 30% 50%, rgba(42, 82, 152, 0.2) 0%, transparent 40%),
-                radial-gradient(circle at 70% 50%, rgba(144, 202, 249, 0.15) 0%, transparent 40%);
-    }
-
     :root {
         --liquid-glass-ultra-thin: rgba(255, 255, 255, 0.08);
         --liquid-glass-thin: rgba(255, 255, 255, 0.12);
         --liquid-glass-regular: rgba(255, 255, 255, 0.16);
         --liquid-glass-medium: rgba(255, 255, 255, 0.20);
         --liquid-glass-thick: rgba(255, 255, 255, 0.24);
-        --liquid-glass-ultra-thick: rgba(255, 255, 255, 0.28);
 
         --liquid-text-primary: rgba(255, 255, 255, 0.95);
         --liquid-text-secondary: rgba(255, 255, 255, 0.75);
         --liquid-text-tertiary: rgba(255, 255, 255, 0.55);
         --liquid-text-muted: rgba(255, 255, 255, 0.35);
+    }
+
+    .profile-welcome p,
+    .section-header h2,
+    .stat-number,
+    .stat-label,
+    .tab-button,
+    .order-number-modern,
+    .order-date-modern,
+    .item-name-modern,
+    .item-price-modern,
+    .total-label,
+    .delivery-info-compact,
+    .card-header-modern h2,
+    .card-header-modern h3,
+    .form-group-modern label,
+    .form-group-modern input,
+    .setting-title,
+    .setting-desc,
+    .info-tip,
+    .app-version,
+    .build-info,
+    .loading-modern,
+    .no-orders-modern,
+    .no-orders-modern h3,
+    .no-orders-modern p,
+    .footer-brand,
+    .footer-links a,
+    .footer-year {
+        color: rgba(255, 255, 255, 0.9) !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .profile-hero,
+    .tab-nav,
+    .modern-card,
+    .order-card-modern,
+    .setting-item-modern,
+    .refresh-btn,
+    .action-btn.secondary,
+    .info-tip,
+    .version-info,
+    .delivery-info-compact,
+    .modern-footer {
+        background: rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .form-group-modern input {
+        background: rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .form-group-modern input:focus {
+        background: rgba(0, 0, 0, 0.4) !important;
     }
 }

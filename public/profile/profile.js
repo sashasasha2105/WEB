@@ -1,11 +1,12 @@
-/* === LIQUID GLASS PROFILE.JS - ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ВЕРСИЯ === */
+/* === PROFILE.JS - ОСНОВНАЯ ЛОГИКА СТРАНИЦЫ === */
 
-/* === Состояние приложения === */
+// Состояние приложения
 let currentTab = 'orders';
 let orders = [];
 let userInfo = {};
+let isLoading = false;
 
-/* === DOM элементы === */
+// DOM элементы (кешированные)
 const DOM = {
     tabButtons: null,
     tabContents: null,
@@ -15,51 +16,69 @@ const DOM = {
     userInfoForm: null,
     totalOrders: null,
     memberSince: null,
-    orderStatus: null,
-    tabNav: null
+    orderStatus: null
 };
 
-/* === Инициализация === */
+// Утилиты
+const debounce = (func, wait) => {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+};
+
+const throttle = (func, limit) => {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    };
+};
+
+// Главная инициализация
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🌊 Liquid Glass Profile загружается...');
 
-    cacheDOMElements();
-    initLiquidTabs();
-    loadUserInfo();
-    initEventListeners();
-    updateCartBadge();
-    initLiquidAnimations();
-
-    // Принудительно показываем первую вкладку и загружаем данные
-    setTimeout(() => {
-        // Показываем вкладку "Заказы"
-        const firstTab = document.getElementById('orders');
-        if (firstTab) {
-            firstTab.style.display = 'block';
-            firstTab.style.visibility = 'visible';
-            firstTab.style.opacity = '1';
-            firstTab.classList.add('active');
-            console.log('🎯 Первая вкладка принудительно активирована');
-        }
-
-        // Загружаем заказы
-        loadOrders();
-        updateTabIndicator(0);
-
-        // Убеждаемся что контент видимый
-        document.querySelectorAll('.tab-content').forEach(content => {
-            if (content.id === 'orders') {
-                content.style.position = 'relative';
-                content.style.zIndex = '10';
-            }
-        });
-
-    }, 200);
-
-    console.log('✨ Liquid Glass Profile готов!');
+    initializePage();
 });
 
-/* === Кеширование DOM элементов === */
+function initializePage() {
+    try {
+        // Критический путь
+        cacheDOMElements();
+        initTabs();
+        showFirstTab();
+        loadUserInfo();
+        updateCartBadge();
+
+        // Инициализация хедера
+        initHeader();
+
+        // Отложенная инициализация
+        setTimeout(() => {
+            initEventListeners();
+            loadOrdersDeferred();
+            initAdvancedFeatures();
+        }, 100);
+
+        console.log('✅ Страница инициализирована');
+    } catch (error) {
+        console.error('❌ Ошибка инициализации:', error);
+        showErrorState();
+    }
+}
+
+// Кеширование DOM элементов
 function cacheDOMElements() {
     DOM.tabButtons = document.querySelectorAll('.tab-button');
     DOM.tabContents = document.querySelectorAll('.tab-content');
@@ -70,161 +89,241 @@ function cacheDOMElements() {
     DOM.totalOrders = document.getElementById('totalOrders');
     DOM.memberSince = document.getElementById('memberSince');
     DOM.orderStatus = document.getElementById('orderStatus');
-    DOM.tabNav = document.querySelector('.tab-nav');
+
+    console.log('📋 DOM элементы кешированы');
 }
 
-/* === Liquid Glass управление вкладками === */
-function initLiquidTabs() {
-    DOM.tabButtons.forEach((btn, index) => {
-        btn.addEventListener('click', () => {
-            const tabId = btn.dataset.tab;
-            switchLiquidTab(tabId, index);
+// Инициализация хедера
+function initHeader() {
+    fetch('/header.html')
+        .then(response => {
+            if (!response.ok) throw new Error('Header загрузка неудачна');
+            return response.text();
+        })
+        .then(html => {
+            const headerContainer = document.getElementById('header-container');
+            if (headerContainer) {
+                headerContainer.innerHTML = html;
+                const header = document.getElementById('site-header');
+                if (header) {
+                    header.classList.add('scrolled');
+                }
+
+                // Инициализация CartManager
+                setTimeout(() => {
+                    if (window.CartManager) {
+                        window.CartManager.updateCartCounter();
+                        console.log('✅ CartManager инициализирован');
+                    }
+                }, 100);
+            }
+        })
+        .catch(error => {
+            console.warn('⚠️ Ошибка загрузки header:', error);
+            // Создаем минимальный header
+            const headerContainer = document.getElementById('header-container');
+            if (headerContainer) {
+                headerContainer.innerHTML = '<div style="height: 60px; background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);"></div>';
+            }
         });
-    });
 }
 
-function switchLiquidTab(tabId, index) {
+// === УПРАВЛЕНИЕ ВКЛАДКАМИ ===
+
+function initTabs() {
+    if (!DOM.tabButtons) return;
+
+    DOM.tabButtons.forEach((btn, index) => {
+        btn.addEventListener('click', throttle(() => {
+            const tabId = btn.dataset.tab;
+            switchTab(tabId);
+        }, 200));
+    });
+
+    console.log('🔄 Вкладки инициализированы');
+}
+
+function switchTab(tabId) {
+    if (currentTab === tabId || isLoading) return;
+
     console.log('🔄 Переключение на вкладку:', tabId);
 
     // Обновляем кнопки
-    DOM.tabButtons.forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.tab === tabId) {
-            btn.classList.add('active');
-        }
-    });
+    updateTabButtons(tabId);
 
-    // Скрываем все вкладки
-    DOM.tabContents.forEach(content => {
-        content.classList.remove('active');
-        content.style.display = 'none';
-        content.style.opacity = '0';
-        content.style.visibility = 'hidden';
-    });
-
-    // Показываем нужную вкладку с анимацией
-    const targetTab = document.getElementById(tabId);
-    if (targetTab) {
-        targetTab.style.display = 'block';
-        targetTab.style.visibility = 'visible';
-        targetTab.style.position = 'relative';
-        targetTab.style.zIndex = '1';
-
-        // Форсируем reflow для анимации
-        requestAnimationFrame(() => {
-            targetTab.style.opacity = '1';
-            targetTab.classList.add('active');
-        });
-    }
+    // Переключаем контент
+    animateTabSwitch(tabId);
 
     currentTab = tabId;
-
-    // Обновляем индикатор
-    updateTabIndicator(index);
 
     // Загружаем данные если нужно
     if (tabId === 'orders' && orders.length === 0) {
         loadOrders();
     }
-
-    console.log('✅ Вкладка переключена на:', tabId);
 }
 
-/* === Liquid Glass индикатор активной вкладки === */
-function updateTabIndicator(index = 0) {
-    if (!DOM.tabNav || !DOM.tabButtons || DOM.tabButtons.length === 0) return;
+function updateTabButtons(activeTabId) {
+    DOM.tabButtons.forEach(btn => {
+        const isActive = btn.dataset.tab === activeTabId;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-selected', isActive);
+    });
+}
 
-    const activeButton = DOM.tabButtons[index];
-    if (!activeButton) return;
+function animateTabSwitch(tabId) {
+    // Скрываем все вкладки
+    DOM.tabContents.forEach(content => {
+        content.classList.remove('active');
+        content.style.display = 'none';
+    });
 
-    try {
-        // Вычисляем позицию и ширину
-        const buttonRect = activeButton.getBoundingClientRect();
-        const navRect = DOM.tabNav.getBoundingClientRect();
-
-        const left = Math.max(0, buttonRect.left - navRect.left);
-        const width = Math.max(0, buttonRect.width);
-
-        // Обновляем CSS переменные
-        document.documentElement.style.setProperty('--indicator-left', `${left}px`);
-        document.documentElement.style.setProperty('--indicator-width', `${width}px`);
-
-        console.log(`Индикатор обновлен: left=${left}px, width=${width}px`);
-    } catch (error) {
-        console.error('Ошибка обновления индикатора:', error);
+    // Показываем нужную вкладку
+    const targetTab = document.getElementById(tabId);
+    if (targetTab) {
+        targetTab.style.display = 'block';
+        targetTab.classList.add('active');
     }
 }
 
-/* === Загрузка заказов с Liquid Glass анимацией === */
-async function loadOrders() {
-    if (!DOM.ordersLoading || !DOM.ordersContainer) return;
+function showFirstTab() {
+    const firstTab = document.getElementById('orders');
+    if (firstTab) {
+        firstTab.style.display = 'block';
+        firstTab.classList.add('active');
+        console.log('🎯 Первая вкладка показана');
+    }
+}
 
+// === ЗАГРУЗКА ЗАКАЗОВ ===
+
+async function loadOrders() {
+    if (isLoading) return;
+
+    isLoading = true;
     console.log('📦 Загрузка заказов...');
 
-    // Показываем загрузку
-    DOM.ordersLoading.style.display = 'flex';
-    if (DOM.noOrdersMessage) DOM.noOrdersMessage.style.display = 'none';
-    DOM.ordersContainer.innerHTML = '';
-
     try {
-        // Эмулируем загрузку
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        showLoadingState();
 
-        // Всегда используем демо данные для демонстрации
-        orders = createDemoOrders();
-        console.log('📋 Загружены демо заказы:', orders.length);
+        // Имитация загрузки
+        await new Promise(resolve => setTimeout(resolve, 1200));
 
-        DOM.ordersLoading.style.display = 'none';
+        orders = await createDemoOrders();
+        console.log('📋 Загружены заказы:', orders.length);
+
+        hideLoadingState();
 
         if (orders.length === 0) {
-            if (DOM.noOrdersMessage) DOM.noOrdersMessage.style.display = 'block';
+            showNoOrdersState();
         } else {
-            renderLiquidOrders();
+            await renderOrders();
         }
 
         updateStats();
 
     } catch (error) {
-        console.error('❌ Ошибка загрузки:', error);
-        DOM.ordersLoading.style.display = 'none';
-
-        // В случае ошибки показываем демо данные
-        orders = createDemoOrders();
-        renderLiquidOrders();
-        updateStats();
+        console.error('❌ Ошибка загрузки заказов:', error);
+        showErrorState();
+    } finally {
+        isLoading = false;
     }
 }
 
-/* === Рендер заказов с Liquid Glass эффектом === */
-function renderLiquidOrders() {
+function loadOrdersDeferred() {
+    setTimeout(() => {
+        if (currentTab === 'orders') {
+            loadOrders();
+        }
+    }, 500);
+}
+
+function showLoadingState() {
+    if (DOM.ordersLoading) DOM.ordersLoading.style.display = 'flex';
+    if (DOM.noOrdersMessage) DOM.noOrdersMessage.style.display = 'none';
+    if (DOM.ordersContainer) DOM.ordersContainer.innerHTML = '';
+}
+
+function hideLoadingState() {
+    if (DOM.ordersLoading) DOM.ordersLoading.style.display = 'none';
+}
+
+function showNoOrdersState() {
+    if (DOM.noOrdersMessage) DOM.noOrdersMessage.style.display = 'block';
+}
+
+function showErrorState() {
+    if (DOM.ordersContainer) {
+        DOM.ordersContainer.innerHTML = `
+            <div class="error-state" style="text-align: center; padding: 60px 20px; color: var(--liquid-text-secondary);">
+                <div style="font-size: 3em; margin-bottom: 16px;">⚠️</div>
+                <h3>Ошибка загрузки</h3>
+                <p>Попробуйте обновить страницу</p>
+                <button onclick="loadOrders()" class="refresh-btn" style="margin-top: 20px;">
+                    <span>🔄</span>
+                    <span>Повторить</span>
+                </button>
+            </div>
+        `;
+    }
+}
+
+// === РЕНДЕРИНГ ЗАКАЗОВ ===
+
+async function renderOrders() {
     if (!DOM.ordersContainer) return;
 
-    // Очищаем контейнер
     DOM.ordersContainer.innerHTML = '';
 
     if (orders.length === 0) {
-        DOM.ordersContainer.innerHTML = `
-            <div class="no-orders-modern">
-                <div class="no-orders-illustration">
-                    <div class="empty-box">📦</div>
-                    <div class="empty-sparkles">✨</div>
-                </div>
-                <h3>Пока заказов нет</h3>
-                <p>Но это легко исправить! Выберите что-то интересное</p>
-                <a href="/index.html" class="cta-button">
-                    <span>🛒</span>
-                    <span>Начать покупки</span>
-                </a>
-            </div>
-        `;
+        showNoOrdersState();
         return;
     }
 
-    const ordersHTML = orders.map((order, index) => `
-        <div class="order-card-modern" style="animation-delay: ${index * 0.1}s">
+    // Рендерим заказы батчами
+    const batchSize = 3;
+
+    for (let i = 0; i < orders.length; i += batchSize) {
+        const batch = orders.slice(i, i + batchSize);
+        const batchHTML = batch.map((order, index) => createOrderCardHTML(order, i + index)).join('');
+
+        DOM.ordersContainer.insertAdjacentHTML('beforeend', batchHTML);
+
+        // Даем браузеру время на рендеринг
+        if (i + batchSize < orders.length) {
+            await new Promise(resolve => requestAnimationFrame(resolve));
+        }
+    }
+
+    // Добавляем интерактивность
+    addOrderCardsInteractivity();
+
+    console.log('✅ Заказы отрендерены:', orders.length);
+}
+
+function createOrderCardHTML(order, index) {
+    const itemsHTML = order.items && order.items.length > 0 ? `
+        <div class="order-items-modern">
+            <div class="order-items-title">Товары в заказе:</div>
+            ${order.items.map(item => `
+                <div class="order-item-modern">
+                    <span class="item-name-modern">${escapeHtml(item.name)}</span>
+                    <span class="item-price-modern">${formatPrice(item.cost || 0)}</span>
+                </div>
+            `).join('')}
+        </div>
+    ` : '';
+
+    const deliveryHTML = order.delivery ? `
+        <div class="delivery-info-compact">
+            📦 ${escapeHtml(order.delivery.type || 'Доставка')} ${order.delivery.address ? '• ' + escapeHtml(order.delivery.address) : ''}
+        </div>
+    ` : '';
+
+    return `
+        <div class="order-card-modern" style="animation-delay: ${index * 0.1}s" data-order-id="${order.id}">
             <div class="order-header-modern">
                 <div>
-                    <div class="order-number-modern">Заказ ${order.cdekNumber || order.id}</div>
+                    <div class="order-number-modern">Заказ ${escapeHtml(order.cdekNumber || order.id)}</div>
                     <div class="order-date-modern">${formatDate(order.createdAt)}</div>
                 </div>
                 <div class="order-status-modern ${getStatusClass(order.status)}">
@@ -232,205 +331,148 @@ function renderLiquidOrders() {
                 </div>
             </div>
             
-            ${order.items && order.items.length > 0 ? `
-                <div class="order-items-modern">
-                    <div class="order-items-title">Товары в заказе:</div>
-                    ${order.items.map(item => `
-                        <div class="order-item-modern">
-                            <span class="item-name-modern">${item.name}</span>
-                            <span class="item-price-modern">${formatPrice(item.cost || 0)}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            ` : ''}
+            ${itemsHTML}
             
             <div class="order-total-modern">
                 <div class="total-label">Итого к оплате:</div>
                 <div class="total-amount">${formatPrice(order.amount || 0)}</div>
             </div>
             
-            ${order.delivery ? `
-                <div class="delivery-info-compact">
-                    📦 ${order.delivery.type || 'Доставка'} ${order.delivery.address ? '• ' + order.delivery.address : ''}
-                </div>
-            ` : ''}
+            ${deliveryHTML}
         </div>
-    `).join('');
+    `;
+}
 
-    DOM.ordersContainer.innerHTML = ordersHTML;
-
-    // Добавляем интерактивность
-    document.querySelectorAll('.order-card-modern').forEach(card => {
+function addOrderCardsInteractivity() {
+    const cards = document.querySelectorAll('.order-card-modern');
+    cards.forEach(card => {
         card.addEventListener('click', function(event) {
-            createLiquidRipple(this, event);
+            createRippleEffect(this, event);
+        });
+    });
+}
+
+// === СОЗДАНИЕ ДЕМО ДАННЫХ ===
+
+async function createDemoOrders() {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve([
+                {
+                    id: 'LG-2025-001',
+                    cdekNumber: 'CG-250115-001',
+                    status: 'created',
+                    amount: 9400,
+                    createdAt: new Date(Date.now() - 86400000).toISOString(),
+                    items: [
+                        { name: 'clip & go камера', cost: 8900 },
+                        { name: 'Карта памяти 8 ГБ', cost: 500 }
+                    ],
+                    delivery: {
+                        type: 'Курьер СДЭК',
+                        address: 'ул. Примерная, 123'
+                    }
+                },
+                {
+                    id: 'LG-2025-002',
+                    cdekNumber: 'CG-250110-002',
+                    status: 'paid',
+                    amount: 8900,
+                    createdAt: new Date(Date.now() - 432000000).toISOString(),
+                    items: [
+                        { name: 'clip & go камера', cost: 8900 }
+                    ],
+                    delivery: {
+                        type: 'ПВЗ СДЭК',
+                        address: 'Пункт выдачи на Ленина'
+                    }
+                },
+                {
+                    id: 'LG-2025-003',
+                    cdekNumber: 'CG-250105-003',
+                    status: 'failed',
+                    amount: 1200,
+                    createdAt: new Date(Date.now() - 864000000).toISOString(),
+                    items: [
+                        { name: 'Аксессуары для камеры', cost: 1200 }
+                    ],
+                    delivery: {
+                        type: 'Самовывоз',
+                        address: 'Офис на Тверской'
+                    }
+                }
+            ]);
+        }, 100);
+    });
+}
+
+// === ОБРАБОТЧИКИ СОБЫТИЙ ===
+
+function initEventListeners() {
+    // Обновление заказов
+    const refreshBtn = document.getElementById('refreshOrdersBtn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', throttle(() => {
+            const icon = refreshBtn.querySelector('.refresh-icon');
+            if (icon) {
+                icon.style.transform = 'rotate(360deg)';
+                setTimeout(() => {
+                    icon.style.transform = '';
+                }, 500);
+            }
+            loadOrders();
+        }, 1000));
+    }
+
+    // Сохранение информации пользователя
+    if (DOM.userInfoForm) {
+        DOM.userInfoForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            saveUserInfo();
+        });
+
+        // Автосохранение
+        const inputs = DOM.userInfoForm.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('blur', debounce(() => {
+                saveUserInfo();
+            }, 1000));
+        });
+    }
+
+    // Переключатели настроек
+    const settingToggles = document.querySelectorAll('.modern-toggle input');
+    settingToggles.forEach(toggle => {
+        toggle.addEventListener('change', () => {
+            saveSettings();
+
+            // Haptic feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(10);
+            }
+
+            // Визуальная анимация
+            const slider = toggle.nextElementSibling;
+            if (slider) {
+                slider.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    slider.style.transform = '';
+                }, 150);
+            }
         });
     });
 
-    console.log('✅ Заказы отрендерены:', orders.length);
+    // Кнопки действий
+    setupActionButtons();
+
+    // Загружаем настройки
+    loadSettings();
+
+    console.log('🎯 Обработчики событий инициализированы');
 }
 
-/* === Liquid Glass ripple эффект === */
-function createLiquidRipple(element, event) {
-    if (!element || !event) return;
+// === УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЬСКОЙ ИНФОРМАЦИЕЙ ===
 
-    try {
-        const ripple = document.createElement('div');
-        const rect = element.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = event.clientX - rect.left - size / 2;
-        const y = event.clientY - rect.top - size / 2;
-
-        ripple.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
-            transform: translate(${x}px, ${y}px) scale(0);
-            animation: liquidRipple 0.6s ease-out;
-            pointer-events: none;
-            z-index: 100;
-        `;
-
-        element.style.position = 'relative';
-        element.style.overflow = 'hidden';
-        element.appendChild(ripple);
-
-        ripple.addEventListener('animationend', () => {
-            if (ripple.parentNode) {
-                ripple.parentNode.removeChild(ripple);
-            }
-        });
-    } catch (error) {
-        console.error('Ошибка создания ripple:', error);
-    }
-}
-
-/* === Создание демо заказов === */
-function createDemoOrders() {
-    return [
-        {
-            id: 'LG-2025-001',
-            cdekNumber: 'CG-250115-001',
-            status: 'created',
-            amount: 9400,
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            items: [
-                { name: 'clip & go камера', cost: 8900 },
-                { name: 'Карта памяти 8 ГБ', cost: 500 }
-            ],
-            delivery: {
-                type: 'Курьер СДЭК',
-                address: 'ул. Примерная, 123'
-            }
-        },
-        {
-            id: 'LG-2025-002',
-            cdekNumber: 'CG-250110-002',
-            status: 'paid',
-            amount: 8900,
-            createdAt: new Date(Date.now() - 432000000).toISOString(),
-            items: [
-                { name: 'clip & go камера', cost: 8900 }
-            ],
-            delivery: {
-                type: 'ПВЗ СДЭК',
-                address: 'Пункт выдачи на Ленина'
-            }
-        }
-    ];
-}
-
-/* === Вспомогательные функции === */
-function getStatusClass(status) {
-    switch (status) {
-        case 'created': return 'created';
-        case 'payment_success_cdek_failed': return 'failed';
-        default: return 'paid';
-    }
-}
-
-function getStatusText(status) {
-    switch (status) {
-        case 'created': return 'Создан';
-        case 'payment_success_cdek_failed': return 'Ошибка';
-        default: return 'Оплачен';
-    }
-}
-
-function formatDate(dateString) {
-    if (!dateString) return 'Не указано';
-
-    try {
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffTime = now - date;
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 0) return 'Сегодня';
-        if (diffDays === 1) return 'Вчера';
-        if (diffDays < 7) return `${diffDays} дн. назад`;
-
-        return date.toLocaleDateString('ru-RU', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
-    } catch {
-        return 'Не указано';
-    }
-}
-
-function formatPrice(price) {
-    return (price || 0).toLocaleString('ru-RU') + ' ₽';
-}
-
-/* === Обновление статистики с анимацией === */
-function updateStats() {
-    animateNumber(DOM.totalOrders, orders.length);
-
-    if (DOM.memberSince) {
-        DOM.memberSince.textContent = new Date().getFullYear();
-    }
-
-    if (DOM.orderStatus) {
-        let status = 'Новичок';
-        if (orders.length >= 10) status = 'VIP';
-        else if (orders.length >= 3) status = 'Постоянный';
-        else if (orders.length > 0) status = 'Клиент';
-
-        DOM.orderStatus.textContent = status;
-    }
-}
-
-/* === Анимация чисел === */
-function animateNumber(element, target) {
-    if (!element) return;
-
-    const start = parseInt(element.textContent) || 0;
-    const duration = 1000;
-    const startTime = performance.now();
-
-    function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-
-        const current = Math.floor(start + (target - start) * easeOutCubic(progress));
-        element.textContent = current;
-
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
-    }
-
-    requestAnimationFrame(update);
-}
-
-function easeOutCubic(t) {
-    return 1 - Math.pow(1 - t, 3);
-}
-
-/* === Управление пользовательской информацией === */
 function loadUserInfo() {
     try {
         const savedInfo = localStorage.getItem('userInfo');
@@ -465,14 +507,28 @@ function saveUserInfo() {
 
     try {
         localStorage.setItem('userInfo', JSON.stringify(userInfo));
-        showLiquidNotification('Информация сохранена!', 'success');
+        showNotification('Информация сохранена!', 'success');
+
+        // Анимация кнопки
+        const saveBtn = document.querySelector('.save-button');
+        if (saveBtn) {
+            const originalContent = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<span>✅</span><span>Сохранено!</span>';
+            saveBtn.style.background = '#34C759';
+
+            setTimeout(() => {
+                saveBtn.innerHTML = originalContent;
+                saveBtn.style.background = '';
+            }, 2000);
+        }
     } catch (error) {
         console.error('❌ Ошибка сохранения:', error);
-        showLiquidNotification('Ошибка сохранения', 'error');
+        showNotification('Ошибка сохранения', 'error');
     }
 }
 
-/* === Настройки === */
+// === НАСТРОЙКИ ===
+
 function loadSettings() {
     try {
         const settings = JSON.parse(localStorage.getItem('userSettings') || '{}');
@@ -510,72 +566,25 @@ function saveSettings() {
     }
 }
 
-/* === Обработчики событий === */
-function initEventListeners() {
-    // Обновление заказов
-    const refreshBtn = document.getElementById('refreshOrdersBtn');
-    if (refreshBtn) {
-        refreshBtn.addEventListener('click', () => {
-            // Добавляем вращение иконки
-            const icon = refreshBtn.querySelector('.refresh-icon');
-            if (icon) {
-                icon.style.transform = 'rotate(360deg)';
-                setTimeout(() => {
-                    icon.style.transform = '';
-                }, 500);
-            }
-            loadOrders();
-        });
-    }
+// === КНОПКИ ДЕЙСТВИЙ ===
 
-    // Сохранение информации пользователя
-    if (DOM.userInfoForm) {
-        DOM.userInfoForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            saveUserInfo();
-        });
-    }
-
-    // Переключатели настроек
-    const settingToggles = document.querySelectorAll('.modern-toggle input');
-    settingToggles.forEach(toggle => {
-        toggle.addEventListener('change', () => {
-            saveSettings();
-            // Добавляем haptic feedback эффект
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
-        });
-    });
-
-    // Кнопки действий
-    setupActionButtons();
-
-    // Загружаем настройки
-    loadSettings();
-
-    // Liquid Glass эффекты при наведении
-    addLiquidHoverEffects();
-
-    // Обработка изменения размера окна
-    window.addEventListener('resize', debounce(() => {
-        updateTabIndicator();
-    }, 300));
-}
-
-/* === Настройка кнопок действий === */
 function setupActionButtons() {
     // Очистка корзины
     const clearCartBtn = document.getElementById('clearCartBtn');
     if (clearCartBtn) {
         clearCartBtn.addEventListener('click', () => {
-            showLiquidConfirm(
+            showConfirm(
                 'Очистить корзину?',
                 'Все товары будут удалены из корзины',
                 () => {
-                    localStorage.removeItem('cartData');
-                    updateCartBadge();
-                    showLiquidNotification('Корзина очищена', 'success');
+                    try {
+                        localStorage.removeItem('cartData');
+                        updateCartBadge();
+                        showNotification('Корзина очищена', 'success');
+                    } catch (error) {
+                        console.error('❌ Ошибка очистки корзины:', error);
+                        showNotification('Ошибка очистки', 'error');
+                    }
                 }
             );
         });
@@ -584,90 +593,45 @@ function setupActionButtons() {
     // Экспорт данных
     const exportDataBtn = document.getElementById('exportDataBtn');
     if (exportDataBtn) {
-        exportDataBtn.addEventListener('click', () => {
+        exportDataBtn.addEventListener('click', throttle(() => {
             exportUserData();
-        });
+        }, 2000));
     }
 
     // Очистка истории
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
     if (clearHistoryBtn) {
         clearHistoryBtn.addEventListener('click', () => {
-            showLiquidConfirm(
+            showConfirm(
                 'Удалить всю историю?',
                 'Это действие необратимо. Все данные о заказах будут удалены.',
                 () => {
-                    orders = [];
-                    renderLiquidOrders();
-                    updateStats();
-                    if (DOM.noOrdersMessage) DOM.noOrdersMessage.style.display = 'block';
-                    showLiquidNotification('История очищена', 'success');
+                    try {
+                        orders = [];
+                        renderOrders();
+                        updateStats();
+                        showNoOrdersState();
+                        showNotification('История очищена', 'success');
+                    } catch (error) {
+                        console.error('❌ Ошибка очистки истории:', error);
+                        showNotification('Ошибка очистки', 'error');
+                    }
                 }
             );
         });
     }
 }
 
-/* === Liquid Glass hover эффекты === */
-function addLiquidHoverEffects() {
-    // Добавляем эффект всем интерактивным элементам
-    const interactiveElements = document.querySelectorAll(
-        '.stat-modern, .order-card-modern, .modern-card, .setting-item-modern, button, .tab-button'
-    );
+// === ЭКСПОРТ ДАННЫХ ===
 
-    interactiveElements.forEach(element => {
-        element.addEventListener('mouseenter', function(e) {
-            createLiquidGlow(this, e);
-        });
-    });
-}
-
-/* === Liquid Glass свечение === */
-function createLiquidGlow(element, event) {
-    if (!element || !event) return;
-
-    try {
-        const glow = document.createElement('div');
-        const rect = element.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        glow.style.cssText = `
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            left: ${x}px;
-            top: ${y}px;
-            pointer-events: none;
-            animation: liquidGlow 1s ease-out forwards;
-            z-index: 100;
-        `;
-
-        element.style.position = 'relative';
-        element.style.overflow = 'hidden';
-        element.appendChild(glow);
-
-        glow.addEventListener('animationend', () => {
-            if (glow.parentNode) {
-                glow.parentNode.removeChild(glow);
-            }
-        });
-    } catch (error) {
-        console.error('Ошибка создания glow:', error);
-    }
-}
-
-/* === Экспорт данных === */
 function exportUserData() {
     try {
         const data = {
             userInfo: userInfo,
             orders: orders,
             settings: JSON.parse(localStorage.getItem('userSettings') || '{}'),
-            exportDate: new Date().toISOString()
+            exportDate: new Date().toISOString(),
+            version: '2.5'
         };
 
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -675,248 +639,77 @@ function exportUserData() {
 
         const a = document.createElement('a');
         a.href = url;
-        a.download = `liquid-glass-profile-${new Date().toISOString().split('T')[0]}.json`;
+        a.download = `clip-go-profile-${new Date().toISOString().split('T')[0]}.json`;
+        a.style.display = 'none';
+
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
 
         URL.revokeObjectURL(url);
-        showLiquidNotification('Данные экспортированы', 'success');
+        showNotification('Данные экспортированы', 'success');
     } catch (error) {
         console.error('❌ Ошибка экспорта:', error);
-        showLiquidNotification('Ошибка экспорта', 'error');
+        showNotification('Ошибка экспорта', 'error');
     }
 }
 
-/* === Liquid Glass диалог подтверждения === */
-function showLiquidConfirm(title, message, onConfirm) {
-    const overlay = document.createElement('div');
-    overlay.className = 'liquid-dialog-overlay';
-    overlay.innerHTML = `
-        <div class="liquid-dialog">
-            <div class="liquid-dialog-header">
-                <h3>${title}</h3>
-            </div>
-            <div class="liquid-dialog-body">
-                <p>${message}</p>
-            </div>
-            <div class="liquid-dialog-actions">
-                <button class="liquid-btn cancel">Отмена</button>
-                <button class="liquid-btn confirm">Подтвердить</button>
-            </div>
-        </div>
-    `;
+// === ОБНОВЛЕНИЕ СТАТИСТИКИ ===
 
-    // Стили для Liquid Glass диалога
-    const style = document.createElement('style');
-    style.textContent = `
-        .liquid-dialog-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            animation: liquidFadeIn 0.3s ease;
-        }
-        
-        .liquid-dialog {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(32px);
-            -webkit-backdrop-filter: blur(32px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            border-radius: 24px;
-            overflow: hidden;
-            max-width: 400px;
-            width: 90%;
-            animation: liquidSlideUp 0.3s ease;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-        }
-        
-        .liquid-dialog-header {
-            padding: 24px 24px 0;
-        }
-        
-        .liquid-dialog-header h3 {
-            margin: 0;
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #1c1c1e;
-        }
-        
-        .liquid-dialog-body {
-            padding: 12px 24px 24px;
-        }
-        
-        .liquid-dialog-body p {
-            margin: 0;
-            color: #3a3a3c;
-            line-height: 1.5;
-        }
-        
-        .liquid-dialog-actions {
-            display: flex;
-            gap: 12px;
-            padding: 0 24px 24px;
-        }
-        
-        .liquid-btn {
-            flex: 1;
-            padding: 14px 24px;
-            border: none;
-            border-radius: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 1em;
-        }
-        
-        .liquid-btn.cancel {
-            background: rgba(0, 0, 0, 0.05);
-            color: #3a3a3c;
-        }
-        
-        .liquid-btn.cancel:hover {
-            background: rgba(0, 0, 0, 0.1);
-            transform: translateY(-1px);
-        }
-        
-        .liquid-btn.confirm {
-            background: #FF453A;
-            color: white;
-        }
-        
-        .liquid-btn.confirm:hover {
-            background: #FF6B5F;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(255, 69, 58, 0.3);
-        }
-        
-        @keyframes liquidFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes liquidSlideUp {
-            from {
-                transform: translateY(40px) scale(0.95);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0) scale(1);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes liquidFadeOut {
-            to { opacity: 0; }
-        }
-        
-        @keyframes liquidSlideDown {
-            to {
-                transform: translateY(40px) scale(0.95);
-                opacity: 0;
-            }
-        }
-    `;
+function updateStats() {
+    animateNumber(DOM.totalOrders, orders.length);
 
-    document.head.appendChild(style);
-    document.body.appendChild(overlay);
-
-    // Обработчики
-    const cancelBtn = overlay.querySelector('.liquid-btn.cancel');
-    const confirmBtn = overlay.querySelector('.liquid-btn.confirm');
-
-    function closeDialog() {
-        overlay.style.animation = 'liquidFadeOut 0.3s ease forwards';
-        overlay.querySelector('.liquid-dialog').style.animation = 'liquidSlideDown 0.3s ease forwards';
-        setTimeout(() => {
-            if (document.body.contains(overlay)) {
-                document.body.removeChild(overlay);
-            }
-            if (document.head.contains(style)) {
-                document.head.removeChild(style);
-            }
-        }, 300);
+    if (DOM.memberSince) {
+        DOM.memberSince.textContent = new Date().getFullYear();
     }
 
-    cancelBtn.addEventListener('click', closeDialog);
-    confirmBtn.addEventListener('click', () => {
-        onConfirm();
-        closeDialog();
-    });
+    if (DOM.orderStatus) {
+        let status = 'Новичок';
+        if (orders.length >= 10) status = 'VIP';
+        else if (orders.length >= 3) status = 'Постоянный';
+        else if (orders.length > 0) status = 'Клиент';
 
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            closeDialog();
+        const currentStatus = DOM.orderStatus.textContent;
+        if (currentStatus !== status) {
+            DOM.orderStatus.style.opacity = '0';
+            setTimeout(() => {
+                DOM.orderStatus.textContent = status;
+                DOM.orderStatus.style.opacity = '1';
+            }, 300);
         }
-    });
-}
-
-/* === Liquid Glass анимации === */
-function initLiquidAnimations() {
-    // Intersection Observer для плавного появления
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.1 });
-
-    // Наблюдаем за элементами
-    const animatedElements = document.querySelectorAll(
-        '.profile-hero, .stat-modern, .order-card-modern, .modern-card'
-    );
-
-    animatedElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(el);
-    });
-
-    // Добавляем CSS для анимаций
-    if (!document.getElementById('liquid-animations')) {
-        const style = document.createElement('style');
-        style.id = 'liquid-animations';
-        style.textContent = `
-            @keyframes liquidRipple {
-                0% {
-                    transform: scale(0);
-                    opacity: 1;
-                }
-                100% {
-                    transform: scale(4);
-                    opacity: 0;
-                }
-            }
-            
-            @keyframes liquidGlow {
-                0% {
-                    opacity: 0;
-                    transform: translate(-50%, -50%) scale(0.5);
-                }
-                50% {
-                    opacity: 1;
-                }
-                100% {
-                    opacity: 0;
-                    transform: translate(-50%, -50%) scale(2);
-                }
-            }
-        `;
-        document.head.appendChild(style);
     }
 }
 
-/* === Обновление счетчика корзины === */
+function animateNumber(element, target) {
+    if (!element) return;
+
+    const start = parseInt(element.textContent) || 0;
+    const duration = 1500;
+    const startTime = performance.now();
+
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+
+        const current = Math.floor(start + (target - start) * easeOutCubic(progress));
+        element.textContent = current;
+
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        } else {
+            element.textContent = target;
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
+function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+}
+
+// === ОБНОВЛЕНИЕ КОРЗИНЫ ===
+
 function updateCartBadge() {
     try {
         let count = 0;
@@ -928,21 +721,172 @@ function updateCartBadge() {
             count = (cartData.cameraCount || 0) + (cartData.memoryCount || 0);
         }
 
-        const badge = document.querySelector('.cart-count');
-        if (badge) {
-            badge.textContent = count;
-        }
+        const badges = document.querySelectorAll('.cart-count');
+        badges.forEach(badge => {
+            if (badge) {
+                badge.textContent = count;
+                badge.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    badge.style.transform = '';
+                }, 200);
+            }
+        });
     } catch (error) {
-        console.error('❌ Ошибка обновления корзины:', error);
+        console.warn('⚠️ Ошибка обновления корзины:', error);
     }
 }
 
-/* === Liquid Glass уведомления === */
-function showLiquidNotification(message, type = 'info', duration = 4000) {
-    let container = document.getElementById('liquid-notifications');
+// === ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ===
+
+function initAdvancedFeatures() {
+    // Lazy loading для изображений
+    if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    if (img.dataset.src) {
+                        img.src = img.dataset.src;
+                        img.removeAttribute('data-src');
+                        imageObserver.unobserve(img);
+                    }
+                }
+            });
+        });
+
+        document.querySelectorAll('img[data-src]').forEach(img => {
+            imageObserver.observe(img);
+        });
+    }
+
+    // Анимации при скролле
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    const animatedElements = document.querySelectorAll(
+        '.profile-hero, .stat-modern, .order-card-modern, .modern-card, .setting-item-modern'
+    );
+
+    animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+
+    console.log('🚀 Дополнительные функции инициализированы');
+}
+
+// === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
+
+function getStatusClass(status) {
+    const statusMap = {
+        'created': 'created',
+        'payment_success_cdek_failed': 'failed',
+        'failed': 'failed'
+    };
+    return statusMap[status] || 'paid';
+}
+
+function getStatusText(status) {
+    const statusMap = {
+        'created': 'Создан',
+        'payment_success_cdek_failed': 'Ошибка',
+        'failed': 'Ошибка'
+    };
+    return statusMap[status] || 'Оплачен';
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'Не указано';
+
+    try {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffTime = now - date;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) return 'Сегодня';
+        if (diffDays === 1) return 'Вчера';
+        if (diffDays < 7) return `${diffDays} дн. назад`;
+
+        return date.toLocaleDateString('ru-RU', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    } catch {
+        return 'Не указано';
+    }
+}
+
+function formatPrice(price) {
+    return (price || 0).toLocaleString('ru-RU') + ' ₽';
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// === ЭФФЕКТЫ ===
+
+function createRippleEffect(element, event) {
+    if (!element || !event) return;
+
+    try {
+        const ripple = document.createElement('div');
+        const rect = element.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = event.clientX - rect.left - size / 2;
+        const y = event.clientY - rect.top - size / 2;
+
+        ripple.className = 'liquid-ripple';
+        ripple.style.cssText = `
+            position: absolute;
+            width: ${size}px;
+            height: ${size}px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
+            transform: translate(${x}px, ${y}px) scale(0);
+            animation: liquidRipple 0.6s ease-out;
+            pointer-events: none;
+            z-index: 100;
+        `;
+
+        element.style.position = 'relative';
+        element.style.overflow = 'hidden';
+        element.appendChild(ripple);
+
+        // Очистка после анимации
+        setTimeout(() => {
+            if (ripple.parentNode) {
+                ripple.parentNode.removeChild(ripple);
+            }
+        }, 600);
+    } catch (error) {
+        console.warn('⚠️ Ошибка создания ripple:', error);
+    }
+}
+
+// === УВЕДОМЛЕНИЯ ===
+
+function showNotification(message, type = 'info', duration = 4000) {
+    let container = document.getElementById('notification-container');
     if (!container) {
         container = document.createElement('div');
-        container.id = 'liquid-notifications';
+        container.id = 'notification-container';
         container.style.cssText = `
             position: fixed;
             top: 20px;
@@ -957,6 +901,9 @@ function showLiquidNotification(message, type = 'info', duration = 4000) {
     }
 
     const notification = document.createElement('div');
+    const notificationId = 'notification-' + Date.now();
+    notification.id = notificationId;
+
     notification.style.cssText = `
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(24px);
@@ -990,7 +937,7 @@ function showLiquidNotification(message, type = 'info', duration = 4000) {
 
     notification.innerHTML = `
         <span style="font-size: 1.2em; color: ${colors[type]};">${icons[type]}</span>
-        <span style="flex: 1; color: #1c1c1e; font-weight: 500;">${message}</span>
+        <span style="flex: 1; color: #1c1c1e; font-weight: 500;">${escapeHtml(message)}</span>
         <button style="background: none; border: none; font-size: 1.2em; color: #8e8e93; cursor: pointer; padding: 0;">&times;</button>
     `;
 
@@ -1020,21 +967,192 @@ function removeNotification(notification) {
     }, 300);
 }
 
-/* === Утилиты === */
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+// === ДИАЛОГ ПОДТВЕРЖДЕНИЯ ===
+
+function showConfirm(title, message, onConfirm) {
+    // Создаем overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'confirm-overlay';
+    overlay.innerHTML = `
+        <div class="confirm-dialog">
+            <div class="confirm-header">
+                <h3>${escapeHtml(title)}</h3>
+            </div>
+            <div class="confirm-body">
+                <p>${escapeHtml(message)}</p>
+            </div>
+            <div class="confirm-actions">
+                <button class="confirm-btn cancel">Отмена</button>
+                <button class="confirm-btn confirm">Подтвердить</button>
+            </div>
+        </div>
+    `;
+
+    // Добавляем стили если их нет
+    if (!document.getElementById('confirm-styles')) {
+        const style = document.createElement('style');
+        style.id = 'confirm-styles';
+        style.textContent = `
+            .confirm-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.4);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease;
+            }
+            
+            .confirm-dialog {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(32px);
+                -webkit-backdrop-filter: blur(32px);
+                border: 1px solid rgba(255, 255, 255, 0.8);
+                border-radius: 24px;
+                overflow: hidden;
+                max-width: 400px;
+                width: 90%;
+                animation: slideUp 0.3s ease;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            }
+            
+            .confirm-header {
+                padding: 24px 24px 0;
+            }
+            
+            .confirm-header h3 {
+                margin: 0;
+                font-size: 1.3em;
+                font-weight: 700;
+                color: #1c1c1e;
+            }
+            
+            .confirm-body {
+                padding: 12px 24px 24px;
+            }
+            
+            .confirm-body p {
+                margin: 0;
+                color: #3a3a3c;
+                line-height: 1.5;
+            }
+            
+            .confirm-actions {
+                display: flex;
+                gap: 12px;
+                padding: 0 24px 24px;
+            }
+            
+            .confirm-btn {
+                flex: 1;
+                padding: 14px 24px;
+                border: none;
+                border-radius: 14px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                font-size: 1em;
+            }
+            
+            .confirm-btn.cancel {
+                background: rgba(0, 0, 0, 0.05);
+                color: #3a3a3c;
+            }
+            
+            .confirm-btn.cancel:hover {
+                background: rgba(0, 0, 0, 0.1);
+                transform: translateY(-1px);
+            }
+            
+            .confirm-btn.confirm {
+                background: #FF453A;
+                color: white;
+            }
+            
+            .confirm-btn.confirm:hover {
+                background: #FF6B5F;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 16px rgba(255, 69, 58, 0.3);
+            }
+            
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            
+            @keyframes slideUp {
+                from {
+                    transform: translateY(40px) scale(0.95);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateY(0) scale(1);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    document.body.appendChild(overlay);
+
+    // Обработчики
+    const cancelBtn = overlay.querySelector('.confirm-btn.cancel');
+    const confirmBtn = overlay.querySelector('.confirm-btn.confirm');
+
+    function closeDialog() {
+        overlay.style.animation = 'fadeIn 0.3s ease reverse';
+        setTimeout(() => {
+            if (document.body.contains(overlay)) {
+                document.body.removeChild(overlay);
+            }
+        }, 300);
+    }
+
+    cancelBtn.addEventListener('click', closeDialog);
+    confirmBtn.addEventListener('click', () => {
+        onConfirm();
+        closeDialog();
+    });
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            closeDialog();
+        }
+    });
+
+    // Фокус на первой кнопке
+    cancelBtn.focus();
 }
 
-/* === Глобальные функции === */
+// Добавляем CSS для ripple эффекта
+if (!document.getElementById('ripple-styles')) {
+    const style = document.createElement('style');
+    style.id = 'ripple-styles';
+    style.textContent = `
+        @keyframes liquidRipple {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// === ГЛОБАЛЬНЫЕ ФУНКЦИИ ===
 window.loadOrders = loadOrders;
-window.switchLiquidTab = switchLiquidTab;
+window.switchTab = switchTab;
+window.showNotification = showNotification;
 
 console.log('🌊 Liquid Glass Profile JavaScript загружен!');
