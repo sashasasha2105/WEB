@@ -21,6 +21,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="clip & go">
+    <meta name="description" content="Личный кабинет clip & go - управляйте заказами и настройками">
 </head>
 
 <body>
@@ -30,7 +31,7 @@
 <!-- Main Content -->
 <main class="profile-container">
     <!-- Hero Section -->
-    <div class="hero-card">
+    <div class="hero-card touchable">
         <div class="hero-avatar">
             <div class="avatar-circle">
                 <span class="avatar-icon">👤</span>
@@ -43,16 +44,22 @@
         </div>
 
         <div class="hero-stats">
-            <div class="stat-item">
-                <div class="stat-number" id="totalOrders">0</div>
+            <div class="stat-item touchable">
+                <div class="stat-number">
+                    📦 <span id="totalOrders">0</span>
+                </div>
                 <div class="stat-label">Заказов</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-number" id="memberSince">2024</div>
+            <div class="stat-item touchable">
+                <div class="stat-number">
+                    📅 <span id="memberSince">2024</span>
+                </div>
                 <div class="stat-label">С нами с</div>
             </div>
-            <div class="stat-item">
-                <div class="stat-number" id="orderStatus">—</div>
+            <div class="stat-item touchable">
+                <div class="stat-number">
+                    ⭐ <span id="orderStatus">—</span>
+                </div>
                 <div class="stat-label">Статус</div>
             </div>
         </div>

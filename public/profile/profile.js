@@ -1,4 +1,4 @@
-/* === PROFILE.JS - УПРОЩЕННАЯ ЛОГИКА === */
+/* === PROFILE.JS - ПРЕМИАЛЬНАЯ ЛОГИКА === */
 
 // Состояние приложения
 let currentTab = 'orders';
@@ -20,14 +20,14 @@ const DOM = {
 
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Профиль загружается...');
+    console.log('🚀 Премиальный профиль загружается...');
 
     initializePage();
 
     // Дополнительная защита - MutationObserver
     setupMutationObserver();
 
-    // Еще одна проверка через 2 секунды
+    // Финальная проверка через 2 секунды
     setTimeout(() => {
         finalTabCheck();
     }, 2000);
@@ -67,7 +67,6 @@ function finalTabCheck() {
     console.log('🔧 Финальная проверка табов...');
 
     const ordersTab = document.getElementById('orders');
-    const ordersBtn = document.querySelector('[data-tab="orders"]');
 
     if (!ordersTab) {
         console.error('❌ КРИТИЧЕСКАЯ ОШИБКА: Вкладка orders не найдена!');
@@ -75,14 +74,8 @@ function finalTabCheck() {
     }
 
     const computedStyle = window.getComputedStyle(ordersTab);
-    console.log('Orders tab computed display:', computedStyle.display);
-    console.log('Orders tab computed visibility:', computedStyle.visibility);
-    console.log('Orders tab computed opacity:', computedStyle.opacity);
-
     if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden' || computedStyle.opacity === '0') {
         console.log('🚨 ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ!');
-
-        // Ядерный вариант - полная перезагрузка табов
         nuclearTabFix();
     } else {
         console.log('✅ Табы работают корректно');
@@ -104,13 +97,7 @@ function nuclearTabFix() {
     const ordersTab = document.getElementById('orders');
     if (ordersTab) {
         ordersTab.classList.add('active');
-        ordersTab.innerHTML = ordersTab.innerHTML; // Принудительный reflow
-
-        // Устанавливаем стили через setAttribute для максимальной принудительности
-        ordersTab.setAttribute('style', 'display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important;');
-
-        // Добавляем дополнительные CSS классы
-        ordersTab.classList.add('force-visible', 'nuclear-fix');
+        ordersTab.setAttribute('style', 'display: block !important; visibility: visible !important; opacity: 1 !important;');
     }
 
     // Активируем кнопку
@@ -119,10 +106,7 @@ function nuclearTabFix() {
         ordersBtn.classList.add('active');
     }
 
-    // Добавляем экстренные CSS правила
     addEmergencyCSS();
-
-    console.log('💥 Ядерное исправление завершено!');
 }
 
 // Добавляем экстренные CSS правила
@@ -130,14 +114,10 @@ function addEmergencyCSS() {
     const emergencyStyle = document.createElement('style');
     emergencyStyle.id = 'emergency-tab-fix';
     emergencyStyle.innerHTML = `
-        .force-visible,
-        .nuclear-fix,
         #orders.active {
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
-            position: relative !important;
-            z-index: 1 !important;
         }
         
         .tab-content:not(.active) {
@@ -149,19 +129,8 @@ function addEmergencyCSS() {
             visibility: visible !important;
             opacity: 1 !important;
         }
-        
-        /* Принудительное правило для orders */
-        #orders {
-            display: block !important;
-        }
-        
-        #profile:not(.active),
-        #settings:not(.active) {
-            display: none !important;
-        }
     `;
 
-    // Удаляем старый emergency style если есть
     const oldStyle = document.getElementById('emergency-tab-fix');
     if (oldStyle) {
         oldStyle.remove();
@@ -189,6 +158,9 @@ function initializePage() {
         // Настраиваем обработчики
         setupEventListeners();
 
+        // Добавляем touchable классы
+        addTouchableClasses();
+
         // Загружаем заказы для первой вкладки
         if (currentTab === 'orders') {
             setTimeout(() => loadOrders(), 500);
@@ -197,7 +169,7 @@ function initializePage() {
         // Инициализируем автоматический расчет высоты
         initializeAutoResize();
 
-        console.log('✅ Профиль инициализирован');
+        console.log('✅ Премиальный профиль инициализирован');
     } catch (error) {
         console.error('❌ Ошибка инициализации:', error);
         showNotification('Ошибка загрузки страницы', 'error');
@@ -215,6 +187,26 @@ function cacheDOMElements() {
     DOM.totalOrders = document.getElementById('totalOrders');
     DOM.memberSince = document.getElementById('memberSince');
     DOM.orderStatus = document.getElementById('orderStatus');
+}
+
+// Добавляем touchable классы
+function addTouchableClasses() {
+    const touchableElements = [
+        '.hero-card',
+        '.stat-item',
+        '.order-card',
+        '.setting-item',
+        '.card'
+    ];
+
+    touchableElements.forEach(selector => {
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => {
+            if (!el.classList.contains('touchable')) {
+                el.classList.add('touchable');
+            }
+        });
+    });
 }
 
 // Загрузка хедера
@@ -249,51 +241,56 @@ function initTabs() {
             switchTab(tabId);
         });
     });
-}
-
-function switchTab(tabId) {
-    if (currentTab === tabId) return;
-
-    console.log('🔄 Переключение на:', tabId);
-
-    // Обновляем кнопки
-    DOM.tabButtons.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.tab === tabId);
-    });
-
-    // Переключаем контент - ИСПРАВЛЕНО
-    DOM.tabContents.forEach(content => {
-        if (content.id === tabId) {
-            content.classList.add('active');
-            content.style.display = 'block';
-        } else {
-            content.classList.remove('active');
-            content.style.display = 'none';
-        }
-    });
-
-    currentTab = tabId;
-
-    // Загружаем данные для вкладки
-    if (tabId === 'orders' && orders.length === 0) {
-        loadOrders();
-    }
-}
-
-// Инициализация табов - УЛУЧШЕНО
-function initTabs() {
-    DOM.tabButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const tabId = btn.dataset.tab;
-            switchTab(tabId);
-        });
-    });
 
     // Убеждаемся что первая вкладка показана
     showFirstTab();
 }
 
-// Показ первой вкладки - ИСПРАВЛЕНО
+function switchTab(tabId) {
+    if (currentTab === tabId) return;
+
+    console.log('🔄 Премиальное переключение на:', tabId);
+
+    // Премиальная анимация перехода
+    switchTabWithAnimation(tabId);
+}
+
+function switchTabWithAnimation(tabId) {
+    const currentTabElement = document.getElementById(currentTab);
+
+    // Анимируем исчезновение текущей вкладки
+    if (currentTabElement) {
+        currentTabElement.style.animation = 'premiumFadeOut 0.2s ease-out';
+
+        setTimeout(() => {
+            // Обновляем кнопки
+            DOM.tabButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === tabId);
+            });
+
+            // Переключаем контент
+            DOM.tabContents.forEach(content => {
+                if (content.id === tabId) {
+                    content.classList.add('active');
+                    content.style.display = 'block';
+                    content.style.animation = 'fadeInUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                } else {
+                    content.classList.remove('active');
+                    content.style.display = 'none';
+                    content.style.animation = '';
+                }
+            });
+
+            currentTab = tabId;
+
+            // Загружаем данные для вкладки
+            if (tabId === 'orders' && orders.length === 0) {
+                loadOrders();
+            }
+        }, 200);
+    }
+}
+
 function showFirstTab() {
     // Сначала скрываем все вкладки
     DOM.tabContents.forEach(content => {
@@ -301,12 +298,13 @@ function showFirstTab() {
         content.style.display = 'none';
     });
 
-    // Показываем вкладку заказов
+    // Показываем вкладку заказов с премиальной анимацией
     const ordersTab = document.getElementById('orders');
     if (ordersTab) {
         ordersTab.style.display = 'block';
         ordersTab.classList.add('active');
-        console.log('🎯 Первая вкладка показана');
+        ordersTab.style.animation = 'fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        console.log('🎯 Первая вкладка показана с премиальной анимацией');
     }
 
     // Активируем первую кнопку
@@ -321,8 +319,8 @@ async function loadOrders() {
     try {
         showLoadingState();
 
-        // Имитация загрузки
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Имитация загрузки с премиальным спиннером
+        await new Promise(resolve => setTimeout(resolve, 1200));
 
         // Создаем демо заказы
         orders = await createDemoOrders();
@@ -332,7 +330,7 @@ async function loadOrders() {
         if (orders.length === 0) {
             showNoOrdersState();
         } else {
-            renderOrders();
+            renderOrdersWithAnimation();
         }
 
         updateStats();
@@ -344,26 +342,37 @@ async function loadOrders() {
 }
 
 function showLoadingState() {
-    if (DOM.ordersLoading) DOM.ordersLoading.style.display = 'flex';
+    if (DOM.ordersLoading) {
+        DOM.ordersLoading.style.display = 'flex';
+        DOM.ordersLoading.style.animation = 'premiumSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    }
     if (DOM.noOrdersMessage) DOM.noOrdersMessage.style.display = 'none';
     if (DOM.ordersContainer) DOM.ordersContainer.innerHTML = '';
 }
 
 function hideLoadingState() {
-    if (DOM.ordersLoading) DOM.ordersLoading.style.display = 'none';
+    if (DOM.ordersLoading) {
+        DOM.ordersLoading.style.animation = 'premiumFadeOut 0.3s ease-out';
+        setTimeout(() => {
+            DOM.ordersLoading.style.display = 'none';
+        }, 300);
+    }
 }
 
 function showNoOrdersState() {
-    if (DOM.noOrdersMessage) DOM.noOrdersMessage.style.display = 'block';
+    if (DOM.noOrdersMessage) {
+        DOM.noOrdersMessage.style.display = 'block';
+        DOM.noOrdersMessage.style.animation = 'premiumEmptyStateSlide 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    }
 }
 
 function showErrorState() {
     if (DOM.ordersContainer) {
         DOM.ordersContainer.innerHTML = `
-            <div style="text-align: center; padding: 60px 20px; color: white;">
-                <div style="font-size: 3em; margin-bottom: 16px;">⚠️</div>
-                <h3>Ошибка загрузки</h3>
-                <p>Попробуйте обновить страницу</p>
+            <div style="text-align: center; padding: 80px 20px; color: white; animation: premiumEmptyStateSlide 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);">
+                <div style="font-size: 3.5em; margin-bottom: 24px; animation: premiumFloat 3s ease-in-out infinite; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));">⚠️</div>
+                <h3 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 16px; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);">Ошибка загрузки</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 32px; opacity: 0.9;">Попробуйте обновить страницу</p>
                 <button onclick="loadOrders()" class="refresh-btn" style="margin-top: 20px;">
                     <span>🔄</span>
                     <span>Повторить</span>
@@ -373,16 +382,26 @@ function showErrorState() {
     }
 }
 
-// Рендеринг заказов
-async function renderOrders() {
+// Премиальный рендеринг заказов с анимацией
+async function renderOrdersWithAnimation() {
     if (!DOM.ordersContainer || orders.length === 0) return;
 
     const ordersHTML = orders.map(order => createOrderHTML(order)).join('');
     DOM.ordersContainer.innerHTML = ordersHTML;
 
-    console.log('✅ Заказы отрендерены:', orders.length);
+    // Добавляем touchable классы и анимации к новым карточкам
+    const orderCards = DOM.ordersContainer.querySelectorAll('.order-card');
+    orderCards.forEach((card, index) => {
+        card.classList.add('touchable');
 
-    // ДОБАВИЛИ: автоматический пересчет высоты после рендеринга
+        // Добавляем анимацию появления с задержкой
+        card.style.animationDelay = `${index * 0.1}s`;
+        card.style.animation = 'premiumCardSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both';
+    });
+
+    console.log('✅ Заказы отрендерены с премиальной анимацией:', orders.length);
+
+    // Автоматический пересчет высоты после рендеринга
     setTimeout(() => {
         autoResizeElements();
     }, 100);
@@ -408,7 +427,7 @@ function createOrderHTML(order) {
     ` : '';
 
     return `
-        <div class="order-card">
+        <div class="order-card touchable">
             <div class="order-header">
                 <div>
                     <div class="order-number">Заказ ${escapeHtml(order.cdekNumber || order.id)}</div>
@@ -483,39 +502,69 @@ async function createDemoOrders() {
 // === ОБРАБОТЧИКИ СОБЫТИЙ ===
 
 function setupEventListeners() {
-    // Обновление заказов
+    // Премиальное обновление заказов
     const refreshBtn = document.getElementById('refreshBtn');
     if (refreshBtn) {
         refreshBtn.addEventListener('click', () => {
+            // Премиальная анимация кнопки
+            refreshBtn.style.transform = 'scale(0.95)';
+            refreshBtn.style.filter = 'brightness(1.1)';
+
             const icon = refreshBtn.querySelector('.refresh-icon');
             if (icon) {
-                icon.style.transform = 'rotate(360deg)';
+                icon.style.animation = 'spin 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
                 setTimeout(() => {
-                    icon.style.transform = '';
-                }, 500);
+                    icon.style.animation = '';
+                }, 600);
             }
+
+            setTimeout(() => {
+                refreshBtn.style.transform = '';
+                refreshBtn.style.filter = '';
+            }, 150);
+
             loadOrders();
         });
     }
 
-    // Сохранение профиля
+    // Премиальное сохранение профиля
     if (DOM.userInfoForm) {
         DOM.userInfoForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            saveUserInfo();
+            saveUserInfoWithPremiumAnimation();
         });
 
         // Автосохранение при потере фокуса
         const inputs = DOM.userInfoForm.querySelectorAll('input');
         inputs.forEach(input => {
             input.addEventListener('blur', debounce(saveUserInfo, 1000));
+
+            // Премиальные эффекты фокуса
+            input.addEventListener('focus', (e) => {
+                e.target.style.animation = 'premiumInputFocus 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                setTimeout(() => {
+                    e.target.style.animation = '';
+                }, 300);
+            });
         });
     }
 
-    // Переключатели настроек
+    // Премиальные переключатели настроек
     const toggles = document.querySelectorAll('.toggle input');
     toggles.forEach(toggle => {
-        toggle.addEventListener('change', () => {
+        toggle.addEventListener('change', (e) => {
+            const slider = e.target.nextElementSibling;
+            if (slider) {
+                const animation = e.target.checked ?
+                    'premiumSwitchOn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)' :
+                    'premiumSwitchOff 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                slider.style.animation = animation;
+
+                setTimeout(() => {
+                    slider.style.animation = '';
+                }, 300);
+            }
+
             saveSettings();
             showNotification('Настройки сохранены', 'success');
         });
@@ -526,6 +575,41 @@ function setupEventListeners() {
 
     // Загружаем сохраненные данные
     loadSettings();
+}
+
+// === ПРЕМИАЛЬНОЕ СОХРАНЕНИЕ ПРОФИЛЯ ===
+
+function saveUserInfoWithPremiumAnimation() {
+    const saveBtn = document.querySelector('.save-btn');
+    if (saveBtn) {
+        // Премиальная анимация нажатия
+        saveBtn.style.animation = 'premiumHaptic 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        saveBtn.style.transform = 'scale(0.98) translateY(1px)';
+
+        setTimeout(() => {
+            saveBtn.style.transform = '';
+            saveBtn.style.animation = '';
+
+            // Выполняем сохранение
+            saveUserInfo();
+
+            // Показываем премиальное уведомление об успехе
+            const originalContent = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<span>✅</span><span>Сохранено!</span>';
+            saveBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            saveBtn.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.4)';
+            saveBtn.style.transform = 'scale(1.02)';
+
+            setTimeout(() => {
+                saveBtn.innerHTML = originalContent;
+                saveBtn.style.background = '';
+                saveBtn.style.boxShadow = '';
+                saveBtn.style.transform = '';
+            }, 2500);
+        }, 150);
+    } else {
+        saveUserInfo();
+    }
 }
 
 // === УПРАВЛЕНИЕ ДАННЫМИ ПОЛЬЗОВАТЕЛЯ ===
@@ -565,19 +649,6 @@ function saveUserInfo() {
     try {
         localStorage.setItem('userInfo', JSON.stringify(userInfo));
         showNotification('Информация сохранена!', 'success');
-
-        // Анимация кнопки сохранения
-        const saveBtn = document.querySelector('.save-btn');
-        if (saveBtn) {
-            const originalContent = saveBtn.innerHTML;
-            saveBtn.innerHTML = '<span>✅</span><span>Сохранено!</span>';
-            saveBtn.style.background = 'var(--success)';
-
-            setTimeout(() => {
-                saveBtn.innerHTML = originalContent;
-                saveBtn.style.background = '';
-            }, 2000);
-        }
     } catch (error) {
         console.error('❌ Ошибка сохранения:', error);
         showNotification('Ошибка сохранения', 'error');
@@ -629,6 +700,8 @@ function setupActionButtons() {
     const clearCartBtn = document.getElementById('clearCartBtn');
     if (clearCartBtn) {
         clearCartBtn.addEventListener('click', () => {
+            addPremiumButtonAnimation(clearCartBtn);
+
             showConfirm(
                 'Очистить корзину?',
                 'Все товары будут удалены из корзины',
@@ -650,6 +723,7 @@ function setupActionButtons() {
     const exportDataBtn = document.getElementById('exportDataBtn');
     if (exportDataBtn) {
         exportDataBtn.addEventListener('click', () => {
+            addPremiumButtonAnimation(exportDataBtn);
             exportUserData();
         });
     }
@@ -658,13 +732,15 @@ function setupActionButtons() {
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
     if (clearHistoryBtn) {
         clearHistoryBtn.addEventListener('click', () => {
+            addPremiumButtonAnimation(clearHistoryBtn);
+
             showConfirm(
                 'Удалить всю историю?',
                 'Это действие необратимо. Все данные о заказах будут удалены.',
                 () => {
                     try {
                         orders = [];
-                        renderOrders();
+                        renderOrdersWithAnimation();
                         updateStats();
                         showNoOrdersState();
                         showNotification('История очищена', 'success');
@@ -676,6 +752,16 @@ function setupActionButtons() {
             );
         });
     }
+}
+
+function addPremiumButtonAnimation(button) {
+    button.style.animation = 'premiumHaptic 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+    button.style.transform = 'scale(0.97) translateY(1px)';
+
+    setTimeout(() => {
+        button.style.animation = '';
+        button.style.transform = '';
+    }, 150);
 }
 
 // === ЭКСПОРТ ДАННЫХ ===
@@ -712,22 +798,16 @@ function exportUserData() {
 
 // === АВТОМАТИЧЕСКИЙ РАСЧЕТ ВЫСОТЫ БЛОКОВ ===
 
-let isResizing = false; // Флаг для предотвращения циклов
+let isResizing = false;
 
 function autoResizeElements() {
-    if (isResizing) {
-        console.log('🔄 Пропускаем пересчет - уже выполняется');
-        return;
-    }
+    if (isResizing) return;
 
     isResizing = true;
-    console.log('🔧 Автоматический расчет высоты блоков...');
 
-    // Функция для расчета нужной высоты элемента
     function calculateRequiredHeight(element) {
         if (!element) return 0;
 
-        // Временно убираем ограничения высоты
         const originalHeight = element.style.height;
         const originalMinHeight = element.style.minHeight;
         const originalMaxHeight = element.style.maxHeight;
@@ -736,12 +816,10 @@ function autoResizeElements() {
         element.style.minHeight = 'auto';
         element.style.maxHeight = 'none';
 
-        // Получаем реальную высоту контента
         const scrollHeight = element.scrollHeight;
         const clientHeight = element.clientHeight;
         const requiredHeight = Math.max(scrollHeight, clientHeight);
 
-        // Возвращаем исходные стили
         element.style.height = originalHeight;
         element.style.minHeight = originalMinHeight;
         element.style.maxHeight = originalMaxHeight;
@@ -749,63 +827,44 @@ function autoResizeElements() {
         return requiredHeight;
     }
 
-    // Обработка вкладок (работала нормально)
+    // Обработка вкладок
     const tabContents = document.querySelectorAll('.tab-content');
-    tabContents.forEach((tab, index) => {
+    tabContents.forEach(tab => {
         const requiredHeight = calculateRequiredHeight(tab);
         if (requiredHeight > 0) {
-            tab.style.minHeight = `${requiredHeight + 20}px`; // +20px запас
-            console.log(`Вкладка ${tab.id}: установлена высота ${requiredHeight + 20}px`);
+            tab.style.minHeight = `${requiredHeight + 20}px`;
         }
     });
 
-    // ИСКЛЮЧИЛИ карточки заказов - они вызывали проблемы!
-    // Пусть они используют CSS sizing
-
-    // Обработка обычных карточек (работали нормально)
+    // Обработка карточек
     const cards = document.querySelectorAll('.card');
-    cards.forEach((card, index) => {
+    cards.forEach(card => {
         const requiredHeight = calculateRequiredHeight(card);
         if (requiredHeight > 0) {
-            card.style.minHeight = `${requiredHeight + 10}px`; // +10px запас
-            console.log(`Карточка ${index}: установлена высота ${requiredHeight + 10}px`);
+            card.style.minHeight = `${requiredHeight + 10}px`;
         }
     });
 
-    // Сбрасываем флаг через небольшую задержку
     setTimeout(() => {
         isResizing = false;
     }, 500);
 }
 
-// Функция для наблюдения за изменениями контента
 function setupAutoResize() {
-    // Создаем ResizeObserver ТОЛЬКО для вкладок и карточек (НЕ order-card!)
     if (window.ResizeObserver) {
-        const resizeObserver = new ResizeObserver((entries) => {
-            entries.forEach((entry) => {
-                const element = entry.target;
-                // УБРАЛИ order-card из наблюдения!
-                if (element.classList.contains('tab-content') ||
-                    element.classList.contains('card')) {
-
-                    // Пересчитываем высоту при изменении контента
-                    setTimeout(() => {
-                        if (!isResizing) {
-                            autoResizeElements();
-                        }
-                    }, 200);
+        const resizeObserver = new ResizeObserver(() => {
+            setTimeout(() => {
+                if (!isResizing) {
+                    autoResizeElements();
                 }
-            });
+            }, 200);
         });
 
-        // Наблюдаем ТОЛЬКО за вкладками и карточками (НЕ order-card!)
         document.querySelectorAll('.tab-content, .card').forEach(el => {
             resizeObserver.observe(el);
         });
     }
 
-    // Также пересчитываем при изменении окна
     window.addEventListener('resize', debounce(() => {
         if (!isResizing) {
             autoResizeElements();
@@ -813,53 +872,55 @@ function setupAutoResize() {
     }, 500));
 }
 
-// Вызываем после загрузки контента
 function initializeAutoResize() {
-    // Начальный расчет
     setTimeout(() => {
         if (!isResizing) {
             autoResizeElements();
         }
     }, 500);
 
-    // Повторный расчет после загрузки заказов
     setTimeout(() => {
         if (!isResizing) {
             autoResizeElements();
         }
     }, 2000);
 
-    // Настраиваем автоматический пересчет
     setupAutoResize();
-
-    console.log('✅ Автоматический расчет высоты инициализирован');
 }
 
+// === ПРЕМИАЛЬНАЯ СТАТИСТИКА ===
+
 function updateStats() {
-    // Анимированное обновление счетчика заказов
+    // Премиальное анимированное обновление счетчика заказов
     if (DOM.totalOrders) {
-        animateCounter(DOM.totalOrders, orders.length);
+        animateCounterPremium(DOM.totalOrders, orders.length);
     }
 
     if (DOM.memberSince) {
-        DOM.memberSince.textContent = new Date().getFullYear();
+        animateCounterPremium(DOM.memberSince, new Date().getFullYear());
     }
 
     if (DOM.orderStatus) {
-        let status = 'Новичок';
+        let status = 'Новый';
         if (orders.length >= 10) status = 'VIP';
-        else if (orders.length >= 3) status = 'Постоянный';
+        else if (orders.length >= 3) status = 'Активный';
         else if (orders.length > 0) status = 'Клиент';
 
         DOM.orderStatus.textContent = status;
+
+        // Премиальная анимация статуса
+        DOM.orderStatus.style.animation = 'premiumPopIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        setTimeout(() => {
+            DOM.orderStatus.style.animation = '';
+        }, 600);
     }
 }
 
-function animateCounter(element, target) {
+function animateCounterPremium(element, target) {
     if (!element) return;
 
     const start = parseInt(element.textContent) || 0;
-    const duration = 1000;
+    const duration = 1500;
     const startTime = performance.now();
 
     function update(currentTime) {
@@ -869,8 +930,15 @@ function animateCounter(element, target) {
         const current = Math.floor(start + (target - start) * easeOutCubic(progress));
         element.textContent = current;
 
+        // Премиальный эффект во время анимации
         if (progress < 1) {
+            const scale = 1 + Math.sin(progress * Math.PI) * 0.05;
+            element.style.transform = `scale(${scale})`;
+            element.style.filter = `brightness(${1 + Math.sin(progress * Math.PI) * 0.1})`;
             requestAnimationFrame(update);
+        } else {
+            element.style.transform = '';
+            element.style.filter = '';
         }
     }
 
@@ -898,6 +966,12 @@ function updateCartBadge() {
         badges.forEach(badge => {
             if (badge) {
                 badge.textContent = count;
+
+                // Премиальная анимация при обновлении
+                badge.style.animation = 'premiumPopIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                setTimeout(() => {
+                    badge.style.animation = '';
+                }, 400);
             }
         });
     } catch (error) {
@@ -970,9 +1044,9 @@ function debounce(func, wait) {
     };
 }
 
-// === УВЕДОМЛЕНИЯ ===
+// === ПРЕМИАЛЬНЫЕ УВЕДОМЛЕНИЯ ===
 
-function showNotification(message, type = 'info', duration = 3000) {
+function showNotification(message, type = 'info', duration = 3500) {
     // Создаем контейнер если его нет
     let container = document.getElementById('notification-container');
     if (!container) {
@@ -980,12 +1054,12 @@ function showNotification(message, type = 'info', duration = 3000) {
         container.id = 'notification-container';
         container.style.cssText = `
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 24px;
+            right: 24px;
             z-index: 10000;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 16px;
             pointer-events: none;
         `;
         document.body.appendChild(container);
@@ -995,7 +1069,7 @@ function showNotification(message, type = 'info', duration = 3000) {
     const notificationId = 'notification-' + Date.now();
     notification.id = notificationId;
 
-    // Цвета для разных типов
+    // Премиальные цвета для разных типов
     const colors = {
         success: '#10b981',
         info: '#1ca6f8',
@@ -1011,26 +1085,29 @@ function showNotification(message, type = 'info', duration = 3000) {
     };
 
     notification.style.cssText = `
-        background: white;
-        border: 1px solid #e5e7eb;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
         border-left: 4px solid ${colors[type]};
-        border-radius: 12px;
-        padding: 16px 20px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        border-radius: 16px;
+        padding: 20px 24px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
         transform: translateX(400px);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         pointer-events: auto;
-        max-width: 350px;
-        min-width: 300px;
+        max-width: 380px;
+        min-width: 320px;
+        animation: premiumNotificationSlide 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     `;
 
     notification.innerHTML = `
-        <span style="font-size: 1.2em; color: ${colors[type]};">${icons[type]}</span>
-        <span style="flex: 1; color: #374151; font-weight: 500;">${escapeHtml(message)}</span>
-        <button style="background: none; border: none; font-size: 1.2em; color: #9ca3af; cursor: pointer; padding: 0; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">&times;</button>
+        <span style="font-size: 1.3em; color: ${colors[type]};">${icons[type]}</span>
+        <span style="flex: 1; color: #1f2937; font-weight: 600; font-size: 0.95rem;">${escapeHtml(message)}</span>
+        <button style="background: none; border: none; font-size: 1.3em; color: #9ca3af; cursor: pointer; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.2s ease;">&times;</button>
     `;
 
     container.appendChild(notification);
@@ -1043,6 +1120,14 @@ function showNotification(message, type = 'info', duration = 3000) {
     // Закрытие по клику
     const closeBtn = notification.querySelector('button');
     closeBtn.onclick = () => removeNotification(notification);
+    closeBtn.onmouseenter = () => {
+        closeBtn.style.background = 'rgba(156, 163, 175, 0.1)';
+        closeBtn.style.color = '#6b7280';
+    };
+    closeBtn.onmouseleave = () => {
+        closeBtn.style.background = 'none';
+        closeBtn.style.color = '#9ca3af';
+    };
 
     // Автоудаление
     setTimeout(() => removeNotification(notification), duration);
@@ -1051,15 +1136,16 @@ function showNotification(message, type = 'info', duration = 3000) {
 function removeNotification(notification) {
     if (!notification || !notification.parentNode) return;
 
-    notification.style.transform = 'translateX(400px)';
+    notification.style.transform = 'translateX(400px) scale(0.95)';
+    notification.style.opacity = '0';
     setTimeout(() => {
         if (notification.parentNode) {
             notification.parentNode.removeChild(notification);
         }
-    }, 300);
+    }, 400);
 }
 
-// === ДИАЛОГ ПОДТВЕРЖДЕНИЯ ===
+// === ПРЕМИАЛЬНЫЙ ДИАЛОГ ПОДТВЕРЖДЕНИЯ ===
 
 function showConfirm(title, message, onConfirm) {
     // Создаем overlay
@@ -1080,7 +1166,7 @@ function showConfirm(title, message, onConfirm) {
         </div>
     `;
 
-    // Добавляем стили если их нет
+    // Добавляем премиальные стили если их нет
     if (!document.getElementById('confirm-styles')) {
         const style = document.createElement('style');
         style.id = 'confirm-styles';
@@ -1091,96 +1177,94 @@ function showConfirm(title, message, onConfirm) {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
+                background: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 z-index: 10000;
-                animation: fadeIn 0.3s ease;
+                animation: premiumOverlaySlide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
             
             .confirm-dialog {
-                background: white;
-                border-radius: 20px;
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 24px;
                 overflow: hidden;
-                max-width: 400px;
+                max-width: 420px;
                 width: 90%;
-                animation: slideUp 0.3s ease;
+                animation: premiumDialogBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
                 box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             }
             
             .confirm-header {
-                padding: 24px 24px 0;
+                padding: 32px 32px 0;
             }
             
             .confirm-header h3 {
                 margin: 0;
-                font-size: 1.25rem;
-                font-weight: 700;
-                color: #111827;
+                font-size: 1.4rem;
+                font-weight: 800;
+                color: #1f2937;
+                letter-spacing: -0.01em;
             }
             
             .confirm-body {
-                padding: 12px 24px 24px;
+                padding: 16px 32px 32px;
             }
             
             .confirm-body p {
                 margin: 0;
                 color: #6b7280;
-                line-height: 1.5;
+                line-height: 1.6;
+                font-size: 1rem;
+                font-weight: 500;
             }
             
             .confirm-actions {
                 display: flex;
-                gap: 12px;
-                padding: 0 24px 24px;
+                gap: 16px;
+                padding: 0 32px 32px;
             }
             
             .confirm-btn {
                 flex: 1;
-                padding: 12px 20px;
+                padding: 16px 24px;
                 border: none;
                 border-radius: 12px;
-                font-weight: 600;
+                font-weight: 700;
                 cursor: pointer;
-                transition: all 0.2s ease;
+                transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
                 font-size: 0.95rem;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
             }
             
             .confirm-btn.cancel {
-                background: #f3f4f6;
+                background: rgba(243, 244, 246, 0.8);
                 color: #6b7280;
+                border: 2px solid rgba(229, 231, 235, 0.5);
             }
             
             .confirm-btn.cancel:hover {
-                background: #e5e7eb;
+                background: rgba(229, 231, 235, 0.9);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
             }
             
             .confirm-btn.confirm {
-                background: #ef4444;
+                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
                 color: white;
+                box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
             }
             
             .confirm-btn.confirm:hover {
-                background: #dc2626;
-            }
-            
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
-            
-            @keyframes slideUp {
-                from {
-                    transform: translateY(30px) scale(0.95);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateY(0) scale(1);
-                    opacity: 1;
-                }
+                background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
             }
         `;
         document.head.appendChild(style);
@@ -1193,7 +1277,7 @@ function showConfirm(title, message, onConfirm) {
     const confirmBtn = overlay.querySelector('.confirm-btn.confirm');
 
     function closeDialog() {
-        overlay.style.animation = 'fadeIn 0.3s ease reverse';
+        overlay.style.animation = 'premiumFadeOut 0.3s ease';
         setTimeout(() => {
             if (document.body.contains(overlay)) {
                 document.body.removeChild(overlay);
@@ -1201,10 +1285,17 @@ function showConfirm(title, message, onConfirm) {
         }, 300);
     }
 
-    cancelBtn.addEventListener('click', closeDialog);
+    cancelBtn.addEventListener('click', () => {
+        addPremiumButtonAnimation(cancelBtn);
+        setTimeout(closeDialog, 150);
+    });
+
     confirmBtn.addEventListener('click', () => {
-        onConfirm();
-        closeDialog();
+        addPremiumButtonAnimation(confirmBtn);
+        setTimeout(() => {
+            onConfirm();
+            closeDialog();
+        }, 150);
     });
 
     overlay.addEventListener('click', (e) => {
@@ -1217,9 +1308,31 @@ function showConfirm(title, message, onConfirm) {
     cancelBtn.focus();
 }
 
+// Добавляем недостающую анимацию
+const premiumFadeOutKeyframes = `
+@keyframes premiumFadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+}
+`;
+
+// Добавляем keyframes если их нет
+if (!document.getElementById('premium-fadeout-keyframes')) {
+    const style = document.createElement('style');
+    style.id = 'premium-fadeout-keyframes';
+    style.textContent = premiumFadeOutKeyframes;
+    document.head.appendChild(style);
+}
+
 // === ГЛОБАЛЬНЫЕ ФУНКЦИИ ===
 window.loadOrders = loadOrders;
 window.switchTab = switchTab;
 window.showNotification = showNotification;
 
-console.log('🎉 Профиль готов к использованию!');
+console.log('🎉 Премиальный профиль готов к использованию!');

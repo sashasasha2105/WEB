@@ -1,68 +1,98 @@
-/* === MOBILE-ANIMATIONS.CSS - УПРОЩЕННЫЕ МОБИЛЬНЫЕ АНИМАЦИИ === */
+/* === MOBILE-ANIMATIONS.CSS - ПРЕМИАЛЬНЫЕ АНИМАЦИИ === */
 
 /* === Touch эффекты для мобильных устройств === */
 @media (max-width: 768px) {
 
-    /* Touch feedback для интерактивных элементов */
+    /* Принудительный фон для мобильных */
+    html, body {
+        background: linear-gradient(135deg, #002a5c 0%, #003d7a 50%, #0057c2 100%) !important;
+        background-attachment: fixed !important;
+        background-repeat: no-repeat !important;
+        background-size: cover !important;
+        min-height: 100vh !important;
+    }
+
+    /* Дополнительный фон-слой для iOS Safari */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: linear-gradient(135deg, #002a5c 0%, #003d7a 50%, #0057c2 100%);
+        z-index: -5;
+        pointer-events: none;
+    }
+
+    /* Премиальные touch эффекты */
     .tab-btn:active,
     .save-btn:active,
     .action-btn:active,
     .refresh-btn:active,
     .cta-btn:active {
-        transform: scale(0.96) !important;
-        transition: transform 0.1s ease !important;
+        transform: scale(0.97) translateY(1px) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
     .stat-item:active {
-        transform: scale(0.98) translateY(-2px) !important;
-        transition: transform 0.1s ease !important;
+        transform: scale(0.98) translateY(-1px) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 8px 20px rgba(28, 166, 248, 0.15) !important;
     }
 
     .order-card:active {
         transform: scale(0.98) translateY(-2px) !important;
-        transition: transform 0.1s ease !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2) !important;
     }
 
     .setting-item:active {
-        transform: scale(0.98) translateX(2px) !important;
-        transition: transform 0.1s ease !important;
+        transform: scale(0.99) translateX(3px) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
-    /* Плавные входные анимации */
+    .card:active {
+        transform: scale(0.99) translateY(-1px) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    /* Элегантные входные анимации */
     .hero-card {
-        animation: mobileSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        animation: premiumSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .stat-item {
-        animation: mobilePopIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        animation: premiumPopIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
 
     .stat-item:nth-child(1) { animation-delay: 0.1s; }
-    .stat-item:nth-child(2) { animation-delay: 0.2s; }
-    .stat-item:nth-child(3) { animation-delay: 0.3s; }
+    .stat-item:nth-child(2) { animation-delay: 0.15s; }
+    .stat-item:nth-child(3) { animation-delay: 0.2s; }
 
     .tabs-navigation {
-        animation: mobileSlideInFromTop 0.5s ease-out 0.2s both;
+        animation: premiumSlideFromTop 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
     }
 
     .tab-content.active {
-        animation: mobileContentSlide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        animation: premiumContentSlide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .order-card {
-        animation: mobileCardSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        animation: premiumCardSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .order-card:nth-child(1) { animation-delay: 0.1s; }
     .order-card:nth-child(2) { animation-delay: 0.15s; }
     .order-card:nth-child(3) { animation-delay: 0.2s; }
+    .order-card:nth-child(4) { animation-delay: 0.25s; }
 
     .card {
-        animation: mobileCardFadeIn 0.6s ease-out;
+        animation: premiumCardFadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .form-group {
-        animation: mobileFormSlideUp 0.4s ease-out;
+        animation: premiumFormSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .form-group:nth-child(1) { animation-delay: 0.05s; }
@@ -72,7 +102,7 @@
     .form-group:nth-child(5) { animation-delay: 0.25s; }
 
     .setting-item {
-        animation: mobileSettingSlide 0.5s ease-out;
+        animation: premiumSettingSlide 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .setting-item:nth-child(1) { animation-delay: 0.1s; }
@@ -80,23 +110,13 @@
     .setting-item:nth-child(3) { animation-delay: 0.2s; }
     .setting-item:nth-child(4) { animation-delay: 0.25s; }
 
-    /* Toggle switch анимации */
+    /* Премиальные toggle анимации */
     .toggle input:checked + .toggle-slider {
-        animation: mobileSwitchOn 0.3s ease-out;
+        animation: premiumSwitchOn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
 
     .toggle input:not(:checked) + .toggle-slider {
-        animation: mobileSwitchOff 0.3s ease-out;
-    }
-
-    /* Пульсация для кнопки обновления */
-    .refresh-btn {
-        animation: mobilePulse 2s infinite;
-    }
-
-    /* Плавное свечение для CTA кнопки */
-    .cta-btn {
-        animation: mobileGlow 3s ease-in-out infinite alternate;
+        animation: premiumSwitchOff 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
 
     /* Убираем hover эффекты на мобильных */
@@ -107,32 +127,32 @@
         transform: none !important;
     }
 
-    /* Спиннер с эффектом */
+    /* Премиальный спиннер */
     .spinner {
-        animation: mobileSpinGlow 1.2s linear infinite;
+        animation: premiumSpinGlow 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
     }
 
     /* Empty state анимации */
     .empty-state {
-        animation: mobileEmptyStateSlide 0.8s ease-out;
+        animation: premiumEmptyStateSlide 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .empty-icon {
-        animation: mobileFloatBounce 4s ease-in-out infinite;
+        animation: premiumFloat 4s ease-in-out infinite;
     }
 
     /* Футер анимация */
     .footer {
-        animation: mobileFooterSlideUp 0.6s ease-out 0.4s both;
+        animation: premiumFooterSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s both;
     }
 
-    /* Переходы между вкладками */
+    /* Плавные переходы между вкладками */
     .tab-content {
-        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .tab-content:not(.active) {
-        transform: translateX(-15px);
+        transform: translateX(-12px);
         opacity: 0;
         pointer-events: none;
     }
@@ -143,224 +163,246 @@
         pointer-events: auto;
     }
 
-    /* Input focus анимация */
+    /* Премиальный input focus */
     .form-group input:focus {
-        animation: mobileInputFocus 0.2s ease-out;
+        animation: premiumInputFocus 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
 
-    /* Notification анимации */
+    /* Уведомления */
     .confirm-overlay {
-        animation: mobileOverlaySlide 0.3s ease-out;
+        animation: premiumOverlaySlide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .confirm-dialog {
-        animation: mobileDialogBounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        animation: premiumDialogBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    /* Специальные эффекты для аватара */
+    .avatar-circle:active {
+        transform: scale(0.95) rotate(5deg) !important;
+        transition: transform 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
     }
 }
 
-/* === Keyframes для мобильных анимаций === */
-@keyframes mobileSlideUp {
+/* === Keyframes для премиальных анимаций === */
+@keyframes premiumSlideUp {
     from {
         opacity: 0;
-        transform: translateY(40px) scale(0.95);
+        transform: translateY(40px) scale(0.96);
+        filter: blur(4px);
     }
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
+        filter: blur(0);
     }
 }
 
-@keyframes mobilePopIn {
+@keyframes premiumPopIn {
     0% {
         opacity: 0;
-        transform: scale(0.8) translateY(20px);
+        transform: scale(0.85) translateY(20px);
+        filter: blur(3px);
     }
     60% {
         opacity: 1;
-        transform: scale(1.02) translateY(-2px);
+        transform: scale(1.02) translateY(-3px);
+        filter: blur(0);
     }
     100% {
         opacity: 1;
         transform: scale(1) translateY(0);
+        filter: blur(0);
     }
 }
 
-@keyframes mobileSlideInFromTop {
+@keyframes premiumSlideFromTop {
     from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateY(-25px);
+        filter: blur(3px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
+        filter: blur(0);
     }
 }
 
-@keyframes mobileContentSlide {
+@keyframes premiumContentSlide {
     from {
         opacity: 0;
-        transform: translateX(15px);
+        transform: translateX(18px);
+        filter: blur(2px);
     }
     to {
         opacity: 1;
         transform: translateX(0);
+        filter: blur(0);
     }
 }
 
-@keyframes mobileCardSlideIn {
+@keyframes premiumCardSlideIn {
     from {
         opacity: 0;
-        transform: translateY(20px) scale(0.95);
+        transform: translateY(25px) scale(0.96);
+        filter: blur(3px);
     }
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
+        filter: blur(0);
     }
 }
 
-@keyframes mobileCardFadeIn {
+@keyframes premiumCardFadeIn {
     from {
         opacity: 0;
-        transform: translateY(15px);
+        transform: translateY(20px);
+        filter: blur(2px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
+        filter: blur(0);
     }
 }
 
-@keyframes mobileFormSlideUp {
+@keyframes premiumFormSlideUp {
     from {
         opacity: 0;
         transform: translateY(15px);
+        filter: blur(1px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
+        filter: blur(0);
     }
 }
 
-@keyframes mobileSettingSlide {
+@keyframes premiumSettingSlide {
     from {
         opacity: 0;
-        transform: translateX(-15px);
+        transform: translateX(-18px);
+        filter: blur(2px);
     }
     to {
         opacity: 1;
         transform: translateX(0);
+        filter: blur(0);
     }
 }
 
-@keyframes mobileSwitchOn {
+@keyframes premiumSwitchOn {
     0% {
-        background: var(--gray-300);
+        background: #d1d5db;
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
     }
     50% {
-        background: var(--primary);
-        transform: scale(1.02);
+        background: linear-gradient(135deg, #1ca6f8 0%, #0057c2 100%);
+        transform: scale(1.03);
+        box-shadow: 0 0 20px rgba(28, 166, 248, 0.3);
     }
     100% {
-        background: var(--primary);
+        background: linear-gradient(135deg, #0057c2 0%, #1ca6f8 100%);
         transform: scale(1);
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(28, 166, 248, 0.15);
     }
 }
 
-@keyframes mobileSwitchOff {
+@keyframes premiumSwitchOff {
     0% {
-        background: var(--primary);
+        background: linear-gradient(135deg, #0057c2 0%, #1ca6f8 100%);
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(28, 166, 248, 0.15);
     }
     50% {
-        background: var(--gray-300);
-        transform: scale(1.02);
+        background: #9ca3af;
+        transform: scale(1.03);
+        box-shadow: 0 0 10px rgba(156, 163, 175, 0.2);
     }
     100% {
-        background: var(--gray-300);
+        background: #d1d5db;
         transform: scale(1);
+        box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 }
 
-@keyframes mobilePulse {
-    0%, 100% {
-        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3);
-    }
-    50% {
-        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
-    }
-}
-
-@keyframes mobileGlow {
-    from {
-        box-shadow: 0 4px 20px rgba(28, 166, 248, 0.3);
-    }
-    to {
-        box-shadow: 0 8px 30px rgba(28, 166, 248, 0.5);
-    }
-}
-
-@keyframes mobileSpinGlow {
+@keyframes premiumSpinGlow {
     0% {
         transform: rotate(0deg);
-        filter: brightness(1);
+        filter: brightness(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
     }
     50% {
-        filter: brightness(1.2);
+        filter: brightness(1.2) drop-shadow(0 0 12px rgba(255, 255, 255, 0.5));
     }
     100% {
         transform: rotate(360deg);
-        filter: brightness(1);
+        filter: brightness(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
     }
 }
 
-@keyframes mobileEmptyStateSlide {
+@keyframes premiumEmptyStateSlide {
     from {
         opacity: 0;
-        transform: translateY(30px) scale(0.9);
+        transform: translateY(35px) scale(0.94);
+        filter: blur(4px);
     }
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
+        filter: blur(0);
     }
 }
 
-@keyframes mobileFloatBounce {
+@keyframes premiumFloat {
     0%, 100% {
         transform: translateY(0) rotate(0deg);
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
     }
     25% {
-        transform: translateY(-6px) rotate(1deg);
+        transform: translateY(-8px) rotate(2deg);
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2));
     }
     50% {
-        transform: translateY(-3px) rotate(0deg);
+        transform: translateY(-4px) rotate(0deg);
+        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
     }
     75% {
-        transform: translateY(-8px) rotate(-1deg);
+        transform: translateY(-10px) rotate(-2deg);
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2));
     }
 }
 
-@keyframes mobileFooterSlideUp {
+@keyframes premiumFooterSlideUp {
     from {
         opacity: 0;
         transform: translateY(30px);
+        filter: blur(3px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
+        filter: blur(0);
     }
 }
 
-@keyframes mobileInputFocus {
+@keyframes premiumInputFocus {
     0% {
         transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(28, 166, 248, 0);
     }
     50% {
-        transform: scale(1.01);
+        transform: scale(1.005) translateY(-1px);
+        box-shadow: 0 0 0 4px rgba(28, 166, 248, 0.15);
     }
     100% {
-        transform: scale(1);
+        transform: scale(1) translateY(-1px);
+        box-shadow: 0 0 0 4px rgba(28, 166, 248, 0.1);
     }
 }
 
-@keyframes mobileOverlaySlide {
+@keyframes premiumOverlaySlide {
     from {
         opacity: 0;
         backdrop-filter: blur(0px);
@@ -368,40 +410,78 @@
     }
     to {
         opacity: 1;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
     }
 }
 
-@keyframes mobileDialogBounce {
+@keyframes premiumDialogBounce {
     0% {
         opacity: 0;
-        transform: scale(0.8) translateY(30px);
+        transform: scale(0.85) translateY(40px);
+        filter: blur(3px);
     }
     60% {
         opacity: 1;
-        transform: scale(1.02) translateY(-5px);
+        transform: scale(1.02) translateY(-8px);
+        filter: blur(0);
     }
     100% {
         opacity: 1;
         transform: scale(1) translateY(0);
+        filter: blur(0);
     }
 }
 
 /* === Оптимизации для маленьких экранов === */
 @media (max-width: 480px) {
 
-    /* Более плавные анимации для экономии батареи */
+    /* Еще более принудительный фон для маленьких экранов */
+    html {
+        background: linear-gradient(135deg, #002a5c 0%, #003d7a 50%, #0057c2 100%) !important;
+        background-attachment: fixed !important;
+        min-height: 100vh !important;
+        min-height: -webkit-fill-available !important;
+    }
+
+    body {
+        background: linear-gradient(135deg, #002a5c 0%, #003d7a 50%, #0057c2 100%) !important;
+        background-attachment: fixed !important;
+        background-repeat: no-repeat !important;
+        background-size: cover !important;
+        min-height: 100vh !important;
+        min-height: -webkit-fill-available !important;
+    }
+
+    /* Тройной фон-слой для максимальной совместимости */
+    body::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        height: -webkit-fill-available;
+        background: linear-gradient(135deg, #002a5c 0%, #003d7a 50%, #0057c2 100%);
+        z-index: -6;
+        pointer-events: none;
+    }
+
+    /* Более быстрые анимации для экономии батареи */
     .hero-card {
-        animation-duration: 0.8s;
+        animation-duration: 0.5s;
     }
 
     .stat-item {
-        animation-duration: 0.6s;
+        animation-duration: 0.4s;
     }
 
     .order-card {
-        animation-duration: 0.6s;
+        animation-duration: 0.4s;
+    }
+
+    .card {
+        animation-duration: 0.4s;
     }
 
     /* Уменьшенные эффекты */
@@ -409,16 +489,20 @@
         transition-duration: 0.2s;
     }
 
-    /* Оптимизированные тени */
+    /* Премиальные тени для маленьких экранов */
     .card,
     .order-card,
     .hero-card {
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
     }
 
     .card:active,
     .order-card:active {
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+    }
+
+    .stat-item:active {
+        box-shadow: 0 6px 20px rgba(28, 166, 248, 0.2) !important;
     }
 }
 
@@ -426,34 +510,34 @@
 @media (max-width: 768px) and (orientation: landscape) {
 
     .hero-card {
-        padding: 20px;
-        margin-bottom: 20px;
+        padding: 24px;
+        margin-bottom: 24px;
     }
 
     .hero-stats {
-        gap: 12px;
+        gap: 16px;
     }
 
     .stat-item {
-        padding: 12px 16px;
+        padding: 16px 20px;
     }
 
     .tabs-navigation {
-        padding: 4px;
+        padding: 6px;
     }
 
     .tab-btn {
-        padding: 12px 16px;
+        padding: 14px 18px;
         font-size: 0.9em;
     }
 
     .card {
-        padding: 20px 16px;
-        margin-bottom: 16px;
+        padding: 24px 20px;
+        margin-bottom: 20px;
     }
 
     .order-card {
-        padding: 16px;
+        padding: 20px;
     }
 
     /* Ускоренные анимации в landscape */
@@ -471,7 +555,7 @@
     .hero-card,
     .card,
     .tabs-navigation {
-        transition: backdrop-filter 0.2s ease;
+        transition: backdrop-filter 0.3s ease;
     }
 
     .stat-item:active,
@@ -479,17 +563,23 @@
         transform: scale(0.98) translateY(-1px) !important;
     }
 
+    /* Специальные эффекты для iOS */
+    .avatar-circle {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+
     /* Safe Area поддержка для новых iPhone */
     @media (max-width: 480px) {
         .profile-container {
-            padding-top: calc(var(--header-height) + 20px + env(safe-area-inset-top));
-            padding-bottom: calc(40px + env(safe-area-inset-bottom));
+            padding-top: calc(var(--header-height) + 24px + env(safe-area-inset-top));
+            padding-bottom: calc(50px + env(safe-area-inset-bottom));
             padding-left: calc(20px + env(safe-area-inset-left));
             padding-right: calc(20px + env(safe-area-inset-right));
         }
 
         .footer {
-            padding-bottom: calc(40px + env(safe-area-inset-bottom));
+            padding-bottom: calc(50px + env(safe-area-inset-bottom));
         }
     }
 }
@@ -506,11 +596,11 @@
     }
 
     .tab-content {
-        transition: opacity 0.1s ease !important;
+        transition: opacity 0.15s ease !important;
     }
 
     .form-group input:focus {
-        transition: border-color 0.1s ease !important;
+        transition: border-color 0.15s ease !important;
     }
 
     /* Оставляем только opacity transitions */
@@ -525,10 +615,10 @@
     }
 }
 
-/* === Дополнительные touch эффекты === */
+/* === Премиальные ripple эффекты === */
 @media (max-width: 768px) {
 
-    /* Ripple эффект для карточек */
+    /* Элегантный ripple эффект */
     .touchable {
         position: relative;
         overflow: hidden;
@@ -541,28 +631,96 @@
         left: 50%;
         width: 0;
         height: 0;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+        background: radial-gradient(circle, rgba(28, 166, 248, 0.25) 0%, rgba(0, 87, 194, 0.1) 40%, transparent 70%);
         border-radius: 50%;
         transform: translate(-50%, -50%);
-        transition: width 0.3s ease, height 0.3s ease;
+        transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         pointer-events: none;
         z-index: 1;
     }
 
     .touchable:active::before {
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
     }
 
-    /* Haptic feedback имитация */
+    /* Премиальные haptic эффекты */
     .toggle input:checked + .toggle-slider,
     .tab-btn.active {
-        animation: mobileHaptic 0.1s ease-out;
+        animation: premiumHaptic 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    /* Специальные эффекты для разных элементов */
+    .stat-item.touchable::before {
+        background: radial-gradient(circle, rgba(28, 166, 248, 0.2) 0%, rgba(0, 87, 194, 0.08) 50%, transparent 70%);
+    }
+
+    .order-card.touchable::before {
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(28, 166, 248, 0.1) 40%, transparent 70%);
+    }
+
+    .setting-item.touchable::before {
+        background: radial-gradient(circle, rgba(28, 166, 248, 0.15) 0%, rgba(0, 87, 194, 0.05) 50%, transparent 70%);
     }
 }
 
-@keyframes mobileHaptic {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
+@keyframes premiumHaptic {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.02);
+        filter: brightness(1.1);
+    }
+    100% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+}
+
+/* === Премиальные уведомления для мобильных === */
+@media (max-width: 768px) {
+    .notification {
+        animation: premiumNotificationSlide 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+
+    .notification.success {
+        background: rgba(255, 255, 255, 0.95);
+        border-left-color: #10b981;
+        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.15);
+    }
+
+    .notification.error {
+        background: rgba(255, 255, 255, 0.95);
+        border-left-color: #ef4444;
+        box-shadow: 0 8px 32px rgba(239, 68, 68, 0.15);
+    }
+
+    .notification.warning {
+        background: rgba(255, 255, 255, 0.95);
+        border-left-color: #f59e0b;
+        box-shadow: 0 8px 32px rgba(245, 158, 11, 0.15);
+    }
+
+    .notification.info {
+        background: rgba(255, 255, 255, 0.95);
+        border-left-color: #1ca6f8;
+        box-shadow: 0 8px 32px rgba(28, 166, 248, 0.15);
+    }
+}
+
+@keyframes premiumNotificationSlide {
+    from {
+        transform: translateX(400px) scale(0.95);
+        opacity: 0;
+        filter: blur(3px);
+    }
+    to {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+        filter: blur(0);
+    }
 }
