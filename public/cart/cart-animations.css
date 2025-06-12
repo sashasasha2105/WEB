@@ -1,0 +1,573 @@
+/* === CART-ANIMATIONS.CSS - ПРЕМИАЛЬНЫЕ МОБИЛЬНЫЕ АНИМАЦИИ === */
+
+/* === Touch эффекты для мобильных устройств === */
+@media (max-width: 768px) {
+
+    /* Принудительный фон для мобильных */
+    html, body {
+        background: linear-gradient(135deg, #002a5c 0%, #003d7a 50%, #0057c2 100%) !important;
+        background-attachment: fixed !important;
+        background-repeat: no-repeat !important;
+        background-size: cover !important;
+        min-height: 100vh !important;
+    }
+
+    /* Дополнительный фон-слой для iOS Safari */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: linear-gradient(135deg, #002a5c 0%, #003d7a 50%, #0057c2 100%);
+        z-index: -5;
+        pointer-events: none;
+    }
+
+    /* Премиальные touch эффекты */
+    .premium-btn:active,
+    .quantity-btn:active,
+    .remove-btn:active {
+        transform: scale(0.97) translateY(1px) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .cart-item:active {
+        transform: scale(0.98) translateY(-2px) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .delivery-option:active {
+        transform: scale(0.99) translateY(-1px) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .promo-card:active,
+    .delivery-card:active,
+    .recipient-card:active,
+    .summary-card:active {
+        transform: scale(0.995) translateY(-1px) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .touchable:active {
+        transform: scale(0.99) translateY(-1px) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    /* Элегантные входные анимации */
+    .cart-hero {
+        animation: premiumSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .cart-item {
+        animation: premiumCardSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .cart-item:nth-child(1) { animation-delay: 0.1s; }
+    .cart-item:nth-child(2) { animation-delay: 0.15s; }
+    .cart-item:nth-child(3) { animation-delay: 0.2s; }
+
+    .delivery-card {
+        animation: premiumFormSlideUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
+    }
+
+    .promo-card {
+        animation: premiumFormSlideUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s both;
+    }
+
+    .recipient-card {
+        animation: premiumFormSlideUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s both;
+    }
+
+    .summary-card {
+        animation: premiumFormSlideUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.5s both;
+    }
+
+    .delivery-option {
+        animation: premiumOptionSlide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .delivery-option:nth-child(1) { animation-delay: 0.1s; }
+    .delivery-option:nth-child(2) { animation-delay: 0.15s; }
+
+    .form-group {
+        animation: premiumFormSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.05s; }
+    .form-group:nth-child(2) { animation-delay: 0.1s; }
+    .form-group:nth-child(3) { animation-delay: 0.15s; }
+    .form-group:nth-child(4) { animation-delay: 0.2s; }
+
+    .tariff-btn {
+        animation: premiumTariffSlide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .tariff-btn:nth-child(1) { animation-delay: 0.1s; }
+    .tariff-btn:nth-child(2) { animation-delay: 0.15s; }
+
+    /* Убираем hover эффекты на мобильных */
+    .cart-item:hover,
+    .delivery-option:hover,
+    .premium-btn:hover,
+    .quantity-btn:hover {
+        transform: none !important;
+    }
+
+    /* Премиальный спиннер */
+    .spinner {
+        animation: premiumSpinGlow 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+
+    /* Empty state анимации */
+    .empty-state {
+        animation: premiumEmptyStateSlide 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .empty-icon {
+        animation: premiumFloat 4s ease-in-out infinite;
+    }
+
+    /* Плавные переходы секций */
+    .section-block {
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .section-block:not(.visible) {
+        transform: translateY(-12px);
+        opacity: 0;
+    }
+
+    .section-block.visible {
+        transform: translateY(0);
+        opacity: 1;
+        animation: premiumSectionReveal 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* Премиальный input focus */
+    .form-group input:focus {
+        animation: premiumInputFocus 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    /* Карта анимации */
+    .map-wrapper {
+        animation: premiumMapReveal 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .pvz-panel {
+        animation: premiumPanelSlide 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
+    }
+
+    /* Специальные эффекты для элементов управления */
+    .quantity-control:active {
+        transform: scale(0.96) !important;
+        transition: transform 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+    }
+
+    .checkout-btn:active {
+        transform: scale(0.98) translateY(1px) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    /* Премиальные ripple эффекты */
+    .touchable::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: radial-gradient(circle, rgba(28, 166, 248, 0.25) 0%, rgba(0, 87, 194, 0.1) 40%, transparent 70%);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .touchable:active::before {
+        width: 120px;
+        height: 120px;
+    }
+
+    /* Специальные ripple для разных элементов */
+    .cart-item.touchable::before {
+        background: radial-gradient(circle, rgba(28, 166, 248, 0.2) 0%, rgba(0, 87, 194, 0.08) 50%, transparent 70%);
+    }
+
+    .delivery-option.touchable::before {
+        background: radial-gradient(circle, rgba(28, 166, 248, 0.15) 0%, rgba(0, 87, 194, 0.05) 50%, transparent 70%);
+    }
+
+    .premium-btn.touchable::before {
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(28, 166, 248, 0.1) 40%, transparent 70%);
+    }
+
+    /* Анимации для уведомлений */
+    .notification {
+        animation: premiumNotificationSlide 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+}
+
+/* === Keyframes для премиальных анимаций === */
+@keyframes premiumSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.96);
+        filter: blur(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes premiumCardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(25px) scale(0.96);
+        filter: blur(3px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes premiumFormSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+        filter: blur(2px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes premiumOptionSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-18px) scale(0.98);
+        filter: blur(2px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes premiumTariffSlide {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.98);
+        filter: blur(1px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes premiumSectionReveal {
+    from {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.99);
+        filter: blur(1px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes premiumMapReveal {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.96);
+        filter: blur(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes premiumPanelSlide {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+        filter: blur(2px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes premiumSpinGlow {
+    0% {
+        transform: rotate(0deg);
+        filter: brightness(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+    }
+    50% {
+        filter: brightness(1.2) drop-shadow(0 0 12px rgba(255, 255, 255, 0.5));
+    }
+    100% {
+        transform: rotate(360deg);
+        filter: brightness(1) drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+    }
+}
+
+@keyframes premiumEmptyStateSlide {
+    from {
+        opacity: 0;
+        transform: translateY(35px) scale(0.94);
+        filter: blur(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes premiumFloat {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg);
+        filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    }
+    25% {
+        transform: translateY(-8px) rotate(2deg);
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2));
+    }
+    50% {
+        transform: translateY(-4px) rotate(0deg);
+        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+    }
+    75% {
+        transform: translateY(-10px) rotate(-2deg);
+        filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2));
+    }
+}
+
+@keyframes premiumInputFocus {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(28, 166, 248, 0);
+    }
+    50% {
+        transform: scale(1.005) translateY(-1px);
+        box-shadow: 0 0 0 4px rgba(28, 166, 248, 0.15);
+    }
+    100% {
+        transform: scale(1) translateY(-1px);
+        box-shadow: 0 0 0 4px rgba(28, 166, 248, 0.1);
+    }
+}
+
+@keyframes premiumNotificationSlide {
+    from {
+        transform: translateX(400px) scale(0.95);
+        opacity: 0;
+        filter: blur(3px);
+    }
+    to {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+/* === Оптимизации для маленьких экранов === */
+@media (max-width: 480px) {
+
+    /* Еще более принудительный фон для маленьких экранов */
+    html {
+        background: linear-gradient(135deg, #002a5c 0%, #003d7a 50%, #0057c2 100%) !important;
+        background-attachment: fixed !important;
+        min-height: 100vh !important;
+        min-height: -webkit-fill-available !important;
+    }
+
+    body {
+        background: linear-gradient(135deg, #002a5c 0%, #003d7a 50%, #0057c2 100%) !important;
+        background-attachment: fixed !important;
+        background-repeat: no-repeat !important;
+        background-size: cover !important;
+        min-height: 100vh !important;
+        min-height: -webkit-fill-available !important;
+    }
+
+    /* Тройной фон-слой для максимальной совместимости */
+    body::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        height: -webkit-fill-available;
+        background: linear-gradient(135deg, #002a5c 0%, #003d7a 50%, #0057c2 100%);
+        z-index: -6;
+        pointer-events: none;
+    }
+
+    /* Более быстрые анимации для экономии батареи */
+    .cart-hero {
+        animation-duration: 0.5s;
+    }
+
+    .cart-item {
+        animation-duration: 0.4s;
+    }
+
+    .promo-card,
+    .delivery-card,
+    .recipient-card,
+    .summary-card {
+        animation-duration: 0.4s;
+    }
+
+    /* Уменьшенные эффекты */
+    .touchable {
+        transition-duration: 0.2s;
+    }
+
+    /* Премиальные тени для маленьких экранов */
+    .cart-item,
+    .promo-card,
+    .delivery-card,
+    .recipient-card,
+    .summary-card {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    }
+
+    .cart-item:active,
+    .promo-card:active,
+    .delivery-card:active,
+    .recipient-card:active,
+    .summary-card:active {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+    }
+
+    .delivery-option:active {
+        box-shadow: 0 6px 20px rgba(28, 166, 248, 0.2) !important;
+    }
+}
+
+/* === Landscape режим на мобильных === */
+@media (max-width: 768px) and (orientation: landscape) {
+
+    .cart-hero {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .hero-content {
+        gap: 20px;
+    }
+
+    .cart-item {
+        padding: 20px;
+    }
+
+    .promo-card,
+    .delivery-card,
+    .recipient-card,
+    .summary-card {
+        padding: 20px;
+    }
+
+    /* Ускоренные анимации в landscape */
+    .cart-hero,
+    .cart-item,
+    .promo-card,
+    .delivery-card,
+    .recipient-card,
+    .summary-card {
+        animation-duration: 0.3s;
+    }
+}
+
+/* === iOS специфичные анимации === */
+@supports (-webkit-touch-callout: none) {
+
+    .cart-hero,
+    .promo-card,
+    .delivery-card,
+    .recipient-card,
+    .summary-card {
+        transition: backdrop-filter 0.3s ease;
+    }
+
+    .cart-item:active,
+    .delivery-option:active {
+        transform: scale(0.98) translateY(-1px) !important;
+    }
+
+    /* Специальные эффекты для iOS */
+    .touchable {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+
+    /* Safe Area поддержка для новых iPhone */
+    @media (max-width: 480px) {
+        .cart-container {
+            padding-top: calc(var(--header-height) + 24px + env(safe-area-inset-top));
+            padding-bottom: calc(50px + env(safe-area-inset-bottom));
+            padding-left: calc(20px + env(safe-area-inset-left));
+            padding-right: calc(20px + env(safe-area-inset-right));
+        }
+
+        .premium-footer {
+            padding-bottom: calc(50px + env(safe-area-inset-bottom));
+        }
+    }
+}
+
+/* === Уменьшенная анимация для пользователей с ограниченными возможностями === */
+@media (prefers-reduced-motion: reduce) and (max-width: 768px) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .section-block {
+        transition: opacity 0.15s ease !important;
+    }
+
+    .form-group input:focus {
+        transition: border-color 0.15s ease !important;
+    }
+
+    /* Оставляем только opacity transitions */
+    .section-block:not(.visible) {
+        opacity: 0;
+        transform: none;
+    }
+
+    .section-block.visible {
+        opacity: 1;
+        transform: none;
+    }
+}
