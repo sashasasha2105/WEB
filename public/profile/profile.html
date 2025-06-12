@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>clip & go • Профиль</title>
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/responsive.css" media="(max-width:768px)" />
-    <link rel="stylesheet" href="/css/header.css" />
-    <link rel="stylesheet" href="/profile/profile.css" />
-    <link rel="stylesheet" href="/profile/mobile-animations.css" media="(max-width:768px)" />
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/profile/profile.css">
+    <link rel="stylesheet" href="/profile/mobile-animations.css" media="(max-width:768px)">
 
     <!-- Meta -->
-    <meta name="theme-color" content="#64B5F6" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="clip & go" />
+    <meta name="theme-color" content="#1ca6f8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="clip & go">
 </head>
 
 <body>
@@ -30,82 +30,74 @@
 <!-- Main Content -->
 <main class="profile-container">
     <!-- Hero Section -->
-    <div class="profile-hero">
-        <div class="profile-avatar">
+    <div class="hero-card">
+        <div class="hero-avatar">
             <div class="avatar-circle">
-                <span class="avatar-text">👤</span>
+                <span class="avatar-icon">👤</span>
             </div>
         </div>
 
-        <div class="profile-welcome">
+        <div class="hero-info">
             <h1>Добро пожаловать!</h1>
             <p>Управляйте заказами и настройками в удобном личном кабинете</p>
         </div>
 
-        <div class="profile-stats-modern">
-            <div class="stat-modern" tabindex="0">
-                <span class="stat-icon">📦</span>
+        <div class="hero-stats">
+            <div class="stat-item">
                 <div class="stat-number" id="totalOrders">0</div>
                 <div class="stat-label">Заказов</div>
             </div>
-            <div class="stat-modern" tabindex="0">
-                <span class="stat-icon">⭐</span>
+            <div class="stat-item">
                 <div class="stat-number" id="memberSince">2024</div>
                 <div class="stat-label">С нами с</div>
             </div>
-            <div class="stat-modern" tabindex="0">
-                <span class="stat-icon">🎯</span>
+            <div class="stat-item">
                 <div class="stat-number" id="orderStatus">—</div>
                 <div class="stat-label">Статус</div>
             </div>
         </div>
     </div>
 
-    <!-- Modern Tabs -->
-    <div class="modern-tabs">
-        <div class="tab-nav" role="tablist">
-            <button class="tab-button active" data-tab="orders" role="tab" aria-selected="true">
-                <span class="tab-icon">📋</span>
-                <span class="tab-text">Мои заказы</span>
-            </button>
-            <button class="tab-button" data-tab="info" role="tab" aria-selected="false">
-                <span class="tab-icon">👤</span>
-                <span class="tab-text">Профиль</span>
-            </button>
-            <button class="tab-button" data-tab="settings" role="tab" aria-selected="false">
-                <span class="tab-icon">⚙️</span>
-                <span class="tab-text">Настройки</span>
-            </button>
-        </div>
+    <!-- Navigation Tabs -->
+    <div class="tabs-navigation">
+        <button class="tab-btn active" data-tab="orders">
+            <span class="tab-icon">📋</span>
+            <span>Мои заказы</span>
+        </button>
+        <button class="tab-btn" data-tab="profile">
+            <span class="tab-icon">👤</span>
+            <span>Профиль</span>
+        </button>
+        <button class="tab-btn" data-tab="settings">
+            <span class="tab-icon">⚙️</span>
+            <span>Настройки</span>
+        </button>
     </div>
 
-    <!-- Content -->
+    <!-- Content Wrapper -->
     <div class="content-wrapper">
         <!-- Orders Tab -->
-        <div id="orders" class="tab-content active" role="tabpanel">
-            <div class="section-header">
+        <div id="orders" class="tab-content active">
+            <div class="content-header">
                 <h2>История заказов</h2>
-                <button id="refreshOrdersBtn" class="refresh-btn">
+                <button id="refreshBtn" class="refresh-btn">
                     <span class="refresh-icon">🔄</span>
                     <span>Обновить</span>
                 </button>
             </div>
 
             <div id="ordersContainer" class="orders-grid">
-                <div class="loading-modern" id="ordersLoading">
-                    <div class="spinner-modern"></div>
+                <div class="loading-state" id="ordersLoading">
+                    <div class="spinner"></div>
                     <p>Загружаем ваши заказы...</p>
                 </div>
             </div>
 
-            <div id="noOrdersMessage" class="no-orders-modern" style="display: none;">
-                <div class="no-orders-illustration">
-                    <div class="empty-box">📦</div>
-                    <div class="empty-sparkles">✨</div>
-                </div>
+            <div id="noOrdersMessage" class="empty-state" style="display: none;">
+                <div class="empty-icon">📦</div>
                 <h3>Пока заказов нет</h3>
                 <p>Но это легко исправить! Выберите что-то интересное</p>
-                <a href="/index.html" class="cta-button">
+                <a href="/index.html" class="cta-btn">
                     <span>🛒</span>
                     <span>Начать покупки</span>
                 </a>
@@ -113,50 +105,50 @@
         </div>
 
         <!-- Profile Tab -->
-        <div id="info" class="tab-content" role="tabpanel">
-            <div class="modern-card">
-                <div class="card-header-modern">
+        <div id="profile" class="tab-content">
+            <div class="card">
+                <div class="card-header">
                     <h2>
-                        <span class="section-icon">👤</span>
+                        <span class="header-icon">👤</span>
                         <span>Личная информация</span>
                     </h2>
                 </div>
 
-                <form id="userInfoForm" class="modern-form" novalidate>
+                <form id="userInfoForm" class="form">
                     <div class="form-grid">
-                        <div class="form-group-modern full-width">
+                        <div class="form-group full-width">
                             <label for="userFullName">
                                 <span class="label-icon">🏷️</span>
                                 <span>Полное имя</span>
                             </label>
-                            <input type="text" id="userFullName" placeholder="Иван Иванов" autocomplete="name" maxlength="100">
+                            <input type="text" id="userFullName" placeholder="Иван Иванов" autocomplete="name">
                         </div>
 
-                        <div class="form-group-modern">
+                        <div class="form-group">
                             <label for="userPhone">
                                 <span class="label-icon">📱</span>
                                 <span>Телефон</span>
                             </label>
-                            <input type="tel" id="userPhone" placeholder="+7 999 000 11 22" autocomplete="tel" maxlength="20">
+                            <input type="tel" id="userPhone" placeholder="+7 999 000 11 22" autocomplete="tel">
                         </div>
 
-                        <div class="form-group-modern">
+                        <div class="form-group">
                             <label for="userEmail">
                                 <span class="label-icon">📧</span>
                                 <span>Email</span>
                             </label>
-                            <input type="email" id="userEmail" placeholder="your@email.com" autocomplete="email" maxlength="100">
+                            <input type="email" id="userEmail" placeholder="your@email.com" autocomplete="email">
                         </div>
 
-                        <div class="form-group-modern">
+                        <div class="form-group">
                             <label for="userCity">
                                 <span class="label-icon">🏙️</span>
                                 <span>Город</span>
                             </label>
-                            <input type="text" id="userCity" placeholder="Москва" autocomplete="address-level2" maxlength="50">
+                            <input type="text" id="userCity" placeholder="Москва" autocomplete="address-level2">
                         </div>
 
-                        <div class="form-group-modern">
+                        <div class="form-group">
                             <label for="userBirthday">
                                 <span class="label-icon">🎂</span>
                                 <span>День рождения</span>
@@ -165,7 +157,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="save-button">
+                    <button type="submit" class="save-btn">
                         <span>💾</span>
                         <span>Сохранить изменения</span>
                     </button>
@@ -179,114 +171,58 @@
         </div>
 
         <!-- Settings Tab -->
-        <div id="settings" class="tab-content" role="tabpanel">
+        <div id="settings" class="tab-content">
             <div class="settings-grid">
-                <!-- Notifications -->
-                <div class="modern-card">
-                    <div class="card-header-modern">
+                <!-- Notifications Card -->
+                <div class="card">
+                    <div class="card-header">
                         <h3>
-                            <span class="section-icon">🔔</span>
+                            <span class="header-icon">🔔</span>
                             <span>Уведомления</span>
                         </h3>
                     </div>
 
                     <div class="settings-list">
-                        <div class="setting-item-modern">
+                        <div class="setting-item">
                             <div class="setting-info">
                                 <div class="setting-title">📧 Email-уведомления</div>
                                 <div class="setting-desc">Информация о заказах и акциях</div>
                             </div>
-                            <label class="modern-toggle">
+                            <label class="toggle">
                                 <input type="checkbox" id="emailNotifications" checked>
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
 
-                        <div class="setting-item-modern">
+                        <div class="setting-item">
                             <div class="setting-info">
                                 <div class="setting-title">📱 SMS-уведомления</div>
                                 <div class="setting-desc">Важные обновления по доставке</div>
                             </div>
-                            <label class="modern-toggle">
+                            <label class="toggle">
                                 <input type="checkbox" id="smsNotifications" checked>
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
 
-                        <div class="setting-item-modern">
+                        <div class="setting-item">
                             <div class="setting-info">
                                 <div class="setting-title">🎁 Рекламные рассылки</div>
                                 <div class="setting-desc">Скидки и предложения</div>
                             </div>
-                            <label class="modern-toggle">
+                            <label class="toggle">
                                 <input type="checkbox" id="marketingEmails">
                                 <span class="toggle-slider"></span>
                             </label>
                         </div>
-
-                        <div class="setting-item-modern">
-                            <div class="setting-info">
-                                <div class="setting-title">🌙 Темная тема</div>
-                                <div class="setting-desc">Переключение темы интерфейса</div>
-                            </div>
-                            <label class="modern-toggle">
-                                <input type="checkbox" id="darkMode">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
                     </div>
                 </div>
 
-                <!-- Privacy -->
-                <div class="modern-card">
-                    <div class="card-header-modern">
+                <!-- Actions Card -->
+                <div class="card">
+                    <div class="card-header">
                         <h3>
-                            <span class="section-icon">🔒</span>
-                            <span>Приватность</span>
-                        </h3>
-                    </div>
-
-                    <div class="settings-list">
-                        <div class="setting-item-modern">
-                            <div class="setting-info">
-                                <div class="setting-title">👁️ Публичный профиль</div>
-                                <div class="setting-desc">Показывать профиль другим</div>
-                            </div>
-                            <label class="modern-toggle">
-                                <input type="checkbox" id="publicProfile">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-
-                        <div class="setting-item-modern">
-                            <div class="setting-info">
-                                <div class="setting-title">📊 Аналитика</div>
-                                <div class="setting-desc">Помочь улучшить сервис</div>
-                            </div>
-                            <label class="modern-toggle">
-                                <input type="checkbox" id="analytics" checked>
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-
-                        <div class="setting-item-modern">
-                            <div class="setting-info">
-                                <div class="setting-title">🔐 Двухфакторная аутентификация</div>
-                                <div class="setting-desc">Дополнительная защита</div>
-                            </div>
-                            <label class="modern-toggle">
-                                <input type="checkbox" id="twoFactorAuth">
-                                <span class="toggle-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div class="modern-card">
-                    <div class="card-header-modern">
-                        <h3>
-                            <span class="section-icon">🔧</span>
+                            <span class="header-icon">🔧</span>
                             <span>Действия с данными</span>
                         </h3>
                     </div>
@@ -323,7 +259,7 @@
 </main>
 
 <!-- Footer -->
-<footer class="modern-footer">
+<footer class="footer">
     <div class="footer-content">
         <div class="footer-brand">
             <strong>clip & go</strong>
@@ -342,7 +278,5 @@
 <script src="/js/script.js" defer></script>
 <script src="/js/mobile-header.js" defer></script>
 <script src="/profile/profile.js" defer></script>
-
 </body>
 </html>
-

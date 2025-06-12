@@ -1,53 +1,308 @@
 <!-- File: public/header.html - ОБНОВЛЕННАЯ ВЕРСИЯ -->
 
-<header id="site-header">
-  <button class="burger-menu" aria-label="Открыть меню" style="display:none;">☰</button>
+<header id="site-header" class="header">
+  <!-- Burger menu для мобильных -->
+  <button class="burger-menu" aria-label="Открыть меню" style="display:none;">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- Логотип -->
   <div class="logo">
     <a href="/index.html" onclick="scrollToTop()">clip & go</a>
   </div>
 
-  <nav class="main-nav">
-    <ul>
-      <li><a href="/index.html#product">О продукте</a></li>
-      <li><a href="/index.html#main">Главная</a></li>
-      <li><a href="/index.html#contact">Контакты</a></li>
-      <li><a href="/gallery/gallery.html">Галерея</a></li>
-      <li><a href="/instruction/instruction.html">Инструкция</a></li>
-      <li><a href="/profile/profile.html">Профиль</a></li>
-    </ul>
+  <!-- Основная навигация -->
+  <nav class="nav">
+    <a href="/index.html#product">О продукте</a>
+    <a href="/index.html#main">Главная</a>
+    <a href="/index.html#contact">Контакты</a>
+    <a href="/gallery/gallery.html">Галерея</a>
+    <a href="/instruction/instruction.html">Инструкция</a>
+    <a href="/profile/profile.html">Профиль</a>
   </nav>
 
-  <div class="header-buttons">
-    <a href="/gallery/gallery.html" class="btn-header">Галерея</a>
-    <a href="/instruction/instruction.html" class="btn-header">Инструкция</a>
-    <a href="/profile/profile.html" class="btn-header">Профиль</a>
+  <!-- Кнопки хедера -->
+  <div class="header-actions">
+    <a href="/gallery/gallery.html" class="header-btn">Галерея</a>
+    <a href="/instruction/instruction.html" class="header-btn">Инструкция</a>
+    <a href="/profile/profile.html" class="header-btn">Профиль</a>
   </div>
 
-  <a href="/cart/cart.html" class="cart-link" title="Корзина">
-    <span class="cart-icon">
-      <img src="/assets/icons/carticon.png" alt="Корзина" width="32" height="32" />
-    </span>
+  <!-- Корзина -->
+  <a href="/cart/cart.html" class="cart-icon" title="Корзина">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.4 5.1 16.4H17M17 13V17C17 18.1 16.1 19 15 19H9C7.9 19 7 18.1 7 17V13H17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
     <span class="cart-count">0</span>
   </a>
 </header>
 
-<!-- Подключаем глобальный менеджер корзины ПЕРВЫМ -->
+<!-- Подключаем глобальный менеджер корзины -->
 <script src="/js/cart-manager.js"></script>
 
-<!-- Дополнительная защита - принудительно обновляем счетчик после загрузки header -->
+<!-- Стили для хедера -->
+<style>
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--gray-200);
+    z-index: 1000;
+    padding: 0 20px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  .logo a {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    text-decoration: none;
+    transition: var(--transition-fast);
+  }
+
+  .logo a:hover {
+    color: var(--primary);
+  }
+
+  .nav {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .nav a {
+    color: var(--gray-600);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: var(--transition-fast);
+    position: relative;
+  }
+
+  .nav a:hover {
+    color: var(--primary);
+  }
+
+  .nav a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: width 0.3s ease;
+  }
+
+  .nav a:hover::after {
+    width: 100%;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .header-btn {
+    padding: 8px 16px;
+    background: var(--gray-100);
+    color: var(--gray-700);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: var(--transition-fast);
+  }
+
+  .header-btn:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-1px);
+  }
+
+  .cart-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: var(--primary);
+    color: white;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: var(--transition-fast);
+  }
+
+  .cart-icon:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(28, 166, 248, 0.3);
+  }
+
+  .cart-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: var(--danger);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: var(--transition-fast);
+  }
+
+  .burger-menu {
+    display: none;
+    flex-direction: column;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    gap: 4px;
+  }
+
+  .burger-menu span {
+    width: 20px;
+    height: 2px;
+    background: var(--gray-700);
+    border-radius: 2px;
+    transition: var(--transition-fast);
+  }
+
+  /* Мобильная адаптация */
+  @media (max-width: 1024px) {
+    .header-actions {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .header {
+      padding: 0 16px;
+    }
+
+    .nav {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      flex-direction: column;
+      padding: 20px;
+      gap: 16px;
+      border-bottom: 1px solid var(--gray-200);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav.active {
+      display: flex;
+    }
+
+    .nav a {
+      padding: 12px 0;
+      width: 100%;
+      text-align: center;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .nav a:last-child {
+      border-bottom: none;
+    }
+
+    .burger-menu {
+      display: flex;
+    }
+
+    .burger-menu.active span:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .burger-menu.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .burger-menu.active span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -6px);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .header {
+      padding: 0 12px;
+    }
+
+    .logo a {
+      font-size: 1.3rem;
+    }
+
+    .cart-icon {
+      width: 40px;
+      height: 40px;
+    }
+  }
+</style>
+
+<!-- Скрипт для мобильного меню -->
 <script>
   (function() {
-    // Ждем полной загрузки header и обновляем счетчик
-    const forceUpdateCart = () => {
-      if (window.CartManager && document.querySelector('.cart-count')) {
-        console.log('[Header] Принудительное обновление счетчика корзины');
-        window.CartManager.forceUpdateCounter();
-      } else {
-        setTimeout(forceUpdateCart, 100);
-      }
-    };
+    // Ждем загрузки DOM
+    document.addEventListener('DOMContentLoaded', function() {
+      const burgerMenu = document.querySelector('.burger-menu');
+      const nav = document.querySelector('.nav');
 
-    // Запускаем через небольшую задержку
-    setTimeout(forceUpdateCart, 200);
+      if (burgerMenu && nav) {
+        burgerMenu.addEventListener('click', function() {
+          nav.classList.toggle('active');
+          burgerMenu.classList.toggle('active');
+        });
+
+        // Закрываем меню при клике на ссылку
+        nav.addEventListener('click', function(e) {
+          if (e.target.tagName === 'A') {
+            nav.classList.remove('active');
+            burgerMenu.classList.remove('active');
+          }
+        });
+
+        // Закрываем меню при клике вне его
+        document.addEventListener('click', function(e) {
+          if (!nav.contains(e.target) && !burgerMenu.contains(e.target)) {
+            nav.classList.remove('active');
+            burgerMenu.classList.remove('active');
+          }
+        });
+      }
+
+      // Обновляем счетчик корзины после загрузки
+      setTimeout(() => {
+        if (window.CartManager) {
+          window.CartManager.forceUpdateCounter();
+          console.log('✅ CartManager инициализирован в хедере');
+        }
+      }, 200);
+    });
   })();
 </script>

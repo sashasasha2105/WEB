@@ -1,12 +1,11 @@
-/* === PROFILE.JS - ОСНОВНАЯ ЛОГИКА СТРАНИЦЫ === */
+/* === PROFILE.JS - УПРОЩЕННАЯ ЛОГИКА === */
 
 // Состояние приложения
 let currentTab = 'orders';
 let orders = [];
 let userInfo = {};
-let isLoading = false;
 
-// DOM элементы (кешированные)
+// DOM элементы
 const DOM = {
     tabButtons: null,
     tabContents: null,
@@ -19,68 +18,195 @@ const DOM = {
     orderStatus: null
 };
 
-// Утилиты
-const debounce = (func, wait) => {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-};
-
-const throttle = (func, limit) => {
-    let inThrottle;
-    return function() {
-        const args = arguments;
-        const context = this;
-        if (!inThrottle) {
-            func.apply(context, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
-        }
-    };
-};
-
-// Главная инициализация
+// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🌊 Liquid Glass Profile загружается...');
+    console.log('🚀 Профиль загружается...');
 
     initializePage();
+
+    // Дополнительная защита - MutationObserver
+    setupMutationObserver();
+
+    // Еще одна проверка через 2 секунды
+    setTimeout(() => {
+        finalTabCheck();
+    }, 2000);
 });
 
+// Наблюдатель за изменениями DOM
+function setupMutationObserver() {
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                const target = mutation.target;
+                if (target.classList.contains('tab-content') && target.classList.contains('active')) {
+                    // Если активная вкладка была скрыта, принудительно показываем
+                    if (target.style.display === 'none') {
+                        console.log('🚨 Обнаружено скрытие активной вкладки, исправляем!');
+                        target.style.setProperty('display', 'block', 'important');
+                        target.style.setProperty('visibility', 'visible', 'important');
+                        target.style.setProperty('opacity', '1', 'important');
+                    }
+                }
+            }
+        });
+    });
+
+    // Наблюдаем за изменениями стилей
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(tab => {
+        observer.observe(tab, {
+            attributes: true,
+            attributeFilter: ['style', 'class']
+        });
+    });
+}
+
+// Финальная проверка
+function finalTabCheck() {
+    console.log('🔧 Финальная проверка табов...');
+
+    const ordersTab = document.getElementById('orders');
+    const ordersBtn = document.querySelector('[data-tab="orders"]');
+
+    if (!ordersTab) {
+        console.error('❌ КРИТИЧЕСКАЯ ОШИБКА: Вкладка orders не найдена!');
+        return;
+    }
+
+    const computedStyle = window.getComputedStyle(ordersTab);
+    console.log('Orders tab computed display:', computedStyle.display);
+    console.log('Orders tab computed visibility:', computedStyle.visibility);
+    console.log('Orders tab computed opacity:', computedStyle.opacity);
+
+    if (computedStyle.display === 'none' || computedStyle.visibility === 'hidden' || computedStyle.opacity === '0') {
+        console.log('🚨 ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ!');
+
+        // Ядерный вариант - полная перезагрузка табов
+        nuclearTabFix();
+    } else {
+        console.log('✅ Табы работают корректно');
+    }
+}
+
+// Ядерный способ исправления табов
+function nuclearTabFix() {
+    console.log('💥 ЯДЕРНОЕ ИСПРАВЛЕНИЕ ТАБОВ!');
+
+    // Удаляем все стили с вкладок
+    const allTabs = document.querySelectorAll('.tab-content');
+    allTabs.forEach(tab => {
+        tab.removeAttribute('style');
+        tab.classList.remove('active');
+    });
+
+    // Принудительно показываем orders
+    const ordersTab = document.getElementById('orders');
+    if (ordersTab) {
+        ordersTab.classList.add('active');
+        ordersTab.innerHTML = ordersTab.innerHTML; // Принудительный reflow
+
+        // Устанавливаем стили через setAttribute для максимальной принудительности
+        ordersTab.setAttribute('style', 'display: block !important; visibility: visible !important; opacity: 1 !important; position: relative !important;');
+
+        // Добавляем дополнительные CSS классы
+        ordersTab.classList.add('force-visible', 'nuclear-fix');
+    }
+
+    // Активируем кнопку
+    const ordersBtn = document.querySelector('[data-tab="orders"]');
+    if (ordersBtn) {
+        ordersBtn.classList.add('active');
+    }
+
+    // Добавляем экстренные CSS правила
+    addEmergencyCSS();
+
+    console.log('💥 Ядерное исправление завершено!');
+}
+
+// Добавляем экстренные CSS правила
+function addEmergencyCSS() {
+    const emergencyStyle = document.createElement('style');
+    emergencyStyle.id = 'emergency-tab-fix';
+    emergencyStyle.innerHTML = `
+        .force-visible,
+        .nuclear-fix,
+        #orders.active {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        
+        .tab-content:not(.active) {
+            display: none !important;
+        }
+        
+        .tab-content.active {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        /* Принудительное правило для orders */
+        #orders {
+            display: block !important;
+        }
+        
+        #profile:not(.active),
+        #settings:not(.active) {
+            display: none !important;
+        }
+    `;
+
+    // Удаляем старый emergency style если есть
+    const oldStyle = document.getElementById('emergency-tab-fix');
+    if (oldStyle) {
+        oldStyle.remove();
+    }
+
+    document.head.appendChild(emergencyStyle);
+    console.log('🚨 Экстренные CSS правила добавлены!');
+}
+
+// Основная инициализация
 function initializePage() {
     try {
-        // Критический путь
+        // Кешируем DOM элементы
         cacheDOMElements();
+
+        // Загружаем хедер
+        loadHeader();
+
+        // Инициализируем табы
         initTabs();
-        showFirstTab();
-        loadUserInfo();
-        updateCartBadge();
 
-        // Инициализация хедера
-        initHeader();
+        // Загружаем данные пользователя
+        loadUserData();
 
-        // Отложенная инициализация
-        setTimeout(() => {
-            initEventListeners();
-            loadOrdersDeferred();
-            initAdvancedFeatures();
-        }, 100);
+        // Настраиваем обработчики
+        setupEventListeners();
 
-        console.log('✅ Страница инициализирована');
+        // Загружаем заказы для первой вкладки
+        if (currentTab === 'orders') {
+            setTimeout(() => loadOrders(), 500);
+        }
+
+        // Инициализируем автоматический расчет высоты
+        initializeAutoResize();
+
+        console.log('✅ Профиль инициализирован');
     } catch (error) {
         console.error('❌ Ошибка инициализации:', error);
-        showErrorState();
+        showNotification('Ошибка загрузки страницы', 'error');
     }
 }
 
 // Кеширование DOM элементов
 function cacheDOMElements() {
-    DOM.tabButtons = document.querySelectorAll('.tab-button');
+    DOM.tabButtons = document.querySelectorAll('.tab-btn');
     DOM.tabContents = document.querySelectorAll('.tab-content');
     DOM.ordersContainer = document.getElementById('ordersContainer');
     DOM.ordersLoading = document.getElementById('ordersLoading');
@@ -89,134 +215,124 @@ function cacheDOMElements() {
     DOM.totalOrders = document.getElementById('totalOrders');
     DOM.memberSince = document.getElementById('memberSince');
     DOM.orderStatus = document.getElementById('orderStatus');
-
-    console.log('📋 DOM элементы кешированы');
 }
 
-// Инициализация хедера
-function initHeader() {
+// Загрузка хедера
+function loadHeader() {
     fetch('/header.html')
-        .then(response => {
-            if (!response.ok) throw new Error('Header загрузка неудачна');
-            return response.text();
-        })
+        .then(response => response.text())
         .then(html => {
             const headerContainer = document.getElementById('header-container');
             if (headerContainer) {
                 headerContainer.innerHTML = html;
-                const header = document.getElementById('site-header');
-                if (header) {
-                    header.classList.add('scrolled');
-                }
 
-                // Инициализация CartManager
+                // Обновляем счетчик корзины
                 setTimeout(() => {
                     if (window.CartManager) {
                         window.CartManager.updateCartCounter();
-                        console.log('✅ CartManager инициализирован');
                     }
+                    updateCartBadge();
                 }, 100);
             }
         })
         .catch(error => {
-            console.warn('⚠️ Ошибка загрузки header:', error);
-            // Создаем минимальный header
-            const headerContainer = document.getElementById('header-container');
-            if (headerContainer) {
-                headerContainer.innerHTML = '<div style="height: 60px; background: rgba(255,255,255,0.1); backdrop-filter: blur(20px);"></div>';
-            }
+            console.warn('⚠️ Не удалось загрузить хедер:', error);
         });
 }
 
 // === УПРАВЛЕНИЕ ВКЛАДКАМИ ===
 
 function initTabs() {
-    if (!DOM.tabButtons) return;
-
-    DOM.tabButtons.forEach((btn, index) => {
-        btn.addEventListener('click', throttle(() => {
+    DOM.tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
             const tabId = btn.dataset.tab;
             switchTab(tabId);
-        }, 200));
+        });
     });
-
-    console.log('🔄 Вкладки инициализированы');
 }
 
 function switchTab(tabId) {
-    if (currentTab === tabId || isLoading) return;
+    if (currentTab === tabId) return;
 
-    console.log('🔄 Переключение на вкладку:', tabId);
+    console.log('🔄 Переключение на:', tabId);
 
     // Обновляем кнопки
-    updateTabButtons(tabId);
+    DOM.tabButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+    });
 
-    // Переключаем контент
-    animateTabSwitch(tabId);
+    // Переключаем контент - ИСПРАВЛЕНО
+    DOM.tabContents.forEach(content => {
+        if (content.id === tabId) {
+            content.classList.add('active');
+            content.style.display = 'block';
+        } else {
+            content.classList.remove('active');
+            content.style.display = 'none';
+        }
+    });
 
     currentTab = tabId;
 
-    // Загружаем данные если нужно
+    // Загружаем данные для вкладки
     if (tabId === 'orders' && orders.length === 0) {
         loadOrders();
     }
 }
 
-function updateTabButtons(activeTabId) {
+// Инициализация табов - УЛУЧШЕНО
+function initTabs() {
     DOM.tabButtons.forEach(btn => {
-        const isActive = btn.dataset.tab === activeTabId;
-        btn.classList.toggle('active', isActive);
-        btn.setAttribute('aria-selected', isActive);
+        btn.addEventListener('click', () => {
+            const tabId = btn.dataset.tab;
+            switchTab(tabId);
+        });
     });
+
+    // Убеждаемся что первая вкладка показана
+    showFirstTab();
 }
 
-function animateTabSwitch(tabId) {
-    // Скрываем все вкладки
+// Показ первой вкладки - ИСПРАВЛЕНО
+function showFirstTab() {
+    // Сначала скрываем все вкладки
     DOM.tabContents.forEach(content => {
         content.classList.remove('active');
         content.style.display = 'none';
     });
 
-    // Показываем нужную вкладку
-    const targetTab = document.getElementById(tabId);
-    if (targetTab) {
-        targetTab.style.display = 'block';
-        targetTab.classList.add('active');
-    }
-}
-
-function showFirstTab() {
-    const firstTab = document.getElementById('orders');
-    if (firstTab) {
-        firstTab.style.display = 'block';
-        firstTab.classList.add('active');
+    // Показываем вкладку заказов
+    const ordersTab = document.getElementById('orders');
+    if (ordersTab) {
+        ordersTab.style.display = 'block';
+        ordersTab.classList.add('active');
         console.log('🎯 Первая вкладка показана');
     }
+
+    // Активируем первую кнопку
+    DOM.tabButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === 'orders');
+    });
 }
 
 // === ЗАГРУЗКА ЗАКАЗОВ ===
 
 async function loadOrders() {
-    if (isLoading) return;
-
-    isLoading = true;
-    console.log('📦 Загрузка заказов...');
-
     try {
         showLoadingState();
 
         // Имитация загрузки
-        await new Promise(resolve => setTimeout(resolve, 1200));
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
+        // Создаем демо заказы
         orders = await createDemoOrders();
-        console.log('📋 Загружены заказы:', orders.length);
 
         hideLoadingState();
 
         if (orders.length === 0) {
             showNoOrdersState();
         } else {
-            await renderOrders();
+            renderOrders();
         }
 
         updateStats();
@@ -224,17 +340,7 @@ async function loadOrders() {
     } catch (error) {
         console.error('❌ Ошибка загрузки заказов:', error);
         showErrorState();
-    } finally {
-        isLoading = false;
     }
-}
-
-function loadOrdersDeferred() {
-    setTimeout(() => {
-        if (currentTab === 'orders') {
-            loadOrders();
-        }
-    }, 500);
 }
 
 function showLoadingState() {
@@ -254,7 +360,7 @@ function showNoOrdersState() {
 function showErrorState() {
     if (DOM.ordersContainer) {
         DOM.ordersContainer.innerHTML = `
-            <div class="error-state" style="text-align: center; padding: 60px 20px; color: var(--liquid-text-secondary);">
+            <div style="text-align: center; padding: 60px 20px; color: white;">
                 <div style="font-size: 3em; margin-bottom: 16px;">⚠️</div>
                 <h3>Ошибка загрузки</h3>
                 <p>Попробуйте обновить страницу</p>
@@ -267,73 +373,55 @@ function showErrorState() {
     }
 }
 
-// === РЕНДЕРИНГ ЗАКАЗОВ ===
-
+// Рендеринг заказов
 async function renderOrders() {
-    if (!DOM.ordersContainer) return;
+    if (!DOM.ordersContainer || orders.length === 0) return;
 
-    DOM.ordersContainer.innerHTML = '';
-
-    if (orders.length === 0) {
-        showNoOrdersState();
-        return;
-    }
-
-    // Рендерим заказы батчами
-    const batchSize = 3;
-
-    for (let i = 0; i < orders.length; i += batchSize) {
-        const batch = orders.slice(i, i + batchSize);
-        const batchHTML = batch.map((order, index) => createOrderCardHTML(order, i + index)).join('');
-
-        DOM.ordersContainer.insertAdjacentHTML('beforeend', batchHTML);
-
-        // Даем браузеру время на рендеринг
-        if (i + batchSize < orders.length) {
-            await new Promise(resolve => requestAnimationFrame(resolve));
-        }
-    }
-
-    // Добавляем интерактивность
-    addOrderCardsInteractivity();
+    const ordersHTML = orders.map(order => createOrderHTML(order)).join('');
+    DOM.ordersContainer.innerHTML = ordersHTML;
 
     console.log('✅ Заказы отрендерены:', orders.length);
+
+    // ДОБАВИЛИ: автоматический пересчет высоты после рендеринга
+    setTimeout(() => {
+        autoResizeElements();
+    }, 100);
 }
 
-function createOrderCardHTML(order, index) {
+function createOrderHTML(order) {
     const itemsHTML = order.items && order.items.length > 0 ? `
-        <div class="order-items-modern">
+        <div class="order-items">
             <div class="order-items-title">Товары в заказе:</div>
             ${order.items.map(item => `
-                <div class="order-item-modern">
-                    <span class="item-name-modern">${escapeHtml(item.name)}</span>
-                    <span class="item-price-modern">${formatPrice(item.cost || 0)}</span>
+                <div class="order-item">
+                    <span class="item-name">${escapeHtml(item.name)}</span>
+                    <span class="item-price">${formatPrice(item.cost || 0)}</span>
                 </div>
             `).join('')}
         </div>
     ` : '';
 
     const deliveryHTML = order.delivery ? `
-        <div class="delivery-info-compact">
+        <div class="delivery-info">
             📦 ${escapeHtml(order.delivery.type || 'Доставка')} ${order.delivery.address ? '• ' + escapeHtml(order.delivery.address) : ''}
         </div>
     ` : '';
 
     return `
-        <div class="order-card-modern" style="animation-delay: ${index * 0.1}s" data-order-id="${order.id}">
-            <div class="order-header-modern">
+        <div class="order-card">
+            <div class="order-header">
                 <div>
-                    <div class="order-number-modern">Заказ ${escapeHtml(order.cdekNumber || order.id)}</div>
-                    <div class="order-date-modern">${formatDate(order.createdAt)}</div>
+                    <div class="order-number">Заказ ${escapeHtml(order.cdekNumber || order.id)}</div>
+                    <div class="order-date">${formatDate(order.createdAt)}</div>
                 </div>
-                <div class="order-status-modern ${getStatusClass(order.status)}">
+                <div class="order-status ${getStatusClass(order.status)}">
                     ${getStatusText(order.status)}
                 </div>
             </div>
             
             ${itemsHTML}
             
-            <div class="order-total-modern">
+            <div class="order-total">
                 <div class="total-label">Итого к оплате:</div>
                 <div class="total-amount">${formatPrice(order.amount || 0)}</div>
             </div>
@@ -343,76 +431,62 @@ function createOrderCardHTML(order, index) {
     `;
 }
 
-function addOrderCardsInteractivity() {
-    const cards = document.querySelectorAll('.order-card-modern');
-    cards.forEach(card => {
-        card.addEventListener('click', function(event) {
-            createRippleEffect(this, event);
-        });
-    });
-}
-
-// === СОЗДАНИЕ ДЕМО ДАННЫХ ===
-
+// Создание демо данных
 async function createDemoOrders() {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve([
-                {
-                    id: 'LG-2025-001',
-                    cdekNumber: 'CG-250115-001',
-                    status: 'created',
-                    amount: 9400,
-                    createdAt: new Date(Date.now() - 86400000).toISOString(),
-                    items: [
-                        { name: 'clip & go камера', cost: 8900 },
-                        { name: 'Карта памяти 8 ГБ', cost: 500 }
-                    ],
-                    delivery: {
-                        type: 'Курьер СДЭК',
-                        address: 'ул. Примерная, 123'
-                    }
-                },
-                {
-                    id: 'LG-2025-002',
-                    cdekNumber: 'CG-250110-002',
-                    status: 'paid',
-                    amount: 8900,
-                    createdAt: new Date(Date.now() - 432000000).toISOString(),
-                    items: [
-                        { name: 'clip & go камера', cost: 8900 }
-                    ],
-                    delivery: {
-                        type: 'ПВЗ СДЭК',
-                        address: 'Пункт выдачи на Ленина'
-                    }
-                },
-                {
-                    id: 'LG-2025-003',
-                    cdekNumber: 'CG-250105-003',
-                    status: 'failed',
-                    amount: 1200,
-                    createdAt: new Date(Date.now() - 864000000).toISOString(),
-                    items: [
-                        { name: 'Аксессуары для камеры', cost: 1200 }
-                    ],
-                    delivery: {
-                        type: 'Самовывоз',
-                        address: 'Офис на Тверской'
-                    }
-                }
-            ]);
-        }, 100);
-    });
+    return [
+        {
+            id: 'CG-2025-001',
+            cdekNumber: 'CG-250115-001',
+            status: 'created',
+            amount: 9400,
+            createdAt: new Date(Date.now() - 86400000).toISOString(),
+            items: [
+                { name: 'clip & go камера', cost: 8900 },
+                { name: 'Карта памяти 8 ГБ', cost: 500 }
+            ],
+            delivery: {
+                type: 'Курьер СДЭК',
+                address: 'ул. Примерная, 123'
+            }
+        },
+        {
+            id: 'CG-2025-002',
+            cdekNumber: 'CG-250110-002',
+            status: 'paid',
+            amount: 8900,
+            createdAt: new Date(Date.now() - 432000000).toISOString(),
+            items: [
+                { name: 'clip & go камера', cost: 8900 }
+            ],
+            delivery: {
+                type: 'ПВЗ СДЭК',
+                address: 'Пункт выдачи на Ленина'
+            }
+        },
+        {
+            id: 'CG-2025-003',
+            cdekNumber: 'CG-250105-003',
+            status: 'failed',
+            amount: 1200,
+            createdAt: new Date(Date.now() - 864000000).toISOString(),
+            items: [
+                { name: 'Аксессуары для камеры', cost: 1200 }
+            ],
+            delivery: {
+                type: 'Самовывоз',
+                address: 'Офис на Тверской'
+            }
+        }
+    ];
 }
 
 // === ОБРАБОТЧИКИ СОБЫТИЙ ===
 
-function initEventListeners() {
+function setupEventListeners() {
     // Обновление заказов
-    const refreshBtn = document.getElementById('refreshOrdersBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
     if (refreshBtn) {
-        refreshBtn.addEventListener('click', throttle(() => {
+        refreshBtn.addEventListener('click', () => {
             const icon = refreshBtn.querySelector('.refresh-icon');
             if (icon) {
                 icon.style.transform = 'rotate(360deg)';
@@ -421,71 +495,54 @@ function initEventListeners() {
                 }, 500);
             }
             loadOrders();
-        }, 1000));
+        });
     }
 
-    // Сохранение информации пользователя
+    // Сохранение профиля
     if (DOM.userInfoForm) {
         DOM.userInfoForm.addEventListener('submit', (e) => {
             e.preventDefault();
             saveUserInfo();
         });
 
-        // Автосохранение
+        // Автосохранение при потере фокуса
         const inputs = DOM.userInfoForm.querySelectorAll('input');
         inputs.forEach(input => {
-            input.addEventListener('blur', debounce(() => {
-                saveUserInfo();
-            }, 1000));
+            input.addEventListener('blur', debounce(saveUserInfo, 1000));
         });
     }
 
     // Переключатели настроек
-    const settingToggles = document.querySelectorAll('.modern-toggle input');
-    settingToggles.forEach(toggle => {
+    const toggles = document.querySelectorAll('.toggle input');
+    toggles.forEach(toggle => {
         toggle.addEventListener('change', () => {
             saveSettings();
-
-            // Haptic feedback
-            if (navigator.vibrate) {
-                navigator.vibrate(10);
-            }
-
-            // Визуальная анимация
-            const slider = toggle.nextElementSibling;
-            if (slider) {
-                slider.style.transform = 'scale(1.1)';
-                setTimeout(() => {
-                    slider.style.transform = '';
-                }, 150);
-            }
+            showNotification('Настройки сохранены', 'success');
         });
     });
 
     // Кнопки действий
     setupActionButtons();
 
-    // Загружаем настройки
+    // Загружаем сохраненные данные
     loadSettings();
-
-    console.log('🎯 Обработчики событий инициализированы');
 }
 
-// === УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЬСКОЙ ИНФОРМАЦИЕЙ ===
+// === УПРАВЛЕНИЕ ДАННЫМИ ПОЛЬЗОВАТЕЛЯ ===
 
-function loadUserInfo() {
+function loadUserData() {
     try {
         const savedInfo = localStorage.getItem('userInfo');
         if (savedInfo) {
             userInfo = JSON.parse(savedInfo);
-            fillUserInfoForm();
+            fillUserForm();
         }
     } catch (error) {
-        console.error('❌ Ошибка загрузки информации:', error);
+        console.error('❌ Ошибка загрузки данных:', error);
     }
 }
 
-function fillUserInfoForm() {
+function fillUserForm() {
     const fields = ['userFullName', 'userPhone', 'userEmail', 'userCity', 'userBirthday'];
     fields.forEach(fieldId => {
         const element = document.getElementById(fieldId);
@@ -509,12 +566,12 @@ function saveUserInfo() {
         localStorage.setItem('userInfo', JSON.stringify(userInfo));
         showNotification('Информация сохранена!', 'success');
 
-        // Анимация кнопки
-        const saveBtn = document.querySelector('.save-button');
+        // Анимация кнопки сохранения
+        const saveBtn = document.querySelector('.save-btn');
         if (saveBtn) {
             const originalContent = saveBtn.innerHTML;
             saveBtn.innerHTML = '<span>✅</span><span>Сохранено!</span>';
-            saveBtn.style.background = '#34C759';
+            saveBtn.style.background = 'var(--success)';
 
             setTimeout(() => {
                 saveBtn.innerHTML = originalContent;
@@ -546,8 +603,7 @@ function loadSettings() {
 
 function saveSettings() {
     const settingIds = [
-        'emailNotifications', 'smsNotifications', 'marketingEmails',
-        'publicProfile', 'analytics', 'darkMode', 'twoFactorAuth'
+        'emailNotifications', 'smsNotifications', 'marketingEmails'
     ];
     const settings = {};
 
@@ -593,9 +649,9 @@ function setupActionButtons() {
     // Экспорт данных
     const exportDataBtn = document.getElementById('exportDataBtn');
     if (exportDataBtn) {
-        exportDataBtn.addEventListener('click', throttle(() => {
+        exportDataBtn.addEventListener('click', () => {
             exportUserData();
-        }, 2000));
+        });
     }
 
     // Очистка истории
@@ -654,10 +710,136 @@ function exportUserData() {
     }
 }
 
-// === ОБНОВЛЕНИЕ СТАТИСТИКИ ===
+// === АВТОМАТИЧЕСКИЙ РАСЧЕТ ВЫСОТЫ БЛОКОВ ===
+
+let isResizing = false; // Флаг для предотвращения циклов
+
+function autoResizeElements() {
+    if (isResizing) {
+        console.log('🔄 Пропускаем пересчет - уже выполняется');
+        return;
+    }
+
+    isResizing = true;
+    console.log('🔧 Автоматический расчет высоты блоков...');
+
+    // Функция для расчета нужной высоты элемента
+    function calculateRequiredHeight(element) {
+        if (!element) return 0;
+
+        // Временно убираем ограничения высоты
+        const originalHeight = element.style.height;
+        const originalMinHeight = element.style.minHeight;
+        const originalMaxHeight = element.style.maxHeight;
+
+        element.style.height = 'auto';
+        element.style.minHeight = 'auto';
+        element.style.maxHeight = 'none';
+
+        // Получаем реальную высоту контента
+        const scrollHeight = element.scrollHeight;
+        const clientHeight = element.clientHeight;
+        const requiredHeight = Math.max(scrollHeight, clientHeight);
+
+        // Возвращаем исходные стили
+        element.style.height = originalHeight;
+        element.style.minHeight = originalMinHeight;
+        element.style.maxHeight = originalMaxHeight;
+
+        return requiredHeight;
+    }
+
+    // Обработка вкладок (работала нормально)
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach((tab, index) => {
+        const requiredHeight = calculateRequiredHeight(tab);
+        if (requiredHeight > 0) {
+            tab.style.minHeight = `${requiredHeight + 20}px`; // +20px запас
+            console.log(`Вкладка ${tab.id}: установлена высота ${requiredHeight + 20}px`);
+        }
+    });
+
+    // ИСКЛЮЧИЛИ карточки заказов - они вызывали проблемы!
+    // Пусть они используют CSS sizing
+
+    // Обработка обычных карточек (работали нормально)
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        const requiredHeight = calculateRequiredHeight(card);
+        if (requiredHeight > 0) {
+            card.style.minHeight = `${requiredHeight + 10}px`; // +10px запас
+            console.log(`Карточка ${index}: установлена высота ${requiredHeight + 10}px`);
+        }
+    });
+
+    // Сбрасываем флаг через небольшую задержку
+    setTimeout(() => {
+        isResizing = false;
+    }, 500);
+}
+
+// Функция для наблюдения за изменениями контента
+function setupAutoResize() {
+    // Создаем ResizeObserver ТОЛЬКО для вкладок и карточек (НЕ order-card!)
+    if (window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver((entries) => {
+            entries.forEach((entry) => {
+                const element = entry.target;
+                // УБРАЛИ order-card из наблюдения!
+                if (element.classList.contains('tab-content') ||
+                    element.classList.contains('card')) {
+
+                    // Пересчитываем высоту при изменении контента
+                    setTimeout(() => {
+                        if (!isResizing) {
+                            autoResizeElements();
+                        }
+                    }, 200);
+                }
+            });
+        });
+
+        // Наблюдаем ТОЛЬКО за вкладками и карточками (НЕ order-card!)
+        document.querySelectorAll('.tab-content, .card').forEach(el => {
+            resizeObserver.observe(el);
+        });
+    }
+
+    // Также пересчитываем при изменении окна
+    window.addEventListener('resize', debounce(() => {
+        if (!isResizing) {
+            autoResizeElements();
+        }
+    }, 500));
+}
+
+// Вызываем после загрузки контента
+function initializeAutoResize() {
+    // Начальный расчет
+    setTimeout(() => {
+        if (!isResizing) {
+            autoResizeElements();
+        }
+    }, 500);
+
+    // Повторный расчет после загрузки заказов
+    setTimeout(() => {
+        if (!isResizing) {
+            autoResizeElements();
+        }
+    }, 2000);
+
+    // Настраиваем автоматический пересчет
+    setupAutoResize();
+
+    console.log('✅ Автоматический расчет высоты инициализирован');
+}
 
 function updateStats() {
-    animateNumber(DOM.totalOrders, orders.length);
+    // Анимированное обновление счетчика заказов
+    if (DOM.totalOrders) {
+        animateCounter(DOM.totalOrders, orders.length);
+    }
 
     if (DOM.memberSince) {
         DOM.memberSince.textContent = new Date().getFullYear();
@@ -669,22 +851,15 @@ function updateStats() {
         else if (orders.length >= 3) status = 'Постоянный';
         else if (orders.length > 0) status = 'Клиент';
 
-        const currentStatus = DOM.orderStatus.textContent;
-        if (currentStatus !== status) {
-            DOM.orderStatus.style.opacity = '0';
-            setTimeout(() => {
-                DOM.orderStatus.textContent = status;
-                DOM.orderStatus.style.opacity = '1';
-            }, 300);
-        }
+        DOM.orderStatus.textContent = status;
     }
 }
 
-function animateNumber(element, target) {
+function animateCounter(element, target) {
     if (!element) return;
 
     const start = parseInt(element.textContent) || 0;
-    const duration = 1500;
+    const duration = 1000;
     const startTime = performance.now();
 
     function update(currentTime) {
@@ -696,8 +871,6 @@ function animateNumber(element, target) {
 
         if (progress < 1) {
             requestAnimationFrame(update);
-        } else {
-            element.textContent = target;
         }
     }
 
@@ -725,66 +898,11 @@ function updateCartBadge() {
         badges.forEach(badge => {
             if (badge) {
                 badge.textContent = count;
-                badge.style.transform = 'scale(1.2)';
-                setTimeout(() => {
-                    badge.style.transform = '';
-                }, 200);
             }
         });
     } catch (error) {
         console.warn('⚠️ Ошибка обновления корзины:', error);
     }
-}
-
-// === ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ===
-
-function initAdvancedFeatures() {
-    // Lazy loading для изображений
-    if ('IntersectionObserver' in window) {
-        const imageObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    if (img.dataset.src) {
-                        img.src = img.dataset.src;
-                        img.removeAttribute('data-src');
-                        imageObserver.unobserve(img);
-                    }
-                }
-            });
-        });
-
-        document.querySelectorAll('img[data-src]').forEach(img => {
-            imageObserver.observe(img);
-        });
-    }
-
-    // Анимации при скролле
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-                observer.unobserve(entry.target);
-            }
-        });
-    }, {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    });
-
-    const animatedElements = document.querySelectorAll(
-        '.profile-hero, .stat-modern, .order-card-modern, .modern-card, .setting-item-modern'
-    );
-
-    animatedElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(20px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(el);
-    });
-
-    console.log('🚀 Дополнительные функции инициализированы');
 }
 
 // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
@@ -840,49 +958,22 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// === ЭФФЕКТЫ ===
-
-function createRippleEffect(element, event) {
-    if (!element || !event) return;
-
-    try {
-        const ripple = document.createElement('div');
-        const rect = element.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = event.clientX - rect.left - size / 2;
-        const y = event.clientY - rect.top - size / 2;
-
-        ripple.className = 'liquid-ripple';
-        ripple.style.cssText = `
-            position: absolute;
-            width: ${size}px;
-            height: ${size}px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.5) 0%, transparent 70%);
-            transform: translate(${x}px, ${y}px) scale(0);
-            animation: liquidRipple 0.6s ease-out;
-            pointer-events: none;
-            z-index: 100;
-        `;
-
-        element.style.position = 'relative';
-        element.style.overflow = 'hidden';
-        element.appendChild(ripple);
-
-        // Очистка после анимации
-        setTimeout(() => {
-            if (ripple.parentNode) {
-                ripple.parentNode.removeChild(ripple);
-            }
-        }, 600);
-    } catch (error) {
-        console.warn('⚠️ Ошибка создания ripple:', error);
-    }
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 // === УВЕДОМЛЕНИЯ ===
 
-function showNotification(message, type = 'info', duration = 4000) {
+function showNotification(message, type = 'info', duration = 3000) {
+    // Создаем контейнер если его нет
     let container = document.getElementById('notification-container');
     if (!container) {
         container = document.createElement('div');
@@ -904,22 +995,13 @@ function showNotification(message, type = 'info', duration = 4000) {
     const notificationId = 'notification-' + Date.now();
     notification.id = notificationId;
 
-    notification.style.cssText = `
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(24px);
-        -webkit-backdrop-filter: blur(24px);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        border-radius: 16px;
-        padding: 16px 20px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        transform: translateX(400px);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        pointer-events: auto;
-        max-width: 350px;
-    `;
+    // Цвета для разных типов
+    const colors = {
+        success: '#10b981',
+        info: '#1ca6f8',
+        warning: '#f59e0b',
+        error: '#ef4444'
+    };
 
     const icons = {
         success: '✅',
@@ -928,17 +1010,27 @@ function showNotification(message, type = 'info', duration = 4000) {
         error: '❌'
     };
 
-    const colors = {
-        success: '#32D74B',
-        info: '#0A84FF',
-        warning: '#FFD60A',
-        error: '#FF453A'
-    };
+    notification.style.cssText = `
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-left: 4px solid ${colors[type]};
+        border-radius: 12px;
+        padding: 16px 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transform: translateX(400px);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        pointer-events: auto;
+        max-width: 350px;
+        min-width: 300px;
+    `;
 
     notification.innerHTML = `
         <span style="font-size: 1.2em; color: ${colors[type]};">${icons[type]}</span>
-        <span style="flex: 1; color: #1c1c1e; font-weight: 500;">${escapeHtml(message)}</span>
-        <button style="background: none; border: none; font-size: 1.2em; color: #8e8e93; cursor: pointer; padding: 0;">&times;</button>
+        <span style="flex: 1; color: #374151; font-weight: 500;">${escapeHtml(message)}</span>
+        <button style="background: none; border: none; font-size: 1.2em; color: #9ca3af; cursor: pointer; padding: 0; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">&times;</button>
     `;
 
     container.appendChild(notification);
@@ -948,7 +1040,7 @@ function showNotification(message, type = 'info', duration = 4000) {
         notification.style.transform = 'translateX(0)';
     });
 
-    // Закрытие
+    // Закрытие по клику
     const closeBtn = notification.querySelector('button');
     closeBtn.onclick = () => removeNotification(notification);
 
@@ -999,7 +1091,7 @@ function showConfirm(title, message, onConfirm) {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0, 0, 0, 0.4);
+                background: rgba(0, 0, 0, 0.5);
                 backdrop-filter: blur(8px);
                 -webkit-backdrop-filter: blur(8px);
                 display: flex;
@@ -1010,16 +1102,13 @@ function showConfirm(title, message, onConfirm) {
             }
             
             .confirm-dialog {
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(32px);
-                -webkit-backdrop-filter: blur(32px);
-                border: 1px solid rgba(255, 255, 255, 0.8);
-                border-radius: 24px;
+                background: white;
+                border-radius: 20px;
                 overflow: hidden;
                 max-width: 400px;
                 width: 90%;
                 animation: slideUp 0.3s ease;
-                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             }
             
             .confirm-header {
@@ -1028,9 +1117,9 @@ function showConfirm(title, message, onConfirm) {
             
             .confirm-header h3 {
                 margin: 0;
-                font-size: 1.3em;
+                font-size: 1.25rem;
                 font-weight: 700;
-                color: #1c1c1e;
+                color: #111827;
             }
             
             .confirm-body {
@@ -1039,7 +1128,7 @@ function showConfirm(title, message, onConfirm) {
             
             .confirm-body p {
                 margin: 0;
-                color: #3a3a3c;
+                color: #6b7280;
                 line-height: 1.5;
             }
             
@@ -1051,34 +1140,31 @@ function showConfirm(title, message, onConfirm) {
             
             .confirm-btn {
                 flex: 1;
-                padding: 14px 24px;
+                padding: 12px 20px;
                 border: none;
-                border-radius: 14px;
+                border-radius: 12px;
                 font-weight: 600;
                 cursor: pointer;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                font-size: 1em;
+                transition: all 0.2s ease;
+                font-size: 0.95rem;
             }
             
             .confirm-btn.cancel {
-                background: rgba(0, 0, 0, 0.05);
-                color: #3a3a3c;
+                background: #f3f4f6;
+                color: #6b7280;
             }
             
             .confirm-btn.cancel:hover {
-                background: rgba(0, 0, 0, 0.1);
-                transform: translateY(-1px);
+                background: #e5e7eb;
             }
             
             .confirm-btn.confirm {
-                background: #FF453A;
+                background: #ef4444;
                 color: white;
             }
             
             .confirm-btn.confirm:hover {
-                background: #FF6B5F;
-                transform: translateY(-1px);
-                box-shadow: 0 4px 16px rgba(255, 69, 58, 0.3);
+                background: #dc2626;
             }
             
             @keyframes fadeIn {
@@ -1088,7 +1174,7 @@ function showConfirm(title, message, onConfirm) {
             
             @keyframes slideUp {
                 from {
-                    transform: translateY(40px) scale(0.95);
+                    transform: translateY(30px) scale(0.95);
                     opacity: 0;
                 }
                 to {
@@ -1127,27 +1213,8 @@ function showConfirm(title, message, onConfirm) {
         }
     });
 
-    // Фокус на первой кнопке
+    // Фокус на кнопке отмены
     cancelBtn.focus();
-}
-
-// Добавляем CSS для ripple эффекта
-if (!document.getElementById('ripple-styles')) {
-    const style = document.createElement('style');
-    style.id = 'ripple-styles';
-    style.textContent = `
-        @keyframes liquidRipple {
-            0% {
-                transform: scale(0);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-    `;
-    document.head.appendChild(style);
 }
 
 // === ГЛОБАЛЬНЫЕ ФУНКЦИИ ===
@@ -1155,4 +1222,4 @@ window.loadOrders = loadOrders;
 window.switchTab = switchTab;
 window.showNotification = showNotification;
 
-console.log('🌊 Liquid Glass Profile JavaScript загружен!');
+console.log('🎉 Профиль готов к использованию!');

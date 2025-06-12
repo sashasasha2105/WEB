@@ -1,178 +1,138 @@
-/* === MOBILE-ANIMATIONS.CSS - МОБИЛЬНЫЕ АНИМАЦИИ === */
+/* === MOBILE-ANIMATIONS.CSS - УПРОЩЕННЫЕ МОБИЛЬНЫЕ АНИМАЦИИ === */
 
-/* === Touch feedback анимации === */
+/* === Touch эффекты для мобильных устройств === */
 @media (max-width: 768px) {
 
-    /* Touch эффекты для кнопок */
-    .tab-button:active,
-    .save-button:active,
+    /* Touch feedback для интерактивных элементов */
+    .tab-btn:active,
+    .save-btn:active,
     .action-btn:active,
     .refresh-btn:active,
-    .cta-button:active {
-        transform: scale(0.95) !important;
+    .cta-btn:active {
+        transform: scale(0.96) !important;
         transition: transform 0.1s ease !important;
     }
 
-    .stat-modern:active {
-        transform: scale(0.98) translateY(-4px) !important;
+    .stat-item:active {
+        transform: scale(0.98) translateY(-2px) !important;
         transition: transform 0.1s ease !important;
     }
 
-    .order-card-modern:active {
-        transform: scale(0.98) translateY(-4px) !important;
+    .order-card:active {
+        transform: scale(0.98) translateY(-2px) !important;
         transition: transform 0.1s ease !important;
     }
 
-    .setting-item-modern:active {
+    .setting-item:active {
         transform: scale(0.98) translateX(2px) !important;
         transition: transform 0.1s ease !important;
     }
 
-    /* Мобильные анимации входа */
-    .profile-hero {
-        animation: mobileSlideUp 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Плавные входные анимации */
+    .hero-card {
+        animation: mobileSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    .stat-modern {
-        animation: mobilePopIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    .stat-item {
+        animation: mobilePopIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
 
-    .stat-modern:nth-child(1) { animation-delay: 0.2s; }
-    .stat-modern:nth-child(2) { animation-delay: 0.35s; }
-    .stat-modern:nth-child(3) { animation-delay: 0.5s; }
+    .stat-item:nth-child(1) { animation-delay: 0.1s; }
+    .stat-item:nth-child(2) { animation-delay: 0.2s; }
+    .stat-item:nth-child(3) { animation-delay: 0.3s; }
 
-    .modern-tabs {
-        animation: mobileSlideInFromTop 0.6s ease-out 0.3s both;
+    .tabs-navigation {
+        animation: mobileSlideInFromTop 0.5s ease-out 0.2s both;
     }
 
     .tab-content.active {
-        animation: mobileContentSlide 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        animation: mobileContentSlide 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    .order-card-modern {
-        animation: mobileCardSlideIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    .order-card {
+        animation: mobileCardSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    .order-card-modern:nth-child(1) { animation-delay: 0.1s; }
-    .order-card-modern:nth-child(2) { animation-delay: 0.2s; }
-    .order-card-modern:nth-child(3) { animation-delay: 0.3s; }
+    .order-card:nth-child(1) { animation-delay: 0.1s; }
+    .order-card:nth-child(2) { animation-delay: 0.15s; }
+    .order-card:nth-child(3) { animation-delay: 0.2s; }
 
-    .modern-card {
-        animation: mobileCardFadeIn 0.7s ease-out;
+    .card {
+        animation: mobileCardFadeIn 0.6s ease-out;
     }
 
-    .form-group-modern {
-        animation: mobileFormSlideUp 0.5s ease-out;
+    .form-group {
+        animation: mobileFormSlideUp 0.4s ease-out;
     }
 
-    .form-group-modern:nth-child(1) { animation-delay: 0.1s; }
-    .form-group-modern:nth-child(2) { animation-delay: 0.15s; }
-    .form-group-modern:nth-child(3) { animation-delay: 0.2s; }
-    .form-group-modern:nth-child(4) { animation-delay: 0.25s; }
-    .form-group-modern:nth-child(5) { animation-delay: 0.3s; }
+    .form-group:nth-child(1) { animation-delay: 0.05s; }
+    .form-group:nth-child(2) { animation-delay: 0.1s; }
+    .form-group:nth-child(3) { animation-delay: 0.15s; }
+    .form-group:nth-child(4) { animation-delay: 0.2s; }
+    .form-group:nth-child(5) { animation-delay: 0.25s; }
 
-    .setting-item-modern {
-        animation: mobileSettingSlide 0.6s ease-out;
+    .setting-item {
+        animation: mobileSettingSlide 0.5s ease-out;
     }
 
-    .setting-item-modern:nth-child(1) { animation-delay: 0.1s; }
-    .setting-item-modern:nth-child(2) { animation-delay: 0.2s; }
-    .setting-item-modern:nth-child(3) { animation-delay: 0.3s; }
-    .setting-item-modern:nth-child(4) { animation-delay: 0.4s; }
+    .setting-item:nth-child(1) { animation-delay: 0.1s; }
+    .setting-item:nth-child(2) { animation-delay: 0.15s; }
+    .setting-item:nth-child(3) { animation-delay: 0.2s; }
+    .setting-item:nth-child(4) { animation-delay: 0.25s; }
 
     /* Toggle switch анимации */
-    .modern-toggle input:checked + .toggle-slider {
+    .toggle input:checked + .toggle-slider {
         animation: mobileSwitchOn 0.3s ease-out;
     }
 
-    .modern-toggle input:not(:checked) + .toggle-slider {
+    .toggle input:not(:checked) + .toggle-slider {
         animation: mobileSwitchOff 0.3s ease-out;
     }
 
-    /* Пульсация кнопок */
+    /* Пульсация для кнопки обновления */
     .refresh-btn {
         animation: mobilePulse 2s infinite;
     }
 
-    .cta-button {
+    /* Плавное свечение для CTA кнопки */
+    .cta-btn {
         animation: mobileGlow 3s ease-in-out infinite alternate;
     }
 
     /* Убираем hover эффекты на мобильных */
-    .stat-modern:hover,
-    .order-card-modern:hover,
-    .setting-item-modern:hover,
-    .modern-card:hover {
+    .stat-item:hover,
+    .order-card:hover,
+    .setting-item:hover,
+    .card:hover {
         transform: none !important;
     }
 
-    /* Touch ripple эффект */
-    .touchable-element {
-        position: relative;
-        overflow: hidden;
-    }
-
-    .touchable-element::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        transition: width 0.3s ease, height 0.3s ease;
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    .touchable-element:active::before {
-        width: 200px;
-        height: 200px;
-    }
-
     /* Спиннер с эффектом */
-    .spinner-modern {
-        animation: mobileSpinGlow 1.5s linear infinite;
+    .spinner {
+        animation: mobileSpinGlow 1.2s linear infinite;
     }
 
     /* Empty state анимации */
-    .no-orders-modern {
-        animation: mobileEmptyStateSlide 1s ease-out;
+    .empty-state {
+        animation: mobileEmptyStateSlide 0.8s ease-out;
     }
 
-    .empty-box {
+    .empty-icon {
         animation: mobileFloatBounce 4s ease-in-out infinite;
     }
 
-    .empty-sparkles {
-        animation: mobileSparkleRotate 3s linear infinite;
-    }
-
     /* Футер анимация */
-    .modern-footer {
-        animation: mobileFooterSlideUp 0.8s ease-out 0.5s both;
-    }
-
-    /* Staggered анимации для списков */
-    .orders-grid .order-card-modern {
-        opacity: 0;
-        animation: mobileStaggerSlideUp 0.6s ease-out forwards;
-    }
-
-    .settings-list .setting-item-modern {
-        opacity: 0;
-        animation: mobileStaggerSlideLeft 0.5s ease-out forwards;
+    .footer {
+        animation: mobileFooterSlideUp 0.6s ease-out 0.4s both;
     }
 
     /* Переходы между вкладками */
     .tab-content {
-        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .tab-content:not(.active) {
-        transform: translateX(-20px);
+        transform: translateX(-15px);
         opacity: 0;
         pointer-events: none;
     }
@@ -184,17 +144,17 @@
     }
 
     /* Input focus анимация */
-    .form-group-modern input:focus {
-        animation: mobileInputFocus 0.3s ease-out;
+    .form-group input:focus {
+        animation: mobileInputFocus 0.2s ease-out;
     }
 
     /* Notification анимации */
     .confirm-overlay {
-        animation: mobileOverlaySlide 0.4s ease-out;
+        animation: mobileOverlaySlide 0.3s ease-out;
     }
 
     .confirm-dialog {
-        animation: mobileDialogBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        animation: mobileDialogBounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     }
 }
 
@@ -202,7 +162,7 @@
 @keyframes mobileSlideUp {
     from {
         opacity: 0;
-        transform: translateY(50px) scale(0.95);
+        transform: translateY(40px) scale(0.95);
     }
     to {
         opacity: 1;
@@ -213,11 +173,11 @@
 @keyframes mobilePopIn {
     0% {
         opacity: 0;
-        transform: scale(0.8) translateY(30px);
+        transform: scale(0.8) translateY(20px);
     }
     60% {
         opacity: 1;
-        transform: scale(1.05) translateY(-5px);
+        transform: scale(1.02) translateY(-2px);
     }
     100% {
         opacity: 1;
@@ -228,7 +188,7 @@
 @keyframes mobileSlideInFromTop {
     from {
         opacity: 0;
-        transform: translateY(-30px);
+        transform: translateY(-20px);
     }
     to {
         opacity: 1;
@@ -239,7 +199,7 @@
 @keyframes mobileContentSlide {
     from {
         opacity: 0;
-        transform: translateX(20px);
+        transform: translateX(15px);
     }
     to {
         opacity: 1;
@@ -250,7 +210,7 @@
 @keyframes mobileCardSlideIn {
     from {
         opacity: 0;
-        transform: translateY(30px) scale(0.95);
+        transform: translateY(20px) scale(0.95);
     }
     to {
         opacity: 1;
@@ -261,7 +221,7 @@
 @keyframes mobileCardFadeIn {
     from {
         opacity: 0;
-        transform: translateY(25px);
+        transform: translateY(15px);
     }
     to {
         opacity: 1;
@@ -272,7 +232,7 @@
 @keyframes mobileFormSlideUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(15px);
     }
     to {
         opacity: 1;
@@ -283,7 +243,7 @@
 @keyframes mobileSettingSlide {
     from {
         opacity: 0;
-        transform: translateX(-20px);
+        transform: translateX(-15px);
     }
     to {
         opacity: 1;
@@ -293,47 +253,47 @@
 
 @keyframes mobileSwitchOn {
     0% {
-        background: var(--liquid-glass-dark-medium);
+        background: var(--gray-300);
     }
     50% {
-        background: var(--liquid-primary);
-        transform: scale(1.05);
+        background: var(--primary);
+        transform: scale(1.02);
     }
     100% {
-        background: var(--liquid-primary);
+        background: var(--primary);
         transform: scale(1);
     }
 }
 
 @keyframes mobileSwitchOff {
     0% {
-        background: var(--liquid-primary);
+        background: var(--primary);
     }
     50% {
-        background: var(--liquid-glass-medium);
-        transform: scale(1.05);
+        background: var(--gray-300);
+        transform: scale(1.02);
     }
     100% {
-        background: var(--liquid-glass-dark-medium);
+        background: var(--gray-300);
         transform: scale(1);
     }
 }
 
 @keyframes mobilePulse {
     0%, 100% {
-        box-shadow: var(--liquid-shadow-subtle);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3);
     }
     50% {
-        box-shadow: var(--liquid-shadow-regular), 0 0 20px rgba(0, 122, 255, 0.3);
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
     }
 }
 
 @keyframes mobileGlow {
     from {
-        box-shadow: var(--liquid-shadow-regular);
+        box-shadow: 0 4px 20px rgba(28, 166, 248, 0.3);
     }
     to {
-        box-shadow: var(--liquid-shadow-elevated), 0 0 30px rgba(0, 122, 255, 0.4);
+        box-shadow: 0 8px 30px rgba(28, 166, 248, 0.5);
     }
 }
 
@@ -354,7 +314,7 @@
 @keyframes mobileEmptyStateSlide {
     from {
         opacity: 0;
-        transform: translateY(40px) scale(0.9);
+        transform: translateY(30px) scale(0.9);
     }
     to {
         opacity: 1;
@@ -367,61 +327,24 @@
         transform: translateY(0) rotate(0deg);
     }
     25% {
-        transform: translateY(-8px) rotate(2deg);
+        transform: translateY(-6px) rotate(1deg);
     }
     50% {
-        transform: translateY(-4px) rotate(0deg);
+        transform: translateY(-3px) rotate(0deg);
     }
     75% {
-        transform: translateY(-12px) rotate(-2deg);
-    }
-}
-
-@keyframes mobileSparkleRotate {
-    from {
-        transform: rotate(0deg) scale(1);
-        opacity: 0.6;
-    }
-    50% {
-        transform: rotate(180deg) scale(1.1);
-        opacity: 1;
-    }
-    to {
-        transform: rotate(360deg) scale(1);
-        opacity: 0.6;
+        transform: translateY(-8px) rotate(-1deg);
     }
 }
 
 @keyframes mobileFooterSlideUp {
     from {
         opacity: 0;
-        transform: translateY(50px);
+        transform: translateY(30px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
-    }
-}
-
-@keyframes mobileStaggerSlideUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes mobileStaggerSlideLeft {
-    from {
-        opacity: 0;
-        transform: translateX(-25px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
     }
 }
 
@@ -430,7 +353,7 @@
         transform: scale(1);
     }
     50% {
-        transform: scale(1.02);
+        transform: scale(1.01);
     }
     100% {
         transform: scale(1);
@@ -453,11 +376,11 @@
 @keyframes mobileDialogBounce {
     0% {
         opacity: 0;
-        transform: scale(0.7) translateY(50px);
+        transform: scale(0.8) translateY(30px);
     }
     60% {
         opacity: 1;
-        transform: scale(1.05) translateY(-10px);
+        transform: scale(1.02) translateY(-5px);
     }
     100% {
         opacity: 1;
@@ -465,148 +388,113 @@
     }
 }
 
-/* === Оптимизации для очень маленьких экранов === */
+/* === Оптимизации для маленьких экранов === */
 @media (max-width: 480px) {
 
-    /* Более плавные анимации */
-    .profile-hero {
-        animation-duration: 1s;
-    }
-
-    .stat-modern {
+    /* Более плавные анимации для экономии батареи */
+    .hero-card {
         animation-duration: 0.8s;
     }
 
-    .order-card-modern {
-        animation-duration: 0.7s;
+    .stat-item {
+        animation-duration: 0.6s;
     }
 
-    /* Уменьшенные эффекты для экономии батареи */
-    .avatar-circle::before {
-        animation-duration: 15s;
+    .order-card {
+        animation-duration: 0.6s;
     }
 
-    .profile-hero::before {
-        animation-duration: 20s;
-    }
-
-    body::after {
-        animation-duration: 40s;
+    /* Уменьшенные эффекты */
+    .avatar-circle {
+        transition-duration: 0.2s;
     }
 
     /* Оптимизированные тени */
-    .stat-modern,
-    .order-card-modern,
-    .modern-card {
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1) !important;
+    .card,
+    .order-card,
+    .hero-card {
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1) !important;
     }
 
-    .stat-modern:active,
-    .order-card-modern:active {
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+    .card:active,
+    .order-card:active {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
     }
 }
 
 /* === Landscape режим на мобильных === */
 @media (max-width: 768px) and (orientation: landscape) {
 
-    .profile-hero {
-        padding: 24px 20px;
+    .hero-card {
+        padding: 20px;
         margin-bottom: 20px;
     }
 
-    .profile-stats-modern {
-        gap: 10px;
+    .hero-stats {
+        gap: 12px;
     }
 
-    .stat-modern {
-        padding: 16px 12px;
+    .stat-item {
+        padding: 12px 16px;
     }
 
-    .tab-nav {
+    .tabs-navigation {
         padding: 4px;
     }
 
-    .tab-button {
-        padding: 10px 16px;
+    .tab-btn {
+        padding: 12px 16px;
         font-size: 0.9em;
     }
 
-    .modern-card {
+    .card {
         padding: 20px 16px;
         margin-bottom: 16px;
     }
 
-    .order-card-modern {
-        padding: 20px 16px;
+    .order-card {
+        padding: 16px;
     }
 
     /* Ускоренные анимации в landscape */
-    .profile-hero,
-    .stat-modern,
-    .order-card-modern,
-    .modern-card {
-        animation-duration: 0.4s;
-    }
-}
-
-/* === Темная тема на мобильных === */
-@media (prefers-color-scheme: dark) and (max-width: 768px) {
-
-    .stat-modern,
-    .order-card-modern,
-    .modern-card {
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
-    }
-
-    .touchable-element::before {
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    }
-
-    .cta-button {
-        animation: mobileDarkGlow 3s ease-in-out infinite alternate;
-    }
-}
-
-@keyframes mobileDarkGlow {
-    from {
-        box-shadow: var(--liquid-shadow-regular);
-    }
-    to {
-        box-shadow: var(--liquid-shadow-elevated), 0 0 25px rgba(100, 181, 246, 0.4);
+    .hero-card,
+    .stat-item,
+    .order-card,
+    .card {
+        animation-duration: 0.3s;
     }
 }
 
 /* === iOS специфичные анимации === */
 @supports (-webkit-touch-callout: none) {
 
-    .profile-hero,
-    .modern-card,
-    .tab-nav {
-        transition: backdrop-filter 0.3s ease;
+    .hero-card,
+    .card,
+    .tabs-navigation {
+        transition: backdrop-filter 0.2s ease;
     }
 
-    .stat-modern:active,
-    .order-card-modern:active {
-        transform: scale(0.97) translateY(-2px) !important;
+    .stat-item:active,
+    .order-card:active {
+        transform: scale(0.98) translateY(-1px) !important;
     }
 
-    /* Safe Area поддержка */
+    /* Safe Area поддержка для новых iPhone */
     @media (max-width: 480px) {
         .profile-container {
-            padding-top: calc(120px + env(safe-area-inset-top));
+            padding-top: calc(var(--header-height) + 20px + env(safe-area-inset-top));
             padding-bottom: calc(40px + env(safe-area-inset-bottom));
-            padding-left: calc(16px + env(safe-area-inset-left));
-            padding-right: calc(16px + env(safe-area-inset-right));
+            padding-left: calc(20px + env(safe-area-inset-left));
+            padding-right: calc(20px + env(safe-area-inset-right));
         }
 
-        .modern-footer {
-            padding-bottom: calc(48px + env(safe-area-inset-bottom));
+        .footer {
+            padding-bottom: calc(40px + env(safe-area-inset-bottom));
         }
     }
 }
 
-/* === Reduced Motion === */
+/* === Уменьшенная анимация для пользователей с ограниченными возможностями === */
 @media (prefers-reduced-motion: reduce) and (max-width: 768px) {
 
     *,
@@ -618,10 +506,63 @@
     }
 
     .tab-content {
-        transition: opacity 0.2s ease !important;
+        transition: opacity 0.1s ease !important;
     }
 
-    .form-group-modern input:focus {
-        transition: border-color 0.2s ease !important;
+    .form-group input:focus {
+        transition: border-color 0.1s ease !important;
     }
+
+    /* Оставляем только opacity transitions */
+    .tab-content:not(.active) {
+        opacity: 0;
+        transform: none;
+    }
+
+    .tab-content.active {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* === Дополнительные touch эффекты === */
+@media (max-width: 768px) {
+
+    /* Ripple эффект для карточек */
+    .touchable {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .touchable::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .touchable:active::before {
+        width: 100px;
+        height: 100px;
+    }
+
+    /* Haptic feedback имитация */
+    .toggle input:checked + .toggle-slider,
+    .tab-btn.active {
+        animation: mobileHaptic 0.1s ease-out;
+    }
+}
+
+@keyframes mobileHaptic {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
 }
