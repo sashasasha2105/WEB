@@ -1,4 +1,4 @@
-/* === PROFILE.JS - УЛУЧШЕННАЯ ВЕРСИЯ С КРАСИВОЙ ЗАГРУЗКОЙ === */
+/* === PROFILE.JS - ИСПРАВЛЕННАЯ ВЕРСИЯ С ИМПОРТОМ ХЕДЕРА === */
 
 // Состояние приложения
 let currentTab = 'orders';
@@ -110,7 +110,7 @@ function hideInitialLoader() {
 async function initializePageSteps() {
     const steps = [
         { name: 'DOM элементы', fn: cacheDOMElements, delay: 200 },
-        { name: 'Заголовок', fn: loadHeader, delay: 300 },
+        { name: 'Хедер', fn: loadHeader, delay: 300 }, // Загружаем из header/header.html
         { name: 'Данные пользователя', fn: loadUserData, delay: 100 },
         { name: 'Система табов', fn: initTabs, delay: 200 },
         { name: 'Обработчики событий', fn: setupEventListeners, delay: 100 },
@@ -195,10 +195,10 @@ async function cacheDOMElements() {
     });
 }
 
-// Загрузка хедера
+// Загрузка хедера из header/header.html
 async function loadHeader() {
     return new Promise((resolve) => {
-        fetch('/header.html')
+        fetch('/header/header.html')
             .then(response => response.text())
             .then(html => {
                 const headerContainer = document.getElementById('header-container');
@@ -210,6 +210,11 @@ async function loadHeader() {
                             window.CartManager.updateCartCounter();
                         }
                         updateOrdersBadge();
+
+                        // Ждем инициализации header.js и обновляем бейджи
+                        if (window.headerManager) {
+                            window.headerManager.forceUpdateBadges();
+                        }
                     }, 100);
                 }
                 resolve();
@@ -1139,7 +1144,12 @@ function updateOrdersBadge() {
             count = orders.length;
         }
 
-        // Обновляем все бейджи заказов
+        // Обновляем все бейджи заказов через headerManager
+        if (window.headerManager) {
+            window.headerManager.setOrdersCount(count);
+        }
+
+        // Fallback обновление
         const badges = document.querySelectorAll('.orders-badge');
         badges.forEach(badge => {
             if (badge) {
@@ -1154,6 +1164,7 @@ function updateOrdersBadge() {
                 }
             }
         });
+
     } catch (error) {
         console.warn('⚠️ Ошибка обновления бейджа заказов:', error);
     }

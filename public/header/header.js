@@ -1,38 +1,34 @@
-// === File: js/header.js ===
-// === ЭЛЕГАНТНЫЙ ХЕДЕР СКРИПТ ===
+// === HEADER JS - Объединенная оптимизированная версия ===
 
 class HeaderManager {
     constructor() {
         console.log('[Header] 🚀 Инициализация...');
 
-        // Поиск элементов (новый и старый хедер)
-        this.header = document.getElementById('premiumHeader') || document.getElementById('site-header');
-        this.mobileToggle = document.querySelector('.mobile-menu-toggle') || document.querySelector('.burger-menu');
+        // Основные элементы
+        this.header = document.getElementById('siteHeader');
+        this.mobileToggle = document.querySelector('.mobile-menu-toggle');
         this.mobileMenu = document.getElementById('mobileMenu');
         this.mobileClose = document.querySelector('.mobile-close');
         this.mobileBackdrop = document.querySelector('.mobile-menu-backdrop');
 
-        // Бейджи корзины
+        // Бейджи
         this.cartBadges = {
-            header: document.getElementById('headerCartBadge'),
-            mobile: document.getElementById('mobileCartBadge'),
-            old: document.querySelector('.cart-count') // Старый бейдж
+            desktop: document.getElementById('cartBadge'),
+            mobile: document.getElementById('mobileCartBadge')
         };
 
-        // Бейджи заказов
         this.ordersBadges = {
-            header: document.getElementById('headerOrdersBadge'),
+            desktop: document.getElementById('ordersBadge'),
             mobile: document.getElementById('mobileOrdersBadge')
         };
 
+        // Состояние
         this.lastScroll = 0;
         this.isMenuOpen = false;
-        this.scrollThreshold = 30; // Когда срабатывает эффект скролла
-        this.isScrolling = false;
+        this.scrollThreshold = 30;
 
-        // Проверяем что хедер найден
         if (!this.header) {
-            console.error('[Header] ❌ Хедер не найден! Проверьте ID элемента.');
+            console.error('[Header] ❌ Хедер не найден!');
             return;
         }
 
@@ -48,7 +44,7 @@ class HeaderManager {
         this.updateBadges();
         this.setupCartManager();
 
-        // Инициальная проверка положения скролла
+        // Инициальная проверка скролла
         this.handleScroll();
 
         console.log('[Header] ✅ Инициализирован успешно');
@@ -62,7 +58,6 @@ class HeaderManager {
                 requestAnimationFrame(() => {
                     const currentScroll = window.pageYOffset;
 
-                    // Эффект прозрачности при скролле (оптимизированный)
                     if (currentScroll > this.scrollThreshold) {
                         if (!this.header.classList.contains('scrolled')) {
                             this.header.classList.add('scrolled');
@@ -80,9 +75,7 @@ class HeaderManager {
             }
         };
 
-        // Используем пассивный слушатель для лучшей производительности
         window.addEventListener('scroll', this.handleScroll, { passive: true });
-
         console.log('[Header] 📜 Scroll handler настроен');
     }
 
@@ -92,8 +85,8 @@ class HeaderManager {
             return;
         }
 
-        // Открытие/закрытие меню (оптимизированный обработчик)
-        this.mobileToggle.addEventListener('click', this.toggleMobileMenu.bind(this), { passive: true });
+        // Открытие/закрытие меню
+        this.mobileToggle.addEventListener('click', this.toggleMobileMenu.bind(this));
 
         // Закрытие меню кнопкой X
         if (this.mobileClose) {
@@ -105,7 +98,7 @@ class HeaderManager {
             this.mobileBackdrop.addEventListener('click', this.closeMobileMenu.bind(this));
         }
 
-        // Закрытие по клику на ссылку в меню
+        // Закрытие по клику на ссылку
         if (this.mobileMenu) {
             this.mobileMenu.addEventListener('click', (e) => {
                 if (e.target.matches('a')) {
@@ -113,19 +106,19 @@ class HeaderManager {
                 }
             });
 
-            // Предотвращение закрытия при клике внутри контента меню
+            // Предотвращение закрытия при клике внутри контента
             const mobileContent = this.mobileMenu.querySelector('.mobile-menu-content');
             if (mobileContent) {
                 mobileContent.addEventListener('click', (e) => e.stopPropagation());
             }
         }
 
-        // Закрытие по ESC (оптимизированный)
+        // Закрытие по ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.isMenuOpen) {
                 this.closeMobileMenu();
             }
-        }, { passive: true });
+        });
 
         console.log('[Header] 📱 Мобильное меню настроено');
     }
@@ -139,7 +132,7 @@ class HeaderManager {
         // Показ/скрытие меню
         this.mobileMenu?.classList.toggle('active', this.isMenuOpen);
 
-        // Блокировка скролла страницы (улучшенная)
+        // Блокировка скролла
         if (this.isMenuOpen) {
             const scrollY = window.scrollY;
             document.body.style.overflow = 'hidden';
@@ -157,7 +150,7 @@ class HeaderManager {
             }
         }
 
-        // Haptic feedback для мобильных устройств
+        // Haptic feedback
         if ('vibrate' in navigator && this.isMenuOpen) {
             navigator.vibrate(30);
         }
@@ -169,11 +162,7 @@ class HeaderManager {
         if (!this.isMenuOpen) return;
 
         this.isMenuOpen = false;
-
-        // Сброс анимации кнопки
         this.mobileToggle?.classList.remove('active');
-
-        // Скрытие меню
         this.mobileMenu?.classList.remove('active');
 
         // Разблокировка скролла
@@ -190,7 +179,6 @@ class HeaderManager {
     }
 
     setupSmoothScroll() {
-        // Плавная прокрутка для всех якорных ссылок (оптимизированная)
         const anchorLinks = document.querySelectorAll('a[data-section], a[href*="#"]');
 
         anchorLinks.forEach(link => {
@@ -198,7 +186,6 @@ class HeaderManager {
                 const href = link.getAttribute('href');
                 let sectionId = link.getAttribute('data-section');
 
-                // Извлекаем ID секции из href если data-section не задан
                 if (!sectionId && href && href.includes('#')) {
                     sectionId = href.split('#')[1];
                 }
@@ -217,7 +204,7 @@ class HeaderManager {
                             behavior: 'smooth'
                         });
 
-                        // Закрываем мобильное меню если открыто
+                        // Закрываем мобильное меню
                         if (this.isMenuOpen) {
                             setTimeout(() => this.closeMobileMenu(), 100);
                         }
@@ -225,7 +212,7 @@ class HeaderManager {
                         console.log(`[Header] 🎯 Прокрутка к секции: ${sectionId}`);
                     }
                 }
-            }, { passive: false });
+            });
         });
 
         console.log(`[Header] 🎯 Настроена плавная прокрутка для ${anchorLinks.length} ссылок`);
@@ -252,7 +239,7 @@ class HeaderManager {
 
                 if (count > 0) {
                     badge.style.display = 'flex';
-                    // Оптимизированная анимация появления
+                    // Анимация появления
                     badge.style.animation = 'none';
                     badge.offsetHeight; // Принудительный reflow
                     badge.style.animation = 'badgeEntry 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
@@ -287,7 +274,7 @@ class HeaderManager {
 
         // Fallback к localStorage
         try {
-            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const orders = JSON.parse(localStorage.getItem('userOrders') || '[]');
             return orders.filter(order => order && order.id).length;
         } catch (e) {
             console.warn('[Header] ⚠️ Ошибка чтения orders:', e);
@@ -303,28 +290,28 @@ class HeaderManager {
             updateTimeout = setTimeout(() => this.updateBadges(), 50);
         };
 
-        // Слушаем стандартные события
+        // Слушаем события
         window.addEventListener('cartUpdated', debouncedUpdate);
         window.addEventListener('ordersUpdated', debouncedUpdate);
 
-        // События изменения localStorage (оптимизированные)
+        // События localStorage
         window.addEventListener('storage', (e) => {
-            if (e.key === 'cartData' || e.key === 'orders') {
+            if (e.key === 'cartData' || e.key === 'userOrders') {
                 console.log(`[Header] 💾 LocalStorage изменен: ${e.key}`);
                 debouncedUpdate();
             }
         });
 
-        // Обновляем при фокусе на страницу (возвращение из другой вкладки)
+        // Обновление при фокусе на страницу
         window.addEventListener('focus', debouncedUpdate, { passive: true });
 
-        // Периодическое обновление каждые 20 секунд (оптимизировано)
+        // Периодическое обновление каждые 20 секунд
         setInterval(() => this.updateBadges(), 20000);
 
         console.log('[Header] 🔄 CartManager интеграция настроена');
     }
 
-    // === ПУБЛИЧНЫЕ МЕТОДЫ ДЛЯ ИНТЕГРАЦИИ ===
+    // === ПУБЛИЧНЫЕ МЕТОДЫ ===
 
     forceUpdateBadges() {
         console.log('[Header] 🔄 Принудительное обновление бейджей');
@@ -341,16 +328,6 @@ class HeaderManager {
         this.setBadge(this.ordersBadges, count);
     }
 
-    // Методы для совместимости с существующим кодом
-    updateCartCounter() {
-        console.log('[Header] 🔄 Вызван updateCartCounter() (совместимость)');
-        this.updateBadges();
-    }
-
-    getTotalCount() {
-        return this.getCartCount();
-    }
-
     // Геттеры для отладки
     get isInitialized() {
         return !!this.header;
@@ -365,12 +342,11 @@ class HeaderManager {
     }
 }
 
-// === ОПТИМИЗИРОВАННАЯ ИНИЦИАЛИЗАЦИЯ ===
+// === ИНИЦИАЛИЗАЦИЯ ===
 
 let headerInstance = null;
 
 function initHeader() {
-    // Предотвращаем множественную инициализацию
     if (headerInstance && headerInstance.isInitialized) {
         console.log('[Header] ⚠️ Уже инициализирован');
         return headerInstance;
@@ -385,70 +361,51 @@ function initHeader() {
             window.headerManager = headerInstance;
             window.HeaderManager = HeaderManager;
 
-            // Совместимость с различными именами
-            window.premiumHeader = headerInstance; // Обратная совместимость
+            console.log('[Header] ✅ Успешно инициализирован');
 
-            // Совместимость с cart-manager.js
-            if (!window.HeaderCompat) {
-                window.HeaderCompat = {
-                    updateCartCounter: () => headerInstance.updateCartCounter(),
-                    updateBadges: () => headerInstance.forceUpdateBadges(),
-                    forceUpdate: () => headerInstance.forceUpdateBadges()
-                };
-            }
-
-            console.log('[Header] ✅ Успешно инициализирован и экспортирован глобально');
-
-            // Первичное обновление бейджей через 300ms
+            // Первичное обновление бейджей
             setTimeout(() => headerInstance.forceUpdateBadges(), 300);
 
             return headerInstance;
         } else {
-            console.error('[Header] ❌ Не удалось инициализировать - хедер не найден');
+            console.error('[Header] ❌ Не удалось инициализировать');
             return null;
         }
 
     } catch (error) {
-        console.error('[Header] ❌ Критическая ошибка инициализации:', error);
+        console.error('[Header] ❌ Критическая ошибка:', error);
         return null;
     }
 }
 
 // === АВТОИНИЦИАЛИЗАЦИЯ ===
 
-// Инициализация при загрузке DOM
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        // Небольшая задержка для гарантии загрузки всех элементов
         setTimeout(initHeader, 50);
     });
 } else {
-    // DOM уже загружен - инициализируем
     setTimeout(initHeader, 100);
 }
 
 // === ИНТЕГРАЦИЯ С CART-MANAGER ===
 
-// Ждем загрузки CartManager и интегрируемся
 function waitForCartManager() {
     if (window.CartManager && headerInstance) {
         console.log('[Header] 🔗 Интеграция с CartManager');
 
-        // Патчим метод updateCartCounter в CartManager если он есть
+        // Патчим метод updateCartCounter в CartManager
         if (typeof window.CartManager.updateCartCounter === 'function') {
             const originalUpdate = window.CartManager.updateCartCounter.bind(window.CartManager);
 
             window.CartManager.updateCartCounter = function() {
-                // Вызываем оригинальный метод
                 originalUpdate();
-
-                // Обновляем наши бейджи с небольшой задержкой
                 if (headerInstance) {
                     setTimeout(() => headerInstance.updateBadges(), 50);
                 }
             };
 
-            console.log('[Header] ✅ CartManager.updateCartCounter пропатчен');
+            console.log('[Header] ✅ CartManager интегрирован');
         }
 
         // Первичное обновление
@@ -459,22 +416,16 @@ function waitForCartManager() {
         }, 100);
 
     } else if (!window.CartManager) {
-        // CartManager еще не загружен, ждем
         setTimeout(waitForCartManager, 100);
     }
 }
 
-// Запускаем интеграцию через 200ms после инициализации
 setTimeout(waitForCartManager, 200);
 
-// === ЭКСПОРТ ДЛЯ СОВМЕСТИМОСТИ ===
+// === ГЛОБАЛЬНЫЕ ФУНКЦИИ ===
 
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { HeaderManager, initHeader };
-}
-
-// Глобальные функции для отладки и ручного управления
 window.initHeader = initHeader;
+
 window.updateHeaderBadges = function() {
     if (headerInstance) {
         headerInstance.forceUpdateBadges();
@@ -483,3 +434,11 @@ window.updateHeaderBadges = function() {
         console.warn('[Header] ⚠️ Header не инициализирован');
     }
 };
+
+// === ЭКСПОРТ ===
+
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { HeaderManager, initHeader };
+}
+
+console.log('[Header] 🎉 Скрипт загружен и готов к работе!');

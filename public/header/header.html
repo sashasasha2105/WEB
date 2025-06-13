@@ -1,15 +1,15 @@
-<!-- File: public/header.html - ПРЕМИАЛЬНЫЙ ХЕДЕР -->
+<!-- Header HTML - Оптимизированная версия -->
 
-<header id="premiumHeader" class="premium-header">
+<header id="siteHeader" class="site-header">
   <div class="header-container">
-    <!-- Мобильное меню бургер -->
+    <!-- Мобильное меню -->
     <button class="mobile-menu-toggle" aria-label="Открыть меню">
       <span class="burger-line"></span>
       <span class="burger-line"></span>
       <span class="burger-line"></span>
     </button>
 
-    <!-- Премиальный логотип -->
+    <!-- Логотип -->
     <div class="header-logo">
       <a href="/index.html" class="logo-link">
         <img src="/assets/logo.png" alt="clip & go" class="logo-image">
@@ -40,19 +40,19 @@
       </a>
     </nav>
 
-    <!-- Премиальные действия -->
+    <!-- Действия -->
     <div class="header-actions">
       <a href="/profile/profile.html" class="action-btn profile-btn">
         <div class="action-icon">👤</div>
         <span class="action-text">Профиль</span>
-        <div class="orders-badge" id="headerOrdersBadge">0</div>
+        <div class="orders-badge" id="ordersBadge">0</div>
         <div class="btn-shimmer"></div>
       </a>
 
       <a href="/cart/cart.html" class="action-btn cart-btn">
         <div class="action-icon">🛒</div>
         <span class="action-text">Корзина</span>
-        <div class="cart-badge" id="headerCartBadge">0</div>
+        <div class="cart-badge" id="cartBadge">0</div>
         <div class="btn-shimmer"></div>
       </a>
     </div>
@@ -114,7 +114,7 @@
   </div>
 </header>
 
-<!-- Подключаем глобальный менеджер корзины и заказов -->
+<!-- Подключение скриптов -->
 <script src="/js/cart-manager.js"></script>
 <script src="/js/order-manager.js"></script>
-<script src="/js/header.js"></script>
+<script src="/header/header.js"></script>

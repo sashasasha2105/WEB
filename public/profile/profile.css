@@ -1,17 +1,37 @@
-/* === PREMIUM PROFILE.CSS - УЛУЧШЕННАЯ ВЕРСИЯ === */
+/* === PREMIUM PROFILE.CSS - ПОЛНОЭКРАННАЯ ВЕРСИЯ === */
 
-/* === Базовые стили === */
-.profile-container {
+/* === ПОЛНОЭКРАННЫЙ ФОН === */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
     min-height: 100vh;
+    min-height: -webkit-fill-available; /* iOS Safari */
     background: linear-gradient(135deg, #001a3a 0%, #003875 30%, #0057c2 70%, #1ca6f8 100%);
-    padding: 20px;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    position: relative;
     overflow-x: hidden;
 }
 
+/* === Дополнительный фон-слой для максимальной совместимости === */
+html::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    height: -webkit-fill-available;
+    background: linear-gradient(135deg, #001a3a 0%, #003875 30%, #0057c2 70%, #1ca6f8 100%);
+    z-index: -10;
+    pointer-events: none;
+}
+
 /* === Анимированный фон === */
-.profile-container::before {
+body::before {
     content: '';
     position: fixed;
     top: 0;
@@ -24,12 +44,25 @@
             radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
     animation: backgroundFloat 20s ease-in-out infinite;
     pointer-events: none;
-    z-index: 0;
+    z-index: -5;
 }
 
 @keyframes backgroundFloat {
     0%, 100% { transform: translateY(0) scale(1); }
     50% { transform: translateY(-20px) scale(1.05); }
+}
+
+/* === ОСНОВНОЙ КОНТЕЙНЕР === */
+.profile-container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    padding: 0 20px;
+    padding-top: calc(85px + 20px); /* Отступ под хедер + отступ контента */
+    padding-bottom: 20px;
+    z-index: 1;
+    box-sizing: border-box;
 }
 
 /* === Hero Card === */
@@ -917,14 +950,11 @@
 }
 
 /* === Исправления и дополнительные стили === */
-
-/* Исправляем потенциальные конфликты стилей */
 .tab-content * {
     max-width: 100%;
     box-sizing: border-box;
 }
 
-/* Гарантируем правильное отображение flex элементов */
 .orders-grid,
 .settings-grid,
 .form-grid {
@@ -932,56 +962,12 @@
     overflow: visible;
 }
 
-/* Убираем лишние отступы которые могут влиять на расчет высоты */
 .tab-content > *:first-child {
     margin-top: 0;
 }
 
 .tab-content > *:last-child {
     margin-bottom: 0;
-}
-
-/* Принудительное отображение для отладки */
-.debug-visible {
-    display: block !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    min-height: 400px !important;
-    background: rgba(255, 0, 0, 0.1) !important;
-    border: 2px solid red !important;
-}
-
-@keyframes premiumFadeOut {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-}
-
-@keyframes premiumEmptyStateSlide {
-    from {
-        opacity: 0;
-        transform: translateY(50px) scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 /* === Принудительное отображение активных табов === */
@@ -996,7 +982,6 @@
     z-index: 1 !important;
 }
 
-/* === Скрытие неактивных табов === */
 .tab-content:not(.active) {
     display: none !important;
 }
@@ -1017,7 +1002,9 @@
 
 @media (max-width: 768px) {
     .profile-container {
-        padding: 15px;
+        padding: 0 15px;
+        padding-top: calc(70px + 15px); /* Хедер на мобильных меньше */
+        padding-bottom: 15px;
     }
 
     .hero-card {
@@ -1063,5 +1050,42 @@
 
     .stat-number {
         font-size: 1.2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-container {
+        padding: 0 12px;
+        padding-top: calc(70px + 12px);
+        padding-bottom: 12px;
+    }
+
+    .hero-card {
+        padding: 20px;
+    }
+
+    .hero-info h1 {
+        font-size: 1.8em;
+    }
+
+    .hero-info p {
+        font-size: 1.1em;
+    }
+
+    .stat-item {
+        padding: 12px;
+        min-width: 70px;
+    }
+
+    .stat-number {
+        font-size: 1.1em;
+    }
+
+    .order-card {
+        padding: 20px;
+    }
+
+    .card {
+        padding: 24px;
     }
 }

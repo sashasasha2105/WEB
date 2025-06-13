@@ -1,13 +1,12 @@
-/* === File: css/header.css === */
-/* === ЭЛЕГАНТНЫЙ ХЕДЕР CLIP & GO === */
+/* === HEADER CSS - Объединенная оптимизированная версия === */
 
 /* === ОСНОВНЫЕ СТИЛИ === */
-.premium-header {
+.site-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
-  height: 85px;
+  height: 140px;
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -15,10 +14,11 @@
   z-index: 1000;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
+  animation: headerSlideDown 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.premium-header.scrolled {
-  height: 75px;
+.site-header.scrolled {
+  height: 120px;
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -37,7 +37,7 @@
   gap: 50px;
 }
 
-/* === БОЛЬШОЙ ЛОГОТИП === */
+/* === ЛОГОТИП === */
 .header-logo {
   flex-shrink: 0;
   z-index: 1001;
@@ -54,9 +54,9 @@
 }
 
 .logo-image {
-  height: 90px;
+  height: 270px;
   width: auto;
-  max-width: 350px;
+  max-width: 1050px;
   object-fit: contain;
   animation: logoFloat 10s ease-in-out infinite;
   filter: drop-shadow(0 2px 8px rgba(28, 166, 248, 0.25));
@@ -65,11 +65,6 @@
 
 .logo-link:hover .logo-image {
   filter: drop-shadow(0 3px 12px rgba(28, 166, 248, 0.4));
-}
-
-@keyframes logoFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-2px); }
 }
 
 /* === НАВИГАЦИЯ === */
@@ -97,6 +92,8 @@
   overflow: hidden;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation-fill-mode: both;
 }
 
 .nav-link::before {
@@ -144,7 +141,7 @@
   opacity: 1;
 }
 
-/* === ЭЛЕГАНТНЫЕ ДЕЙСТВИЯ === */
+/* === ДЕЙСТВИЯ === */
 .header-actions {
   display: flex;
   gap: 12px;
@@ -169,31 +166,37 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   min-width: 44px;
   justify-content: center;
+  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation-fill-mode: both;
 }
 
 .profile-btn {
-  background: rgba(255, 255, 255, 0.08);
+  background: transparent;
   color: rgba(255, 255, 255, 0.9);
+  animation-delay: 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .profile-btn:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .cart-btn {
-  background: linear-gradient(135deg, #1ca6f8 0%, #0057c2 100%);
-  color: white;
-  box-shadow: 0 4px 15px rgba(28, 166, 248, 0.25);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  box-shadow: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation-delay: 0.35s;
 }
 
 .cart-btn:hover {
-  background: linear-gradient(135deg, #0057c2 0%, #001a3a 100%);
+  background: rgba(255, 255, 255, 0.1);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(28, 166, 248, 0.4);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .action-icon {
@@ -210,7 +213,7 @@
   letter-spacing: -0.01em;
 }
 
-/* === КОМПАКТНЫЕ БЕЙДЖИ === */
+/* === БЕЙДЖИ === */
 .cart-badge,
 .orders-badge {
   position: absolute;
@@ -237,33 +240,7 @@
   box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
 }
 
-/* Совместимость со старым кодом */
-.cart-count {
-  position: absolute;
-  top: -6px;
-  right: -6px;
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
-  font-size: 0.7rem;
-  font-weight: 800;
-  padding: 3px 6px;
-  border-radius: 10px;
-  min-width: 18px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 3px 10px rgba(239, 68, 68, 0.4);
-  animation: badgeEntry 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-@keyframes badgeEntry {
-  0% { transform: scale(0) rotate(90deg); opacity: 0; }
-  60% { transform: scale(1.2) rotate(-5deg); }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
-}
-
+/* === ШИММЕР ЭФФЕКТ === */
 .btn-shimmer {
   position: absolute;
   top: 0;
@@ -445,6 +422,8 @@
   border: 1px solid rgba(0, 26, 58, 0.1);
   position: relative;
   overflow: hidden;
+  animation: mobileSlideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation-fill-mode: both;
 }
 
 .mobile-nav-link::before {
@@ -504,25 +483,25 @@
 }
 
 .profile-mobile {
-  background: rgba(0, 26, 58, 0.1);
-  color: #001a3a;
-  border: 2px solid rgba(0, 26, 58, 0.15);
+  background: transparent;
+  color: rgba(0, 26, 58, 0.9);
+  border: 2px solid rgba(0, 26, 58, 0.2);
 }
 
 .profile-mobile:active {
-  background: rgba(0, 26, 58, 0.15);
+  background: rgba(0, 26, 58, 0.1);
   transform: scale(0.98);
 }
 
 .cart-mobile {
-  background: linear-gradient(135deg, #1ca6f8 0%, #0057c2 100%);
-  color: white;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 6px 20px rgba(28, 166, 248, 0.3);
+  background: transparent;
+  color: rgba(0, 26, 58, 0.9);
+  border: 2px solid rgba(0, 26, 58, 0.2);
+  box-shadow: none;
 }
 
 .cart-mobile:active {
-  background: linear-gradient(135deg, #0057c2 0%, #001a3a 100%);
+  background: rgba(0, 26, 58, 0.1);
   transform: scale(0.98);
 }
 
@@ -554,144 +533,68 @@
   padding: 5px 8px;
 }
 
-/* === СОВМЕСТИМОСТЬ СО СТАРЫМ КОДОМ === */
-
-/* Старые селекторы для совместимости */
-#site-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 85px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  z-index: 1000;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 35px;
+/* === ОТСТУП ДЛЯ BODY === */
+body {
+  padding-top: 85px;
 }
 
-#site-header.scrolled {
-  height: 75px;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
-  border-bottom-color: rgba(255, 255, 255, 0.15);
+/* === АНИМАЦИИ === */
+@keyframes headerSlideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-/* Старая навигация */
-#site-header .main-nav {
-  flex: 1;
-  display: flex;
-  justify-content: center;
+@keyframes fadeInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-#site-header .main-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-  margin: 0;
-  padding: 0;
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-2px); }
 }
 
-#site-header .main-nav li {
-  display: inline-block;
+@keyframes badgeEntry {
+  0% { transform: scale(0) rotate(90deg); opacity: 0; }
+  60% { transform: scale(1.2) rotate(-5deg); }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
-#site-header .main-nav a {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  color: rgba(255, 255, 255, 0.85);
-  text-decoration: none;
-  border-radius: 14px;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  position: relative;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+@keyframes mobileSlideIn {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
-#site-header .main-nav a:hover {
-  color: #ffffff;
-  transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 20px rgba(28, 166, 248, 0.15);
-}
+/* === ЗАДЕРЖКИ АНИМАЦИИ === */
+.nav-link:nth-child(1) { animation-delay: 0.05s; }
+.nav-link:nth-child(2) { animation-delay: 0.1s; }
+.nav-link:nth-child(3) { animation-delay: 0.15s; }
+.nav-link:nth-child(4) { animation-delay: 0.2s; }
+.nav-link:nth-child(5) { animation-delay: 0.25s; }
 
-/* Старая корзина */
-.cart-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  text-decoration: none;
-  border-radius: 16px;
-  font-weight: 600;
-  font-size: 0.9rem;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  position: relative;
-  overflow: hidden;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: linear-gradient(135deg, #1ca6f8 0%, #0057c2 100%);
-  color: white;
-  box-shadow: 0 4px 15px rgba(28, 166, 248, 0.25);
-}
+.mobile-nav-link:nth-child(1) { animation-delay: 0.05s; }
+.mobile-nav-link:nth-child(2) { animation-delay: 0.1s; }
+.mobile-nav-link:nth-child(3) { animation-delay: 0.15s; }
+.mobile-nav-link:nth-child(4) { animation-delay: 0.2s; }
+.mobile-nav-link:nth-child(5) { animation-delay: 0.25s; }
 
-.cart-link:hover {
-  background: linear-gradient(135deg, #0057c2 0%, #001a3a 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(28, 166, 248, 0.4);
-}
-
-.cart-icon img {
-  display: none; /* Скрываем старую иконку */
-}
-
-/* Старый бургер */
-.burger-menu {
-  display: none;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  cursor: pointer;
-  padding: 10px;
-  position: relative;
-  width: 44px;
-  height: 44px;
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  transition: all 0.3s ease;
-  font-size: 1.4rem;
-  color: rgba(255, 255, 255, 0.9);
-  margin: 0;
-}
-
-#site-header .burger-menu {
-  display: none;
-}
-
-/* === АДАПТИВНОСТЬ === */
+/* === МЕДИА ЗАПРОСЫ === */
 @media (max-width: 1200px) {
   .header-container {
     padding: 0 30px;
     gap: 35px;
-  }
-
-  #site-header {
-    padding: 0 30px;
   }
 
   .nav-link {
@@ -708,26 +611,17 @@
   }
 
   .logo-image {
-    height: 80px;
+    height: 240px;
   }
 }
 
 @media (max-width: 768px) {
-  .premium-header {
-    height: 70px;
+  .site-header {
+    height: 120px;
   }
 
-  .premium-header.scrolled {
-    height: 65px;
-  }
-
-  #site-header {
-    height: 70px;
-    padding: 0 20px;
-  }
-
-  #site-header.scrolled {
-    height: 65px;
+  .site-header.scrolled {
+    height: 100px;
   }
 
   .header-container {
@@ -735,15 +629,11 @@
     gap: 20px;
   }
 
-  .header-nav,
-  #site-header .main-nav,
-  #site-header .header-buttons {
+  .header-nav {
     display: none;
   }
 
-  .mobile-menu-toggle,
-  #site-header .burger-menu,
-  .burger-menu {
+  .mobile-menu-toggle {
     display: block;
   }
 
@@ -752,11 +642,11 @@
   }
 
   .logo-image {
-    height: 65px;
+    height: 195px;
   }
 
   .mobile-logo-image {
-    height: 45px;
+    height: 135px;
   }
 
   .action-btn {
@@ -772,37 +662,8 @@
     gap: 8px;
   }
 
-  /* Мобильные состояния для старого кода */
-  #site-header.mobile-menu-open .nav-wrapper {
-    display: flex;
-    flex-direction: column;
-    background: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    gap: 0.5rem;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-  }
-
-  #site-header.mobile-menu-open .main-nav ul {
-    flex-direction: column;
-    padding: 0.5rem 1rem;
-    gap: 0.5rem;
-  }
-
-  #site-header.mobile-menu-open .header-buttons {
-    flex-direction: column;
-    padding: 0 1rem;
-    gap: 0.5rem;
-    display: flex;
-  }
-
-  #site-header.mobile-menu-open .cart-link {
-    margin: 0.5rem 1rem;
-    display: flex;
+  body {
+    padding-top: 120px;
   }
 }
 
@@ -811,17 +672,13 @@
     padding: 0 16px;
   }
 
-  #site-header {
-    padding: 0 16px;
-  }
-
   .logo-image {
-    height: 55px;
-    max-width: 280px;
+    height: 165px;
+    max-width: 840px;
   }
 
   .mobile-logo-image {
-    height: 40px;
+    height: 120px;
   }
 
   .action-btn {
@@ -832,78 +689,5 @@
   .mobile-menu-content {
     width: 100%;
     max-width: 100%;
-  }
-}
-
-/* === АНИМАЦИИ ЗАГРУЗКИ === */
-@keyframes headerSlideDown {
-  from { transform: translateY(-100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-.premium-header,
-#site-header {
-  animation: headerSlideDown 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* === АНИМАЦИЯ ДЛЯ ЭЛЕМЕНТОВ НАВИГАЦИИ === */
-.nav-link,
-.action-btn {
-  animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  animation-fill-mode: both;
-}
-
-.nav-link:nth-child(1) { animation-delay: 0.05s; }
-.nav-link:nth-child(2) { animation-delay: 0.1s; }
-.nav-link:nth-child(3) { animation-delay: 0.15s; }
-.nav-link:nth-child(4) { animation-delay: 0.2s; }
-.nav-link:nth-child(5) { animation-delay: 0.25s; }
-
-.profile-btn { animation-delay: 0.3s; }
-.cart-btn { animation-delay: 0.35s; }
-
-@keyframes fadeInUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* === МОБИЛЬНАЯ АНИМАЦИЯ === */
-.mobile-nav-link {
-  animation: mobileSlideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  animation-fill-mode: both;
-}
-
-.mobile-nav-link:nth-child(1) { animation-delay: 0.05s; }
-.mobile-nav-link:nth-child(2) { animation-delay: 0.1s; }
-.mobile-nav-link:nth-child(3) { animation-delay: 0.15s; }
-.mobile-nav-link:nth-child(4) { animation-delay: 0.2s; }
-.mobile-nav-link:nth-child(5) { animation-delay: 0.25s; }
-
-@keyframes mobileSlideIn {
-  from {
-    transform: translateX(40px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* === ОТСТУП ДЛЯ BODY === */
-/* Добавляем отступ чтобы контент не перекрывался хедером */
-body {
-  padding-top: 85px;
-}
-
-@media (max-width: 768px) {
-  body {
-    padding-top: 70px;
   }
 }
