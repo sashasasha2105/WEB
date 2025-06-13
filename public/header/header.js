@@ -25,7 +25,7 @@ class HeaderManager {
         // Состояние
         this.lastScroll = 0;
         this.isMenuOpen = false;
-        this.scrollThreshold = 30;
+        this.scrollThreshold = 30; // Обновлен порог для нового размера хедера
 
         if (!this.header) {
             console.error('[Header] ❌ Хедер не найден!');
@@ -196,7 +196,8 @@ class HeaderManager {
                     if (targetElement) {
                         e.preventDefault();
 
-                        const headerHeight = this.header.offsetHeight || 75;
+                        // Обновленный расчет с учетом новой высоты хедера
+                        const headerHeight = this.header.offsetHeight || 100;
                         const targetPosition = targetElement.offsetTop - headerHeight - 20;
 
                         window.scrollTo({

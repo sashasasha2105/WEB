@@ -1,22 +1,22 @@
-<!-- Header HTML - Оптимизированная версия -->
+<!-- Header HTML - Оптимизированная версия с новым layout -->
 
 <header id="siteHeader" class="site-header">
   <div class="header-container">
-    <!-- Мобильное меню -->
-    <button class="mobile-menu-toggle" aria-label="Открыть меню">
-      <span class="burger-line"></span>
-      <span class="burger-line"></span>
-      <span class="burger-line"></span>
-    </button>
-
-    <!-- Логотип -->
+    <!-- Логотип (левый край) -->
     <div class="header-logo">
+      <!-- Мобильное меню (показывается только на мобильных, заменяет лого) -->
+      <button class="mobile-menu-toggle" aria-label="Открыть меню">
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+      </button>
+
       <a href="/index.html" class="logo-link">
         <img src="/assets/logo.png" alt="clip & go" class="logo-image">
       </a>
     </div>
 
-    <!-- Навигация -->
+    <!-- Навигация (центр, равномерно распределена) -->
     <nav class="header-nav">
       <a href="/index.html#main" class="nav-link" data-section="main">
         <span class="nav-text">Главная</span>
@@ -40,7 +40,7 @@
       </a>
     </nav>
 
-    <!-- Действия -->
+    <!-- Действия (правый край) -->
     <div class="header-actions">
       <a href="/profile/profile.html" class="action-btn profile-btn">
         <div class="action-icon">👤</div>
@@ -50,7 +50,7 @@
       </a>
 
       <a href="/cart/cart.html" class="action-btn cart-btn">
-        <div class="action-icon">🛒</div>
+        <img src="/assets/icons/carticon.png" alt="Корзина" class="cart-icon">
         <span class="action-text">Корзина</span>
         <div class="cart-badge" id="cartBadge">0</div>
         <div class="btn-shimmer"></div>
@@ -102,7 +102,7 @@
           <div class="orders-badge mobile" id="mobileOrdersBadge">0</div>
         </a>
         <a href="/cart/cart.html" class="mobile-action-btn cart-mobile">
-          <div class="action-icon">🛒</div>
+          <img src="/assets/icons/carticon.png" alt="Корзина" class="cart-icon">
           <div class="action-content">
             <span class="action-title">Корзина</span>
             <span class="action-subtitle">Ваши товары</span>
