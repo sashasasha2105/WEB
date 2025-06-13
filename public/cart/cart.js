@@ -468,8 +468,11 @@ function initCartControls() {
       });
     }
 
-    // Сохраняем данные заказа для последующего создания
-    const orderDataForLater = {
+    // Создаем заказ ДО отправки на оплату
+    const orderData = {
+      id: `CG-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      cdekNumber: null, // будет установлен после создания в CDEK
+      status: 'created',
       amount: amount,
       items: items,
       delivery: deliveryData,
@@ -482,10 +485,21 @@ function initCartControls() {
       createdAt: new Date().toISOString()
     };
 
-    // Сохраняем в localStorage для страницы результата
-    localStorage.setItem('pendingOrderData', JSON.stringify(orderDataForLater));
+    // Сохраняем заказ в OrderManager
+    if (window.OrderManager) {
+      const savedOrder = window.OrderManager.addOrder(orderData);
+      console.log('✅ Заказ сохранен в OrderManager:', savedOrder);
+    } else {
+      console.warn('⚠️ OrderManager не найден, сохраняем в localStorage');
+      const orders = JSON.parse(localStorage.getItem('userOrders') || '[]');
+      orders.unshift(orderData);
+      localStorage.setItem('userOrders', JSON.stringify(orders));
+    }
 
-    const orderData = buildCdekOrderRequest(amount);
+    // Сохраняем данные заказа для страницы результата
+    localStorage.setItem('pendingOrderData', JSON.stringify(orderData));
+
+    const cdekOrderData = buildCdekOrderRequest(amount);
 
     try {
       const resp = await fetch('/api/yookassa/create-payment', {
@@ -495,16 +509,28 @@ function initCartControls() {
           amount,
           currency: 'RUB',
           description: `Заказ clip & go на сумму ${amount} ₽`,
-          orderData: orderData
+          orderData: cdekOrderData,
+          internalOrderId: orderData.id // передаем ID нашего заказа
         })
       });
 
       const payment = await resp.json();
       if (!resp.ok) throw new Error(payment.error || 'Ошибка создания платежа');
 
-      console.log('Платеж создан, переходим к оплате...');
+      console.log('✅ Платеж создан, переходим к оплате...');
+
+      // Обновляем заказ с ID платежа
+      if (window.OrderManager) {
+        const orders = window.OrderManager.getOrders();
+        const orderIndex = orders.findIndex(o => o.id === orderData.id);
+        if (orderIndex !== -1) {
+          orders[orderIndex].paymentId = payment.payment_id;
+          localStorage.setItem('userOrders', JSON.stringify(orders));
+        }
+      }
 
       localStorage.setItem('currentPaymentId', payment.payment_id);
+      localStorage.setItem('currentOrderId', orderData.id);
 
       updateLoaderText('Переходим к оплате...');
 
@@ -513,7 +539,13 @@ function initCartControls() {
       }, 1000);
 
     } catch (e) {
-      console.error('Ошибка создания платежа:', e);
+      console.error('❌ Ошибка создания платежа:', e);
+
+      // Обновляем статус заказа на ошибку
+      if (window.OrderManager) {
+        window.OrderManager.updateOrderStatus(orderData.id, 'failed');
+      }
+
       hidePremiumPaymentLoader();
       showNotification('Ошибка при создании платежа: ' + e.message, 'error');
     }
@@ -1399,7 +1431,7 @@ function getNotificationContainer() {
             z-index: 9999;
             pointer-events: none;
             display: flex;
-            flex-directionflex-direction: column;
+            flex-direction: column;
             gap: 8px;
         `;
     container.addEventListener('click', (e) => {
