@@ -1,4 +1,4 @@
-/* === PREMIUM CART.JS - ПРЕМИАЛЬНАЯ ЛОГИКА КОРЗИНЫ === */
+/* === PREMIUM CART.JS - ОБНОВЛЕННАЯ ВЕРСИЯ С ЗАКАЗАМИ === */
 
 /* === Цены и параметры === */
 const prices = { camera: 8900, memory: 500 };
@@ -16,7 +16,7 @@ let shipping = 0;
 let cityCode = null;
 let currentCity = '';
 let cachedPreviews = {};
-let selectedTariff = null; // { code, type, pvzCode, address }
+let selectedTariff = null;
 let justSelectedCity = false;
 
 /* === DOM-шорткаты === */
@@ -45,10 +45,7 @@ let yandexMapsLoaded = false;
 document.addEventListener('DOMContentLoaded', () => {
   console.log('🚀 Премиальная корзина загружается...');
 
-  // Добавляем touchable классы
   addTouchableClasses();
-
-  // Инициализируем все компоненты
   loadCart();
   updateUI();
   initCartControls();
@@ -58,10 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
   hideTariffs();
   cachedPreviews = {};
 
-  // Проверяем загрузку Яндекс.Карт
   checkYandexMapsStatus();
 
-  // Запускаем премиальные анимации
   setTimeout(() => {
     initPremiumAnimations();
   }, 500);
@@ -96,7 +91,6 @@ function addTouchableClasses() {
 
 /* === Премиальные анимации === */
 function initPremiumAnimations() {
-  // Анимация появления элементов с задержками
   const animatedElements = [
     { selector: '.cart-hero', delay: 0 },
     { selector: '.cart-item', delay: 100 },
@@ -115,7 +109,6 @@ function initPremiumAnimations() {
     });
   });
 
-  // Анимация счетчика товаров
   setTimeout(() => {
     animateCartItemsCounter();
   }, 1000);
@@ -143,7 +136,6 @@ function animateCounterPremium(element, target) {
     const current = Math.floor(start + (target - start) * easeOutCubic(progress));
     element.textContent = current;
 
-    // Премиальный эффект во время анимации
     if (progress < 1) {
       const scale = 1 + Math.sin(progress * Math.PI) * 0.1;
       element.style.transform = `scale(${scale})`;
@@ -200,14 +192,6 @@ function loadCart() {
     const cameraColor = data.cartColor || 'Чёрный';
     const colorEl = document.getElementById('cameraColor');
     if (colorEl) colorEl.textContent = cameraColor;
-  } else {
-    const d = JSON.parse(localStorage.getItem('cartData') || '{}');
-    counts.camera = d.cameraCount || 0;
-    counts.memory = d.memoryCount || 0;
-
-    const cameraColor = d.cartColor || 'Чёрный';
-    const colorEl = document.getElementById('cameraColor');
-    if (colorEl) colorEl.textContent = cameraColor;
   }
 }
 
@@ -215,20 +199,6 @@ function saveCart() {
   if (window.CartManager) {
     const currentData = window.CartManager.getCartData();
     window.CartManager.saveCartData(counts.camera, counts.memory, currentData.cartColor);
-  } else {
-    const cartData = {
-      cameraCount: counts.camera,
-      memoryCount: counts.memory
-    };
-    localStorage.setItem('cartData', JSON.stringify(cartData));
-
-    if (window.updateCartCounter) {
-      window.updateCartCounter();
-    }
-
-    window.dispatchEvent(new CustomEvent('cartUpdated', {
-      detail: cartData
-    }));
   }
 }
 
@@ -260,13 +230,11 @@ function updateDeliveryTip(deliveryType) {
 function updateUI() {
   shipEl().textContent = shipping.toLocaleString('ru-RU');
 
-  // Обновляем количество в UI
   document.querySelectorAll('.quantity-value').forEach(el => {
     const id = el.dataset.id;
     if (id && counts[id] !== undefined) {
       el.textContent = counts[id];
 
-      // Анимация изменения количества
       el.style.animation = 'premiumPopIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
       setTimeout(() => {
         el.style.animation = '';
@@ -274,7 +242,6 @@ function updateUI() {
     }
   });
 
-  // Скрываем товары с нулевым количеством
   document.querySelectorAll('.cart-item').forEach(item => {
     const id = item.dataset.id;
     if (id && counts[id] !== undefined) {
@@ -289,10 +256,8 @@ function updateUI() {
 
   let sum = counts.camera * prices.camera + counts.memory * prices.memory;
 
-  // Обновляем итоговые суммы
   document.getElementById('itemsSubtotal').textContent = sum.toLocaleString('ru-RU');
 
-  // Показываем/скрываем блоки в зависимости от наличия товаров
   const hasItems = sum > 0;
   const deliveryContainer = document.getElementById('deliverySectionContainer');
   const recipientContainer = document.getElementById('recipientSectionContainer');
@@ -304,7 +269,6 @@ function updateUI() {
   if (summaryContainer) summaryContainer.style.display = hasItems ? 'block' : 'none';
   if (promoContainer) promoContainer.style.display = hasItems ? 'block' : 'none';
 
-  // Обновляем счетчик товаров
   if (cartItemsCount()) {
     cartItemsCount().textContent = counts.camera + counts.memory;
   }
@@ -316,7 +280,6 @@ function updateUI() {
     hideEmptyCartMessage();
   }
 
-  // Показываем/скрываем скидку
   const discountRow = document.getElementById('discountRow');
   if (discount > 0) {
     const discountAmount = Math.round(sum * discount / 100);
@@ -330,7 +293,6 @@ function updateUI() {
   sum -= Math.round(sum * discount / 100);
   sum += shipping;
 
-  // Анимация обновления итоговой суммы
   const totalElement = totalEl();
   if (totalElement) {
     totalElement.style.animation = 'premiumPopIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
@@ -481,10 +443,47 @@ function initCartControls() {
     // Показываем премиальный лоадер
     showPremiumPaymentLoader();
 
-    // Сохраняем данные доставки
-    localStorage.setItem('lastShippingCost', shipping.toString());
-    localStorage.setItem('lastDeliveryMethod', getDeliveryMethodText(selectedTariff.type));
-    localStorage.setItem('lastDeliveryAddress', selectedTariff.address);
+    // Собираем данные доставки
+    const deliveryData = {
+      type: getDeliveryMethodText(selectedTariff.type),
+      address: selectedTariff.address,
+      tariff: selectedTariff.code,
+      cost: shipping
+    };
+
+    // Собираем товары
+    const items = [];
+    if (counts.camera > 0) {
+      items.push({
+        name: `clip & go камера (${counts.camera} шт.)`,
+        cost: counts.camera * prices.camera,
+        quantity: counts.camera
+      });
+    }
+    if (counts.memory > 0) {
+      items.push({
+        name: `Карта памяти 8 ГБ (${counts.memory} шт.)`,
+        cost: counts.memory * prices.memory,
+        quantity: counts.memory
+      });
+    }
+
+    // Сохраняем данные заказа для последующего создания
+    const orderDataForLater = {
+      amount: amount,
+      items: items,
+      delivery: deliveryData,
+      recipient: {
+        name: name,
+        phone: phone,
+        email: recEmailIn().value.trim() || null
+      },
+      discount: discount > 0 ? { percent: discount, amount: Math.round(itemsSum * discount / 100) } : null,
+      createdAt: new Date().toISOString()
+    };
+
+    // Сохраняем в localStorage для страницы результата
+    localStorage.setItem('pendingOrderData', JSON.stringify(orderDataForLater));
 
     const orderData = buildCdekOrderRequest(amount);
 
@@ -564,7 +563,6 @@ function getDeliveryMethodText(type) {
 function scrollToElement(element) {
   if (element) {
     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    // Премиальная подсветка
     element.style.transition = 'box-shadow 0.3s ease';
     element.style.boxShadow = '0 0 20px rgba(28, 166, 248, 0.4)';
     setTimeout(() => {
@@ -1244,17 +1242,6 @@ function renderTariffButtons(markerType, address, pvzCode) {
 
         showNotification(`✅ Тариф выбран! ${tariffName} • ${shipping.toLocaleString('ru-RU')} ₽`, 'success');
 
-        // Убираем автоскролл при выборе тарифа
-        // setTimeout(() => {
-        //     const recipientSection = document.getElementById('recipientSectionContainer');
-        //     if (recipientSection) {
-        //         recipientSection.scrollIntoView({
-        //             behavior: 'smooth',
-        //             block: 'start'
-        //         });
-        //     }
-        // }, 300);
-
       }, 400);
     });
   });
@@ -1412,7 +1399,7 @@ function getNotificationContainer() {
             z-index: 9999;
             pointer-events: none;
             display: flex;
-            flex-direction: column;
+            flex-directionflex-direction: column;
             gap: 8px;
         `;
     container.addEventListener('click', (e) => {

@@ -1,308 +1,582 @@
-<!-- File: public/header.html - ОБНОВЛЕННАЯ ВЕРСИЯ -->
+<!-- File: public/header.html - ПРЕМИАЛЬНЫЙ ХЕДЕР -->
 
-<header id="site-header" class="header">
-  <!-- Burger menu для мобильных -->
-  <button class="burger-menu" aria-label="Открыть меню" style="display:none;">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
+<header id="site-header" class="premium-header">
+  <div class="header-container">
+    <!-- Мобильное меню бургер -->
+    <button class="mobile-menu-toggle" aria-label="Открыть меню">
+      <span class="burger-line"></span>
+      <span class="burger-line"></span>
+      <span class="burger-line"></span>
+    </button>
 
-  <!-- Логотип -->
-  <div class="logo">
-    <a href="/index.html" onclick="scrollToTop()">clip & go</a>
+    <!-- Логотип -->
+    <div class="header-logo">
+      <a href="/index.html" class="logo-link">
+        <span class="logo-text">clip & go</span>
+        <span class="logo-accent">•</span>
+      </a>
+    </div>
+
+    <!-- Навигация -->
+    <nav class="header-nav">
+      <a href="/index.html#product" class="nav-link">
+        <span class="nav-icon">📷</span>
+        <span class="nav-text">О продукте</span>
+      </a>
+      <a href="/index.html#main" class="nav-link">
+        <span class="nav-icon">🏠</span>
+        <span class="nav-text">Главная</span>
+      </a>
+      <a href="/gallery/gallery.html" class="nav-link">
+        <span class="nav-icon">🖼️</span>
+        <span class="nav-text">Галерея</span>
+      </a>
+      <a href="/instruction/instruction.html" class="nav-link">
+        <span class="nav-icon">📖</span>
+        <span class="nav-text">Инструкция</span>
+      </a>
+      <a href="/index.html#contact" class="nav-link">
+        <span class="nav-icon">📞</span>
+        <span class="nav-text">Контакты</span>
+      </a>
+    </nav>
+
+    <!-- Действия -->
+    <div class="header-actions">
+      <a href="/profile/profile.html" class="action-btn profile-btn">
+        <span class="action-icon">👤</span>
+        <span class="action-text">Профиль</span>
+        <span class="orders-badge" id="headerOrdersBadge" style="display: none;">0</span>
+      </a>
+
+      <a href="/cart/cart.html" class="action-btn cart-btn">
+        <span class="action-icon">🛒</span>
+        <span class="action-text">Корзина</span>
+        <span class="cart-badge" id="headerCartBadge">0</span>
+      </a>
+    </div>
   </div>
 
-  <!-- Основная навигация -->
-  <nav class="nav">
-    <a href="/index.html#product">О продукте</a>
-    <a href="/index.html#main">Главная</a>
-    <a href="/index.html#contact">Контакты</a>
-    <a href="/gallery/gallery.html">Галерея</a>
-    <a href="/instruction/instruction.html">Инструкция</a>
-    <a href="/profile/profile.html">Профиль</a>
-  </nav>
+  <!-- Мобильное меню -->
+  <div class="mobile-menu" id="mobileMenu">
+    <nav class="mobile-nav">
+      <a href="/index.html#product" class="mobile-nav-link">
+        <span class="nav-icon">📷</span>
+        <span>О продукте</span>
+      </a>
+      <a href="/index.html#main" class="mobile-nav-link">
+        <span class="nav-icon">🏠</span>
+        <span>Главная</span>
+      </a>
+      <a href="/gallery/gallery.html" class="mobile-nav-link">
+        <span class="nav-icon">🖼️</span>
+        <span>Галерея</span>
+      </a>
+      <a href="/instruction/instruction.html" class="mobile-nav-link">
+        <span class="nav-icon">📖</span>
+        <span>Инструкция</span>
+      </a>
+      <a href="/index.html#contact" class="mobile-nav-link">
+        <span class="nav-icon">📞</span>
+        <span>Контакты</span>
+      </a>
+    </nav>
 
-  <!-- Кнопки хедера -->
-  <div class="header-actions">
-    <a href="/gallery/gallery.html" class="header-btn">Галерея</a>
-    <a href="/instruction/instruction.html" class="header-btn">Инструкция</a>
-    <a href="/profile/profile.html" class="header-btn">Профиль</a>
+    <div class="mobile-actions">
+      <a href="/profile/profile.html" class="mobile-action-btn">
+        <span class="action-icon">👤</span>
+        <span>Профиль</span>
+        <span class="orders-badge mobile" id="mobileOrdersBadge" style="display: none;">0</span>
+      </a>
+      <a href="/cart/cart.html" class="mobile-action-btn">
+        <span class="action-icon">🛒</span>
+        <span>Корзина</span>
+        <span class="cart-badge mobile" id="mobileCartBadge">0</span>
+      </a>
+    </div>
   </div>
-
-  <!-- Корзина -->
-  <a href="/cart/cart.html" class="cart-icon" title="Корзина">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.4 5.1 16.4H17M17 13V17C17 18.1 16.1 19 15 19H9C7.9 19 7 18.1 7 17V13H17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <span class="cart-count">0</span>
-  </a>
 </header>
 
-<!-- Подключаем глобальный менеджер корзины -->
+<!-- Подключаем глобальный менеджер корзины и заказов -->
 <script src="/js/cart-manager.js"></script>
+<script src="/js/order-manager.js"></script>
 
-<!-- Стили для хедера -->
+<!-- Стили хедера -->
 <style>
-  .header {
+  /* === ПРЕМИАЛЬНЫЙ ХЕДЕР === */
+  .premium-header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
+    height: 70px;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--gray-200);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     z-index: 1000;
-    padding: 0 20px;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 
-  .logo a {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-dark);
-    text-decoration: none;
-    transition: var(--transition-fast);
+  .premium-header.scrolled {
+    height: 60px;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 
-  .logo a:hover {
-    color: var(--primary);
-  }
-
-  .nav {
+  .header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 0 24px;
     display: flex;
-    gap: 2rem;
     align-items: center;
+    justify-content: space-between;
+    gap: 40px;
   }
 
-  .nav a {
-    color: var(--gray-600);
+  /* Логотип */
+  .header-logo {
+    flex-shrink: 0;
+  }
+
+  .logo-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     text-decoration: none;
-    font-weight: 500;
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .logo-link:hover {
+    transform: scale(1.05);
+  }
+
+  .logo-text {
+    font-size: 1.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #0057c2 0%, #1ca6f8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+  }
+
+  .logo-accent {
+    font-size: 1.8rem;
+    color: #1ca6f8;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.2); }
+  }
+
+  /* Навигация */
+  .header-nav {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    color: #516f82;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
     font-size: 0.95rem;
-    transition: var(--transition-fast);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
+    overflow: hidden;
   }
 
-  .nav a:hover {
-    color: var(--primary);
-  }
-
-  .nav a::after {
+  .nav-link::before {
     content: '';
     position: absolute;
-    bottom: -2px;
+    top: 0;
     left: 0;
     width: 0;
-    height: 2px;
-    background: var(--primary);
+    height: 100%;
+    background: linear-gradient(135deg, rgba(28, 166, 248, 0.1) 0%, rgba(0, 87, 194, 0.1) 100%);
     transition: width 0.3s ease;
+    z-index: -1;
   }
 
-  .nav a:hover::after {
+  .nav-link:hover::before {
     width: 100%;
   }
 
+  .nav-link:hover {
+    color: #1ca6f8;
+    transform: translateY(-2px);
+  }
+
+  .nav-icon {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+  }
+
+  .nav-link:hover .nav-icon {
+    transform: rotate(10deg) scale(1.1);
+  }
+
+  .nav-text {
+    display: inline-block;
+  }
+
+  /* Действия */
   .header-actions {
     display: flex;
     gap: 12px;
     align-items: center;
+    flex-shrink: 0;
   }
 
-  .header-btn {
-    padding: 8px 16px;
-    background: var(--gray-100);
-    color: var(--gray-700);
-    text-decoration: none;
-    border-radius: 8px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: var(--transition-fast);
-  }
-
-  .header-btn:hover {
-    background: var(--primary);
-    color: white;
-    transform: translateY(-1px);
-  }
-
-  .cart-icon {
-    position: relative;
+  .action-btn {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    background: var(--primary);
-    color: white;
-    border-radius: 12px;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #f4f6f8 0%, #e1e5e9 100%);
+    color: #516f82;
     text-decoration: none;
-    transition: var(--transition-fast);
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
 
-  .cart-icon:hover {
-    background: var(--primary-dark);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(28, 166, 248, 0.3);
+  .action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   }
 
-  .cart-count {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    background: var(--danger);
+  .cart-btn {
+    background: linear-gradient(135deg, #0057c2 0%, #1ca6f8 100%);
     color: white;
-    font-size: 0.75rem;
-    font-weight: 700;
+  }
+
+  .cart-btn:hover {
+    background: linear-gradient(135deg, #002a5c 0%, #0057c2 100%);
+    box-shadow: 0 6px 20px rgba(28, 166, 248, 0.3);
+  }
+
+  .action-icon {
+    font-size: 1.2rem;
+  }
+
+  /* Бейджи */
+  .cart-badge,
+  .orders-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 800;
     padding: 2px 6px;
     border-radius: 10px;
-    min-width: 18px;
-    height: 18px;
+    min-width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: var(--transition-fast);
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+    animation: badgePop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
-  .burger-menu {
+  .orders-badge {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+  }
+
+  @keyframes badgePop {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  /* Мобильное меню */
+  .mobile-menu-toggle {
     display: none;
-    flex-direction: column;
     background: none;
     border: none;
     cursor: pointer;
     padding: 8px;
-    gap: 4px;
+    position: relative;
+    width: 32px;
+    height: 32px;
   }
 
-  .burger-menu span {
-    width: 20px;
+  .burger-line {
+    display: block;
+    width: 24px;
     height: 2px;
-    background: var(--gray-700);
+    background: #516f82;
+    margin: 5px 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
     border-radius: 2px;
-    transition: var(--transition-fast);
   }
 
-  /* Мобильная адаптация */
+  .mobile-menu-toggle.active .burger-line:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+  }
+
+  .mobile-menu-toggle.active .burger-line:nth-child(2) {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  .mobile-menu-toggle.active .burger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+  }
+
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-100%);
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 999;
+  }
+
+  .mobile-menu.active {
+    transform: translateY(0);
+  }
+
+  .mobile-nav {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mobile-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    color: #516f82;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    background: rgba(244, 246, 248, 0.5);
+  }
+
+  .mobile-nav-link:active {
+    background: rgba(28, 166, 248, 0.1);
+    transform: scale(0.98);
+  }
+
+  .mobile-actions {
+    padding: 0 20px 20px;
+    display: flex;
+    gap: 12px;
+  }
+
+  .mobile-action-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px;
+    background: linear-gradient(135deg, #f4f6f8 0%, #e1e5e9 100%);
+    color: #516f82;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .mobile-action-btn:last-child {
+    background: linear-gradient(135deg, #0057c2 0%, #1ca6f8 100%);
+    color: white;
+  }
+
+  .mobile-action-btn:active {
+    transform: scale(0.98);
+  }
+
+  .cart-badge.mobile,
+  .orders-badge.mobile {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin-left: 4px;
+    display: inline-flex;
+  }
+
+  /* Адаптивность */
   @media (max-width: 1024px) {
-    .header-actions {
+    .nav-text {
       display: none;
+    }
+
+    .nav-link {
+      padding: 8px 12px;
+    }
+
+    .header-container {
+      gap: 20px;
     }
   }
 
   @media (max-width: 768px) {
-    .header {
+    .premium-header.scrolled {
+      height: 60px;
+    }
+
+    .mobile-menu {
+      top: 60px;
+    }
+
+    .header-nav,
+    .action-text {
+      display: none;
+    }
+
+    .mobile-menu-toggle {
+      display: block;
+    }
+
+    .mobile-menu {
+      display: block;
+    }
+
+    .header-actions {
+      gap: 8px;
+    }
+
+    .action-btn {
+      padding: 10px;
+      border-radius: 12px;
+    }
+
+    .header-container {
       padding: 0 16px;
     }
 
-    .nav {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: rgba(255, 255, 255, 0.98);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      flex-direction: column;
-      padding: 20px;
-      gap: 16px;
-      border-bottom: 1px solid var(--gray-200);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .nav.active {
-      display: flex;
-    }
-
-    .nav a {
-      padding: 12px 0;
-      width: 100%;
-      text-align: center;
-      border-bottom: 1px solid var(--gray-200);
-    }
-
-    .nav a:last-child {
-      border-bottom: none;
-    }
-
-    .burger-menu {
-      display: flex;
-    }
-
-    .burger-menu.active span:nth-child(1) {
-      transform: rotate(45deg) translate(5px, 5px);
-    }
-
-    .burger-menu.active span:nth-child(2) {
-      opacity: 0;
-    }
-
-    .burger-menu.active span:nth-child(3) {
-      transform: rotate(-45deg) translate(7px, -6px);
+    .logo-text {
+      font-size: 1.3rem;
     }
   }
 
   @media (max-width: 480px) {
-    .header {
+    .header-container {
       padding: 0 12px;
     }
 
-    .logo a {
-      font-size: 1.3rem;
+    .action-btn {
+      padding: 8px;
     }
 
-    .cart-icon {
-      width: 40px;
-      height: 40px;
+    .action-icon {
+      font-size: 1.1rem;
     }
   }
 </style>
 
-<!-- Скрипт для мобильного меню -->
+<!-- Скрипт управления хедером -->
 <script>
   (function() {
-    // Ждем загрузки DOM
-    document.addEventListener('DOMContentLoaded', function() {
-      const burgerMenu = document.querySelector('.burger-menu');
-      const nav = document.querySelector('.nav');
+    // Управление мобильным меню
+    const mobileToggle = document.querySelector('.mobile-menu-toggle');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const header = document.getElementById('site-header');
 
-      if (burgerMenu && nav) {
-        burgerMenu.addEventListener('click', function() {
-          nav.classList.toggle('active');
-          burgerMenu.classList.toggle('active');
-        });
+    if (mobileToggle && mobileMenu) {
+      mobileToggle.addEventListener('click', function() {
+        mobileToggle.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+        document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+      });
 
-        // Закрываем меню при клике на ссылку
-        nav.addEventListener('click', function(e) {
-          if (e.target.tagName === 'A') {
-            nav.classList.remove('active');
-            burgerMenu.classList.remove('active');
-          }
-        });
+      // Закрытие меню при клике на ссылку
+      mobileMenu.addEventListener('click', function(e) {
+        if (e.target.matches('a')) {
+          mobileToggle.classList.remove('active');
+          mobileMenu.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      });
+    }
 
-        // Закрываем меню при клике вне его
-        document.addEventListener('click', function(e) {
-          if (!nav.contains(e.target) && !burgerMenu.contains(e.target)) {
-            nav.classList.remove('active');
-            burgerMenu.classList.remove('active');
-          }
-        });
+    // Эффект при прокрутке
+    let lastScroll = 0;
+    window.addEventListener('scroll', function() {
+      const currentScroll = window.pageYOffset;
+
+      if (currentScroll > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
       }
 
-      // Обновляем счетчик корзины после загрузки
-      setTimeout(() => {
-        if (window.CartManager) {
-          window.CartManager.forceUpdateCounter();
-          console.log('✅ CartManager инициализирован в хедере');
-        }
-      }, 200);
+      lastScroll = currentScroll;
     });
+
+    // Обновление бейджей
+    function updateBadges() {
+      // Обновляем корзину
+      if (window.CartManager) {
+        const cartCount = window.CartManager.getTotalCount();
+        updateBadge('headerCartBadge', cartCount);
+        updateBadge('mobileCartBadge', cartCount);
+      }
+
+      // Обновляем заказы
+      if (window.OrderManager) {
+        const ordersCount = window.OrderManager.getOrdersCount();
+        updateBadge('headerOrdersBadge', ordersCount, true);
+        updateBadge('mobileOrdersBadge', ordersCount, true);
+      }
+    }
+
+    function updateBadge(badgeId, count, isOrders = false) {
+      const badge = document.getElementById(badgeId);
+      if (badge) {
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'flex' : 'none';
+
+        if (count > 0) {
+          badge.style.animation = 'none';
+          setTimeout(() => {
+            badge.style.animation = 'badgePop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+          }, 10);
+        }
+      }
+    }
+
+    // Слушаем события обновления
+    window.addEventListener('cartUpdated', updateBadges);
+    window.addEventListener('ordersUpdated', updateBadges);
+
+    // Инициализация
+    setTimeout(updateBadges, 100);
   })();
 </script>

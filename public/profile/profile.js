@@ -1,4 +1,4 @@
-/* === PROFILE.JS - ПРЕМИАЛЬНАЯ ЛОГИКА === */
+/* === PROFILE.JS - ОБНОВЛЕННАЯ ВЕРСИЯ С РЕАЛЬНЫМИ ЗАКАЗАМИ === */
 
 // Состояние приложения
 let currentTab = 'orders';
@@ -23,11 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Премиальный профиль загружается...');
 
     initializePage();
-
-    // Дополнительная защита - MutationObserver
     setupMutationObserver();
 
-    // Финальная проверка через 2 секунды
     setTimeout(() => {
         finalTabCheck();
     }, 2000);
@@ -40,7 +37,6 @@ function setupMutationObserver() {
             if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
                 const target = mutation.target;
                 if (target.classList.contains('tab-content') && target.classList.contains('active')) {
-                    // Если активная вкладка была скрыта, принудительно показываем
                     if (target.style.display === 'none') {
                         console.log('🚨 Обнаружено скрытие активной вкладки, исправляем!');
                         target.style.setProperty('display', 'block', 'important');
@@ -52,7 +48,6 @@ function setupMutationObserver() {
         });
     });
 
-    // Наблюдаем за изменениями стилей
     const tabContents = document.querySelectorAll('.tab-content');
     tabContents.forEach(tab => {
         observer.observe(tab, {
@@ -86,21 +81,18 @@ function finalTabCheck() {
 function nuclearTabFix() {
     console.log('💥 ЯДЕРНОЕ ИСПРАВЛЕНИЕ ТАБОВ!');
 
-    // Удаляем все стили с вкладок
     const allTabs = document.querySelectorAll('.tab-content');
     allTabs.forEach(tab => {
         tab.removeAttribute('style');
         tab.classList.remove('active');
     });
 
-    // Принудительно показываем orders
     const ordersTab = document.getElementById('orders');
     if (ordersTab) {
         ordersTab.classList.add('active');
         ordersTab.setAttribute('style', 'display: block !important; visibility: visible !important; opacity: 1 !important;');
     }
 
-    // Активируем кнопку
     const ordersBtn = document.querySelector('[data-tab="orders"]');
     if (ordersBtn) {
         ordersBtn.classList.add('active');
@@ -143,30 +135,17 @@ function addEmergencyCSS() {
 // Основная инициализация
 function initializePage() {
     try {
-        // Кешируем DOM элементы
         cacheDOMElements();
-
-        // Загружаем хедер
         loadHeader();
-
-        // Инициализируем табы
         initTabs();
-
-        // Загружаем данные пользователя
         loadUserData();
-
-        // Настраиваем обработчики
         setupEventListeners();
-
-        // Добавляем touchable классы
         addTouchableClasses();
 
-        // Загружаем заказы для первой вкладки
         if (currentTab === 'orders') {
             setTimeout(() => loadOrders(), 500);
         }
 
-        // Инициализируем автоматический расчет высоты
         initializeAutoResize();
 
         console.log('✅ Премиальный профиль инициализирован');
@@ -218,12 +197,11 @@ function loadHeader() {
             if (headerContainer) {
                 headerContainer.innerHTML = html;
 
-                // Обновляем счетчик корзины
                 setTimeout(() => {
                     if (window.CartManager) {
                         window.CartManager.updateCartCounter();
                     }
-                    updateCartBadge();
+                    updateOrdersBadge();
                 }, 100);
             }
         })
@@ -242,7 +220,6 @@ function initTabs() {
         });
     });
 
-    // Убеждаемся что первая вкладка показана
     showFirstTab();
 }
 
@@ -250,25 +227,20 @@ function switchTab(tabId) {
     if (currentTab === tabId) return;
 
     console.log('🔄 Премиальное переключение на:', tabId);
-
-    // Премиальная анимация перехода
     switchTabWithAnimation(tabId);
 }
 
 function switchTabWithAnimation(tabId) {
     const currentTabElement = document.getElementById(currentTab);
 
-    // Анимируем исчезновение текущей вкладки
     if (currentTabElement) {
         currentTabElement.style.animation = 'premiumFadeOut 0.2s ease-out';
 
         setTimeout(() => {
-            // Обновляем кнопки
             DOM.tabButtons.forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.tab === tabId);
             });
 
-            // Переключаем контент
             DOM.tabContents.forEach(content => {
                 if (content.id === tabId) {
                     content.classList.add('active');
@@ -283,8 +255,7 @@ function switchTabWithAnimation(tabId) {
 
             currentTab = tabId;
 
-            // Загружаем данные для вкладки
-            if (tabId === 'orders' && orders.length === 0) {
+            if (tabId === 'orders') {
                 loadOrders();
             }
         }, 200);
@@ -292,13 +263,11 @@ function switchTabWithAnimation(tabId) {
 }
 
 function showFirstTab() {
-    // Сначала скрываем все вкладки
     DOM.tabContents.forEach(content => {
         content.classList.remove('active');
         content.style.display = 'none';
     });
 
-    // Показываем вкладку заказов с премиальной анимацией
     const ordersTab = document.getElementById('orders');
     if (ordersTab) {
         ordersTab.style.display = 'block';
@@ -307,7 +276,6 @@ function showFirstTab() {
         console.log('🎯 Первая вкладка показана с премиальной анимацией');
     }
 
-    // Активируем первую кнопку
     DOM.tabButtons.forEach(btn => {
         btn.classList.toggle('active', btn.dataset.tab === 'orders');
     });
@@ -319,11 +287,20 @@ async function loadOrders() {
     try {
         showLoadingState();
 
-        // Имитация загрузки с премиальным спиннером
-        await new Promise(resolve => setTimeout(resolve, 1200));
+        // Загружаем реальные заказы
+        if (window.OrderManager) {
+            orders = window.OrderManager.getOrders();
 
-        // Создаем демо заказы
-        orders = await createDemoOrders();
+            // Синхронизируем с сервером
+            const synced = await window.OrderManager.syncWithServer();
+            if (synced) {
+                orders = window.OrderManager.getOrders();
+            }
+        } else {
+            // Fallback на localStorage
+            const savedOrders = localStorage.getItem('userOrders');
+            orders = savedOrders ? JSON.parse(savedOrders) : [];
+        }
 
         hideLoadingState();
 
@@ -389,19 +366,15 @@ async function renderOrdersWithAnimation() {
     const ordersHTML = orders.map(order => createOrderHTML(order)).join('');
     DOM.ordersContainer.innerHTML = ordersHTML;
 
-    // Добавляем touchable классы и анимации к новым карточкам
     const orderCards = DOM.ordersContainer.querySelectorAll('.order-card');
     orderCards.forEach((card, index) => {
         card.classList.add('touchable');
-
-        // Добавляем анимацию появления с задержкой
         card.style.animationDelay = `${index * 0.1}s`;
         card.style.animation = 'premiumCardSlideIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both';
     });
 
     console.log('✅ Заказы отрендерены с премиальной анимацией:', orders.length);
 
-    // Автоматический пересчет высоты после рендеринга
     setTimeout(() => {
         autoResizeElements();
     }, 100);
@@ -450,55 +423,6 @@ function createOrderHTML(order) {
     `;
 }
 
-// Создание демо данных
-async function createDemoOrders() {
-    return [
-        {
-            id: 'CG-2025-001',
-            cdekNumber: 'CG-250115-001',
-            status: 'created',
-            amount: 9400,
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            items: [
-                { name: 'clip & go камера', cost: 8900 },
-                { name: 'Карта памяти 8 ГБ', cost: 500 }
-            ],
-            delivery: {
-                type: 'Курьер СДЭК',
-                address: 'ул. Примерная, 123'
-            }
-        },
-        {
-            id: 'CG-2025-002',
-            cdekNumber: 'CG-250110-002',
-            status: 'paid',
-            amount: 8900,
-            createdAt: new Date(Date.now() - 432000000).toISOString(),
-            items: [
-                { name: 'clip & go камера', cost: 8900 }
-            ],
-            delivery: {
-                type: 'ПВЗ СДЭК',
-                address: 'Пункт выдачи на Ленина'
-            }
-        },
-        {
-            id: 'CG-2025-003',
-            cdekNumber: 'CG-250105-003',
-            status: 'failed',
-            amount: 1200,
-            createdAt: new Date(Date.now() - 864000000).toISOString(),
-            items: [
-                { name: 'Аксессуары для камеры', cost: 1200 }
-            ],
-            delivery: {
-                type: 'Самовывоз',
-                address: 'Офис на Тверской'
-            }
-        }
-    ];
-}
-
 // === ОБРАБОТЧИКИ СОБЫТИЙ ===
 
 function setupEventListeners() {
@@ -534,12 +458,10 @@ function setupEventListeners() {
             saveUserInfoWithPremiumAnimation();
         });
 
-        // Автосохранение при потере фокуса
         const inputs = DOM.userInfoForm.querySelectorAll('input');
         inputs.forEach(input => {
             input.addEventListener('blur', debounce(saveUserInfo, 1000));
 
-            // Премиальные эффекты фокуса
             input.addEventListener('focus', (e) => {
                 e.target.style.animation = 'premiumInputFocus 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
                 setTimeout(() => {
@@ -575,6 +497,15 @@ function setupEventListeners() {
 
     // Загружаем сохраненные данные
     loadSettings();
+
+    // Слушаем обновления заказов
+    window.addEventListener('ordersUpdated', (e) => {
+        console.log('📦 Получено событие обновления заказов:', e.detail);
+        if (currentTab === 'orders') {
+            loadOrders();
+        }
+        updateOrdersBadge();
+    });
 }
 
 // === ПРЕМИАЛЬНОЕ СОХРАНЕНИЕ ПРОФИЛЯ ===
@@ -582,7 +513,6 @@ function setupEventListeners() {
 function saveUserInfoWithPremiumAnimation() {
     const saveBtn = document.querySelector('.save-btn');
     if (saveBtn) {
-        // Премиальная анимация нажатия
         saveBtn.style.animation = 'premiumHaptic 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
         saveBtn.style.transform = 'scale(0.98) translateY(1px)';
 
@@ -590,10 +520,8 @@ function saveUserInfoWithPremiumAnimation() {
             saveBtn.style.transform = '';
             saveBtn.style.animation = '';
 
-            // Выполняем сохранение
             saveUserInfo();
 
-            // Показываем премиальное уведомление об успехе
             const originalContent = saveBtn.innerHTML;
             saveBtn.innerHTML = '<span>✅</span><span>Сохранено!</span>';
             saveBtn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
@@ -707,8 +635,15 @@ function setupActionButtons() {
                 'Все товары будут удалены из корзины',
                 () => {
                     try {
-                        localStorage.removeItem('cartData');
-                        updateCartBadge();
+                        if (window.CartManager) {
+                            window.CartManager.clearCart();
+                        } else {
+                            localStorage.removeItem('cartData');
+                        }
+
+                        // Обновляем бейдж корзины
+                        window.dispatchEvent(new CustomEvent('cartUpdated'));
+
                         showNotification('Корзина очищена', 'success');
                     } catch (error) {
                         console.error('❌ Ошибка очистки корзины:', error);
@@ -739,6 +674,12 @@ function setupActionButtons() {
                 'Это действие необратимо. Все данные о заказах будут удалены.',
                 () => {
                     try {
+                        if (window.OrderManager) {
+                            window.OrderManager.clearOrders();
+                        } else {
+                            localStorage.removeItem('userOrders');
+                        }
+
                         orders = [];
                         renderOrdersWithAnimation();
                         updateStats();
@@ -827,7 +768,6 @@ function autoResizeElements() {
         return requiredHeight;
     }
 
-    // Обработка вкладок
     const tabContents = document.querySelectorAll('.tab-content');
     tabContents.forEach(tab => {
         const requiredHeight = calculateRequiredHeight(tab);
@@ -836,7 +776,6 @@ function autoResizeElements() {
         }
     });
 
-    // Обработка карточек
     const cards = document.querySelectorAll('.card');
     cards.forEach(card => {
         const requiredHeight = calculateRequiredHeight(card);
@@ -897,7 +836,14 @@ function updateStats() {
     }
 
     if (DOM.memberSince) {
-        animateCounterPremium(DOM.memberSince, new Date().getFullYear());
+        const oldestOrder = orders.length > 0 ?
+            orders.reduce((oldest, order) => {
+                const orderDate = new Date(order.createdAt);
+                return orderDate < oldest ? orderDate : oldest;
+            }, new Date()) : new Date();
+
+        const year = oldestOrder.getFullYear();
+        animateCounterPremium(DOM.memberSince, year);
     }
 
     if (DOM.orderStatus) {
@@ -908,7 +854,6 @@ function updateStats() {
 
         DOM.orderStatus.textContent = status;
 
-        // Премиальная анимация статуса
         DOM.orderStatus.style.animation = 'premiumPopIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
         setTimeout(() => {
             DOM.orderStatus.style.animation = '';
@@ -930,7 +875,6 @@ function animateCounterPremium(element, target) {
         const current = Math.floor(start + (target - start) * easeOutCubic(progress));
         element.textContent = current;
 
-        // Премиальный эффект во время анимации
         if (progress < 1) {
             const scale = 1 + Math.sin(progress * Math.PI) * 0.05;
             element.style.transform = `scale(${scale})`;
@@ -949,33 +893,37 @@ function easeOutCubic(t) {
     return 1 - Math.pow(1 - t, 3);
 }
 
-// === ОБНОВЛЕНИЕ КОРЗИНЫ ===
+// === ОБНОВЛЕНИЕ БЕЙДЖА ЗАКАЗОВ ===
 
-function updateCartBadge() {
+function updateOrdersBadge() {
     try {
         let count = 0;
 
-        if (window.CartManager) {
-            count = window.CartManager.getTotalCount();
+        if (window.OrderManager) {
+            count = window.OrderManager.getOrdersCount();
         } else {
-            const cartData = JSON.parse(localStorage.getItem('cartData') || '{}');
-            count = (cartData.cameraCount || 0) + (cartData.memoryCount || 0);
+            const savedOrders = localStorage.getItem('userOrders');
+            const orders = savedOrders ? JSON.parse(savedOrders) : [];
+            count = orders.length;
         }
 
-        const badges = document.querySelectorAll('.cart-count');
+        // Обновляем все бейджи заказов
+        const badges = document.querySelectorAll('.orders-badge');
         badges.forEach(badge => {
             if (badge) {
                 badge.textContent = count;
+                badge.style.display = count > 0 ? 'flex' : 'none';
 
-                // Премиальная анимация при обновлении
-                badge.style.animation = 'premiumPopIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-                setTimeout(() => {
-                    badge.style.animation = '';
-                }, 400);
+                if (count > 0) {
+                    badge.style.animation = 'badgePop 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                    setTimeout(() => {
+                        badge.style.animation = '';
+                    }, 300);
+                }
             }
         });
     } catch (error) {
-        console.warn('⚠️ Ошибка обновления корзины:', error);
+        console.warn('⚠️ Ошибка обновления бейджа заказов:', error);
     }
 }
 
@@ -984,19 +932,21 @@ function updateCartBadge() {
 function getStatusClass(status) {
     const statusMap = {
         'created': 'created',
+        'payment_success': 'paid',
         'payment_success_cdek_failed': 'failed',
         'failed': 'failed'
     };
-    return statusMap[status] || 'paid';
+    return statusMap[status] || 'created';
 }
 
 function getStatusText(status) {
     const statusMap = {
         'created': 'Создан',
-        'payment_success_cdek_failed': 'Ошибка',
+        'payment_success': 'Оплачен',
+        'payment_success_cdek_failed': 'Ошибка доставки',
         'failed': 'Ошибка'
     };
-    return statusMap[status] || 'Оплачен';
+    return statusMap[status] || 'В обработке';
 }
 
 function formatDate(dateString) {
@@ -1047,7 +997,6 @@ function debounce(func, wait) {
 // === ПРЕМИАЛЬНЫЕ УВЕДОМЛЕНИЯ ===
 
 function showNotification(message, type = 'info', duration = 3500) {
-    // Создаем контейнер если его нет
     let container = document.getElementById('notification-container');
     if (!container) {
         container = document.createElement('div');
@@ -1069,7 +1018,6 @@ function showNotification(message, type = 'info', duration = 3500) {
     const notificationId = 'notification-' + Date.now();
     notification.id = notificationId;
 
-    // Премиальные цвета для разных типов
     const colors = {
         success: '#10b981',
         info: '#1ca6f8',
@@ -1112,12 +1060,10 @@ function showNotification(message, type = 'info', duration = 3500) {
 
     container.appendChild(notification);
 
-    // Анимация появления
     requestAnimationFrame(() => {
         notification.style.transform = 'translateX(0)';
     });
 
-    // Закрытие по клику
     const closeBtn = notification.querySelector('button');
     closeBtn.onclick = () => removeNotification(notification);
     closeBtn.onmouseenter = () => {
@@ -1129,7 +1075,6 @@ function showNotification(message, type = 'info', duration = 3500) {
         closeBtn.style.color = '#9ca3af';
     };
 
-    // Автоудаление
     setTimeout(() => removeNotification(notification), duration);
 }
 
@@ -1148,7 +1093,6 @@ function removeNotification(notification) {
 // === ПРЕМИАЛЬНЫЙ ДИАЛОГ ПОДТВЕРЖДЕНИЯ ===
 
 function showConfirm(title, message, onConfirm) {
-    // Создаем overlay
     const overlay = document.createElement('div');
     overlay.className = 'confirm-overlay';
     overlay.innerHTML = `
@@ -1166,7 +1110,6 @@ function showConfirm(title, message, onConfirm) {
         </div>
     `;
 
-    // Добавляем премиальные стили если их нет
     if (!document.getElementById('confirm-styles')) {
         const style = document.createElement('style');
         style.id = 'confirm-styles';
@@ -1272,7 +1215,6 @@ function showConfirm(title, message, onConfirm) {
 
     document.body.appendChild(overlay);
 
-    // Обработчики
     const cancelBtn = overlay.querySelector('.confirm-btn.cancel');
     const confirmBtn = overlay.querySelector('.confirm-btn.confirm');
 
@@ -1304,7 +1246,6 @@ function showConfirm(title, message, onConfirm) {
         }
     });
 
-    // Фокус на кнопке отмены
     cancelBtn.focus();
 }
 
@@ -1322,7 +1263,6 @@ const premiumFadeOutKeyframes = `
 }
 `;
 
-// Добавляем keyframes если их нет
 if (!document.getElementById('premium-fadeout-keyframes')) {
     const style = document.createElement('style');
     style.id = 'premium-fadeout-keyframes';

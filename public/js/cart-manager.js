@@ -1,213 +1,180 @@
-// === File: public/js/cart-manager.js ===
-// ВАЖНО: Подключать ПЕРВЫМ перед другими скриптами!
-// Глобальный менеджер корзины для синхронизации между страницами
+/* === CART-MANAGER.JS - ОБНОВЛЕННАЯ ВЕРСИЯ === */
 
 (function() {
     'use strict';
 
-    // Флаг для предотвращения бесконечной рекурсии
-    let isUpdating = false;
-    let initializationComplete = false;
+    console.log('[CartManager] Инициализация...');
 
-    // Глобальный объект для управления корзиной
-    window.CartManager = {
-
-        // Получение данных корзины из localStorage
+    // Синглтон для управления корзиной
+    const CartManager = {
+        // Получить данные корзины
         getCartData: function() {
             try {
-                return JSON.parse(localStorage.getItem('cartData') || '{}');
-            } catch (e) {
-                console.error('[CartManager] Ошибка чтения cartData:', e);
-                return {};
+                const data = localStorage.getItem('cartData');
+                const parsed = data ? JSON.parse(data) : {};
+
+                return {
+                    cameraCount: parsed.cameraCount || 0,
+                    memoryCount: parsed.memoryCount || 0,
+                    cartColor: parsed.cartColor || 'Чёрный'
+                };
+            } catch (error) {
+                console.error('[CartManager] Ошибка чтения данных:', error);
+                return { cameraCount: 0, memoryCount: 0, cartColor: 'Чёрный' };
             }
         },
 
-        // Получение общего количества товаров
-        getTotalCount: function() {
-            const data = this.getCartData();
-            return (data.cameraCount || 0) + (data.memoryCount || 0);
-        },
-
-        // Обновление счетчика во всех местах на странице
-        updateCartCounter: function() {
-            // Предотвращаем бесконечную рекурсию
-            if (isUpdating) return;
-            isUpdating = true;
-
-            const count = this.getTotalCount();
-
-            // Обновляем все элементы с классом cart-count
-            const cartElements = document.querySelectorAll('.cart-count');
-            cartElements.forEach(element => {
-                element.textContent = count;
-                console.log('[CartManager] Обновлен элемент:', element, 'новое значение:', count);
-            });
-
-            console.log('[CartManager] Счетчик обновлен:', count, 'элементов найдено:', cartElements.length);
-
-            isUpdating = false;
-            return count;
-        },
-
-        // Принудительное обновление счетчика (для случаев когда элементы загружаются асинхронно)
-        forceUpdateCounter: function() {
-            console.log('[CartManager] Принудительное обновление счетчика');
-            isUpdating = false; // Сбрасываем флаг
-            return this.updateCartCounter();
-        },
-
-        // Сохранение данных корзины
-        saveCartData: function(cameraCount, memoryCount, cartColor = null) {
-            const data = {
-                cameraCount: cameraCount || 0,
-                memoryCount: memoryCount || 0
-            };
-
-            // Сохраняем цвет если передан
-            if (cartColor) {
-                data.cartColor = cartColor;
-            } else {
-                // Пытаемся определить цвет из текущих данных
-                const currentData = this.getCartData();
-                if (currentData.cartColor) {
-                    data.cartColor = currentData.cartColor;
-                }
-            }
-
+        // Сохранить данные корзины
+        saveCartData: function(cameraCount, memoryCount, cartColor) {
             try {
+                const data = {
+                    cameraCount: Math.max(0, parseInt(cameraCount) || 0),
+                    memoryCount: Math.max(0, parseInt(memoryCount) || 0),
+                    cartColor: cartColor || 'Чёрный'
+                };
+
                 localStorage.setItem('cartData', JSON.stringify(data));
 
                 // Обновляем счетчик
                 this.updateCartCounter();
 
-                // Отправляем событие для синхронизации между вкладками
-                this.dispatchCartUpdateEvent(data);
+                // Отправляем событие
+                window.dispatchEvent(new CustomEvent('cartUpdated', { detail: data }));
 
-                console.log('[CartManager] Данные корзины сохранены:', data);
-            } catch (e) {
-                console.error('[CartManager] Ошибка сохранения cartData:', e);
+                console.log('[CartManager] Данные сохранены:', data);
+                return true;
+            } catch (error) {
+                console.error('[CartManager] Ошибка сохранения:', error);
+                return false;
             }
         },
 
-        // Отправка события обновления корзины
-        dispatchCartUpdateEvent: function(data) {
-            // Событие для текущей страницы
-            window.dispatchEvent(new CustomEvent('cartUpdated', {
-                detail: data
-            }));
-
-            // Событие для синхронизации между вкладками
-            window.dispatchEvent(new StorageEvent('storage', {
-                key: 'cartData',
-                newValue: JSON.stringify(data),
-                url: window.location.href
-            }));
+        // Получить общее количество товаров
+        getTotalCount: function() {
+            const data = this.getCartData();
+            return data.cameraCount + data.memoryCount;
         },
 
-        // Инициализация менеджера корзины
-        init: function() {
-            if (initializationComplete) return;
+        // Добавить товар
+        addItem: function(type, quantity = 1) {
+            const data = this.getCartData();
 
-            console.log('[CartManager] Начало инициализации');
+            if (type === 'camera') {
+                data.cameraCount += quantity;
+            } else if (type === 'memory') {
+                data.memoryCount += quantity;
+            }
 
-            // Обновляем счетчик при загрузке страницы
-            this.updateCartCounter();
+            return this.saveCartData(data.cameraCount, data.memoryCount, data.cartColor);
+        },
 
-            // Слушаем изменения localStorage для синхронизации между вкладками
-            window.addEventListener('storage', (e) => {
-                if (e.key === 'cartData') {
-                    console.log('[CartManager] Синхронизация с другой вкладкой');
-                    this.updateCartCounter();
+        // Удалить товар
+        removeItem: function(type, quantity = 1) {
+            const data = this.getCartData();
+
+            if (type === 'camera') {
+                data.cameraCount = Math.max(0, data.cameraCount - quantity);
+            } else if (type === 'memory') {
+                data.memoryCount = Math.max(0, data.memoryCount - quantity);
+            }
+
+            return this.saveCartData(data.cameraCount, data.memoryCount, data.cartColor);
+        },
+
+        // Установить цвет камеры
+        setColor: function(color) {
+            const data = this.getCartData();
+            data.cartColor = color;
+            return this.saveCartData(data.cameraCount, data.memoryCount, data.cartColor);
+        },
+
+        // Очистить корзину
+        clearCart: function() {
+            try {
+                localStorage.removeItem('cartData');
+                this.updateCartCounter();
+
+                window.dispatchEvent(new CustomEvent('cartUpdated', {
+                    detail: { cameraCount: 0, memoryCount: 0, cartColor: 'Чёрный' }
+                }));
+
+                console.log('[CartManager] Корзина очищена');
+                return true;
+            } catch (error) {
+                console.error('[CartManager] Ошибка очистки корзины:', error);
+                return false;
+            }
+        },
+
+        // Обновить счетчик в UI
+        updateCartCounter: function() {
+            const count = this.getTotalCount();
+            const counters = document.querySelectorAll('.cart-count, #cart-count, .cart-badge');
+
+            counters.forEach(counter => {
+                if (counter) {
+                    counter.textContent = count;
+                    counter.style.display = count > 0 ? 'flex' : 'flex';
+
+                    // Анимация при изменении
+                    if (parseInt(counter.textContent) !== count) {
+                        counter.style.animation = 'cartBounce 0.3s ease';
+                        setTimeout(() => {
+                            counter.style.animation = '';
+                        }, 300);
+                    }
                 }
             });
 
-            // Слушаем кастомные события обновления корзины
-            window.addEventListener('cartUpdated', (e) => {
-                console.log('[CartManager] Получено событие cartUpdated:', e.detail);
-                this.updateCartCounter();
-            });
+            console.log('[CartManager] Счетчик обновлен:', count);
+        },
 
-            // Обновляем счетчик каждые 3 секунды для надежности
-            setInterval(() => {
-                this.updateCartCounter();
-            }, 3000);
-
-            // Дополнительная проверка элементов через 1 секунду после загрузки
+        // Принудительное обновление счетчика
+        forceUpdateCounter: function() {
             setTimeout(() => {
-                console.log('[CartManager] Дополнительная проверка элементов через 1 сек');
-                this.forceUpdateCounter();
-            }, 1000);
-
-            initializationComplete = true;
-            console.log('[CartManager] Инициализация завершена');
+                this.updateCartCounter();
+            }, 100);
         },
 
-        // Добавление товара в корзину
-        addToCart: function(itemType, quantity = 1) {
-            const data = this.getCartData();
-
-            if (itemType === 'camera') {
-                data.cameraCount = (data.cameraCount || 0) + quantity;
-            } else if (itemType === 'memory') {
-                data.memoryCount = (data.memoryCount || 0) + quantity;
-            }
-
-            this.saveCartData(data.cameraCount, data.memoryCount, data.cartColor);
-            return this.getTotalCount();
-        },
-
-        // Удаление товара из корзины
-        removeFromCart: function(itemType, quantity = 1) {
-            const data = this.getCartData();
-
-            if (itemType === 'camera') {
-                data.cameraCount = Math.max(0, (data.cameraCount || 0) - quantity);
-            } else if (itemType === 'memory') {
-                data.memoryCount = Math.max(0, (data.memoryCount || 0) - quantity);
-            }
-
-            this.saveCartData(data.cameraCount, data.memoryCount, data.cartColor);
-            return this.getTotalCount();
-        },
-
-        // Очистка корзины
-        clearCart: function() {
-            this.saveCartData(0, 0);
-            return 0;
-        },
-
-        // Установка количества товара
-        setItemCount: function(itemType, count) {
-            const data = this.getCartData();
-
-            if (itemType === 'camera') {
-                data.cameraCount = Math.max(0, count);
-            } else if (itemType === 'memory') {
-                data.memoryCount = Math.max(0, count);
-            }
-
-            this.saveCartData(data.cameraCount, data.memoryCount, data.cartColor);
-            return this.getTotalCount();
+        // Проверить наличие товаров
+        hasItems: function() {
+            return this.getTotalCount() > 0;
         }
     };
 
-    // Автоинициализация при загрузке DOM
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            window.CartManager.init();
-        });
-    } else {
-        window.CartManager.init();
+    // Добавляем глобальную анимацию для счетчика
+    if (!document.getElementById('cart-counter-animation')) {
+        const style = document.createElement('style');
+        style.id = 'cart-counter-animation';
+        style.textContent = `
+            @keyframes cartBounce {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.2); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
     }
 
-    // Экспорт для совместимости со старым кодом
-    window.updateCartCounter = function() {
-        return window.CartManager.updateCartCounter();
-    };
+    // Делаем доступным глобально
+    window.CartManager = CartManager;
 
-    // Глобальная функция для принудительного обновления
-    window.forceUpdateCartCounter = function() {
-        return window.CartManager.forceUpdateCounter();
-    };
+    // Автоматическое обновление счетчика при загрузке
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            CartManager.updateCartCounter();
+        });
+    } else {
+        CartManager.updateCartCounter();
+    }
 
+    // Слушаем storage события для синхронизации между вкладками
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'cartData') {
+            console.log('[CartManager] Обнаружено изменение в другой вкладке');
+            CartManager.updateCartCounter();
+        }
+    });
+
+    console.log('[CartManager] ✅ Инициализация завершена');
 })();
