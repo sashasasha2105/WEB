@@ -1,4 +1,4 @@
-// === ИСПРАВЛЕННЫЙ HEADER JS ===
+// === ИСПРАВЛЕННЫЙ HEADER JS БЕЗ ПРИНУДИТЕЛЬНОЙ СТИЛИЗАЦИИ ===
 
 class HeaderManager {
     constructor() {
@@ -47,9 +47,6 @@ class HeaderManager {
         this.updateBadges();
         this.setupCartManager();
 
-        // ИСПРАВЛЕНИЕ: Настраиваем корзину для мобильного
-        this.setupMobileCartSizing();
-
         // Инициальная проверка скролла
         this.handleScroll();
 
@@ -57,27 +54,6 @@ class HeaderManager {
         this.isInitialized = true;
 
         console.log('[Header] ✅ Инициализирован успешно');
-    }
-
-    // НОВАЯ ФУНКЦИЯ: Настройка размеров корзины для мобильного
-    setupMobileCartSizing() {
-        if (window.innerWidth <= 768) {
-            const cartBtn = document.querySelector('.cart-btn');
-            const cartIcon = cartBtn?.querySelector('.cart-icon');
-
-            if (cartBtn && cartIcon) {
-                // Увеличиваем корзину в 1.5 раза для мобильного
-                cartBtn.style.setProperty('width', '96px', 'important');
-                cartBtn.style.setProperty('height', '96px', 'important');
-                cartBtn.style.setProperty('min-width', '96px', 'important');
-                cartBtn.style.setProperty('min-height', '96px', 'important');
-
-                cartIcon.style.setProperty('width', '54px', 'important');
-                cartIcon.style.setProperty('height', '54px', 'important');
-
-                console.log('[Header] 📱 Мобильная корзина увеличена');
-            }
-        }
     }
 
     setupScrollHandler() {
@@ -301,7 +277,7 @@ class HeaderManager {
         }
     }
 
-    // ИСПРАВЛЕННАЯ ФУНКЦИЯ setBadge с мобильными стилями
+    // ИСПРАВЛЕННАЯ ФУНКЦИЯ setBadge - УБРАНА ПРИНУДИТЕЛЬНАЯ СТИЛИЗАЦИЯ
     setBadge(badges, count) {
         Object.values(badges).forEach(badge => {
             if (badge) {
@@ -309,11 +285,6 @@ class HeaderManager {
 
                 if (count > 0) {
                     badge.style.display = 'flex';
-
-                    // ИСПРАВЛЕНИЕ: Применяем мобильные стили для счетчика корзины
-                    if (window.innerWidth <= 768 && badge.classList.contains('cart-badge')) {
-                        this.applyMobileBadgeStyles(badge);
-                    }
 
                     // Анимация появления
                     badge.style.animation = 'none';
@@ -324,32 +295,6 @@ class HeaderManager {
                 }
             }
         });
-    }
-
-    // НОВАЯ ФУНКЦИЯ: Применение мобильных стилей к бейджу
-    applyMobileBadgeStyles(badge) {
-        // Принудительно устанавливаем правильные стили для мобильного
-        badge.style.setProperty('position', 'absolute', 'important');
-        badge.style.setProperty('top', '25px', 'important');
-        badge.style.setProperty('right', '20px', 'important'); // ИСПРАВЛЕНО: компенсируем сдвиг корзины
-        badge.style.setProperty('width', '16px', 'important');
-        badge.style.setProperty('height', '16px', 'important');
-        badge.style.setProperty('min-width', '16px', 'important');
-        badge.style.setProperty('min-height', '16px', 'important');
-        badge.style.setProperty('border-radius', '50%', 'important');
-        badge.style.setProperty('font-size', '0.6rem', 'important');
-        badge.style.setProperty('font-weight', '800', 'important');
-        badge.style.setProperty('line-height', '1', 'important');
-        badge.style.setProperty('padding', '0', 'important');
-        badge.style.setProperty('margin', '0', 'important');
-        badge.style.setProperty('background', 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', 'important');
-        badge.style.setProperty('color', 'white', 'important');
-        badge.style.setProperty('box-shadow', '0 2px 8px rgba(239, 68, 68, 0.4)', 'important');
-        badge.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.3)', 'important');
-        badge.style.setProperty('align-items', 'center', 'important');
-        badge.style.setProperty('justify-content', 'center', 'important');
-
-        console.log('[Header] 📱 Мобильные стили применены к бейджу');
     }
 
     getCartCount() {
@@ -407,15 +352,11 @@ class HeaderManager {
         // Обновление при фокусе на страницу
         window.addEventListener('focus', debouncedUpdate, { passive: true });
 
-        // Обновление при изменении размера экрана (для корректной работы мобильных стилей)
+        // УБРАНА ПРИНУДИТЕЛЬНАЯ СТИЛИЗАЦИЯ ПРИ RESIZE
         window.addEventListener('resize', () => {
             this.isMobile = window.innerWidth <= 768;
-            if (this.isMobile) {
-                setTimeout(() => {
-                    this.setupMobileCartSizing();
-                    this.updateBadges();
-                }, 100);
-            }
+            // Просто обновляем бейджи без принудительной стилизации
+            setTimeout(() => this.updateBadges(), 100);
         });
 
         // Периодическое обновление каждые 20 секунд
@@ -502,21 +443,27 @@ class HeaderManager {
 
             console.log('- Мобильная кнопка стили:', {
                 display: toggleStyles.display,
-                order: toggleStyles.order,
+                background: toggleStyles.background,
+                border: toggleStyles.border,
                 zIndex: toggleStyles.zIndex
             });
         }
 
-        // Диагностика счетчика корзины
-        const cartBadge = document.querySelector('.cart-badge');
-        if (cartBadge) {
-            const badgeRect = cartBadge.getBoundingClientRect();
-            console.log('- Счетчик корзины:', {
-                top: badgeRect.top,
-                visible: badgeRect.top >= 0,
-                size: `${badgeRect.width}x${badgeRect.height}`
+        // Диагностика линий бургера
+        const burgerLines = document.querySelectorAll('.burger-line');
+        console.log('- Количество линий бургера:', burgerLines.length);
+
+        burgerLines.forEach((line, index) => {
+            const lineRect = line.getBoundingClientRect();
+            const lineStyles = window.getComputedStyle(line);
+
+            console.log(`- Линия ${index + 1}:`, {
+                width: lineRect.width,
+                height: lineRect.height,
+                background: lineStyles.background,
+                visible: lineRect.width > 0 && lineRect.height > 0
             });
-        }
+        });
     }
 }
 
