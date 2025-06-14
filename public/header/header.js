@@ -40,7 +40,7 @@ class HeaderManager {
     init() {
         console.log('[Header] ✅ Найден хедер:', this.header.id);
 
-        // Убираем принудительные стили - пусть работает CSS
+        // Основные настройки
         this.setupScrollHandler();
         this.setupMobileMenu();
         this.setupSmoothScroll();
@@ -90,11 +90,13 @@ class HeaderManager {
         // Открытие/закрытие меню
         this.mobileToggle.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             this.toggleMobileMenu();
         });
 
         this.mobileToggle.addEventListener('touchend', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             this.toggleMobileMenu();
         });
 
@@ -153,14 +155,18 @@ class HeaderManager {
     toggleMobileMenu() {
         this.isMenuOpen = !this.isMenuOpen;
 
+        console.log(`[Header] 📱 Переключение меню: ${this.isMenuOpen ? 'открыть' : 'закрыть'}`);
+
         // Анимация кнопки бургер
         if (this.mobileToggle) {
             this.mobileToggle.classList.toggle('active', this.isMenuOpen);
+            console.log(`[Header] 🍔 Бургер кнопка: ${this.isMenuOpen ? 'активна' : 'неактивна'}`);
         }
 
         // Показ/скрытие меню
         if (this.mobileMenu) {
             this.mobileMenu.classList.toggle('active', this.isMenuOpen);
+            console.log(`[Header] 📋 Мобильное меню: ${this.isMenuOpen ? 'показано' : 'скрыто'}`);
         }
 
         // Блокировка скролла
@@ -176,6 +182,8 @@ class HeaderManager {
 
     closeMobileMenu() {
         if (!this.isMenuOpen) return;
+
+        console.log('[Header] 📱 Закрытие мобильного меню');
 
         this.isMenuOpen = false;
 
@@ -410,6 +418,26 @@ class HeaderManager {
         console.log('- Мобильная кнопка:', !!this.mobileToggle);
         console.log('- Мобильное меню:', !!this.mobileMenu);
         console.log('- Инициализирован:', this.isInitialized);
+
+        // Дополнительная диагностика кнопки меню
+        if (this.mobileToggle) {
+            const toggleRect = this.mobileToggle.getBoundingClientRect();
+            const toggleStyles = window.getComputedStyle(this.mobileToggle);
+
+            console.log('- Мобильная кнопка размеры:', {
+                width: toggleRect.width,
+                height: toggleRect.height,
+                left: toggleRect.left,
+                top: toggleRect.top,
+                visible: toggleRect.width > 0 && toggleRect.height > 0
+            });
+
+            console.log('- Мобильная кнопка стили:', {
+                display: toggleStyles.display,
+                order: toggleStyles.order,
+                zIndex: toggleStyles.zIndex
+            });
+        }
     }
 }
 
