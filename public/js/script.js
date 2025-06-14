@@ -1,4 +1,4 @@
-// === УЛУЧШЕННЫЙ SCRIPT.JS - ИСПРАВЛЕННАЯ ВЕРСИЯ ===
+// === SCRIPT.JS - МИНИМАЛЬНОЕ ИСПРАВЛЕНИЕ ===
 
 // ==== State & Prices ====
 let cameraCount = 0;
@@ -68,25 +68,16 @@ function saveCartState() {
       localStorage.setItem('cartData', JSON.stringify(data));
       console.log('[Script] Состояние корзины сохранено в localStorage:', data);
 
-      // Обновляем счетчик вручную если нет CartManager
-      updateCartCounterFallback();
+      // УБРАНО: дублирующий вызов updateCartCounterFallback()
+      // CartManager сам обновит счетчик
     }
   } catch (error) {
     console.error('[Script] Ошибка сохранения состояния корзины:', error);
   }
 }
 
-function updateCartCounterFallback() {
-  const totalCount = cameraCount + memoryCount;
-  const counters = document.querySelectorAll('.cart-count, #cart-count, .cart-badge');
-
-  counters.forEach(counter => {
-    if (counter) {
-      counter.textContent = totalCount;
-      counter.style.display = totalCount > 0 ? 'flex' : 'flex';
-    }
-  });
-}
+// УБРАНА ДУБЛИРУЮЩАЯ ФУНКЦИЯ updateCartCounterFallback()
+// Весь функционал счетчика теперь только в CartManager
 
 // ==== Update Price Display ====
 function updatePriceDisplay() {
@@ -478,6 +469,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Инициализация состояния
     loadCartState();
     updatePriceDisplay();
+
+    // ПРИНУДИТЕЛЬНО обновляем счетчик через CartManager
+    if (window.CartManager) {
+      setTimeout(() => {
+        window.CartManager.forceUpdateCounter();
+        console.log('[Script] Принудительное обновление счетчика через CartManager');
+      }, 200);
+    }
 
     // Настройка обработчиков событий менеджеров
     setupManagerEventListeners();

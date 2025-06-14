@@ -158,18 +158,23 @@
   right: -6px;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 800;
-  padding: 3px 6px;
-  border-radius: 10px;
-  min-width: 18px;
-  height: 18px;
+
+  /* КРУГЛЫЙ КАК CART-BADGE */
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 50%;
+  padding: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
   animation: badgeEntry 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   border: 1px solid rgba(255, 255, 255, 0.3);
+  line-height: 1;
 }
 
 /* === КОРЗИНА === */
@@ -225,30 +230,45 @@
   transform: scale(1.15);
 }
 
-/* === БЕЙДЖИ === */
+/* === БЕЙДЖИ - ПРОСТЫЕ И КРУГЛЫЕ === */
 .cart-badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
+  top: -6px;
+  right: -6px;
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
   font-size: 0.65rem;
   font-weight: 800;
-  padding: 2px 5px;
-  border-radius: 8px;
-  min-width: 16px;
-  height: 16px;
-  display: flex;
+
+  /* КРУГЛЫЙ НА ВСЕХ УСТРОЙСТВАХ */
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 50%;
+  padding: 0;
+
+  /* УПРАВЛЯЕТСЯ ЧЕРЕЗ JS */
+  display: none; /* По умолчанию скрыт, JS покажет при count > 0 */
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
   animation: badgeEntry 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   border: 1px solid rgba(255, 255, 255, 0.3);
+  line-height: 1;
 }
 
 .orders-badge {
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
+
+  /* КРУГЛЫЙ КАК CART-BADGE */
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 0.65rem;
+  line-height: 1;
 }
 
 /* === ШИММЕР ЭФФЕКТ === */
@@ -695,7 +715,7 @@ body {
   }
 }
 
-/* === ИСПРАВЛЕННАЯ МОБИЛЬНАЯ ВЕРСИЯ - ПРОЗРАЧНАЯ КАК НА ДЕСКТОПЕ === */
+/* === ИСПРАВЛЕННАЯ МОБИЛЬНАЯ ВЕРСИЯ - РАДИКАЛЬНЫЕ ИЗМЕНЕНИЯ === */
 @media (max-width: 768px) {
 
   /* === ПОЛНОСТЬЮ ПРОЗРАЧНЫЙ ХЕДЕР === */
@@ -735,69 +755,90 @@ body {
   }
 
   /* === КОНТЕЙНЕР === */
-  .header-container {
-    padding: 0 16px !important;
+  .site-header .header-container {
+    padding: 0 8px !important; /* УМЕНЬШЕНО: больше места для корзины */
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 12px !important;
+    gap: 8px !important; /* УМЕНЬШЕНО */
     width: 100% !important;
     height: 100% !important;
+    position: relative !important;
   }
 
   /* === СКРЫВАЕМ НАВИГАЦИЮ === */
-  .header-nav {
+  .site-header .header-nav {
     display: none !important;
   }
 
-  /* === ЛОГОТИП === */
-  .header-logo {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex: 1 !important;
-    order: 2 !important; /* Логотип в центре */
+  /* === ЛОГОТИП - РАДИКАЛЬНОЕ ЦЕНТРИРОВАНИЕ === */
+  .site-header .header-logo {
+    /* УБИРАЕМ ВСЕ FLEX НАСТРОЙКИ */
+    display: block !important;
+    flex: none !important;
+    order: unset !important;
+
+    /* АБСОЛЮТНОЕ ПОЗИЦИОНИРОВАНИЕ В ЦЕНТРЕ */
     position: absolute !important;
     left: 50% !important;
-    transform: translateX(-50%) !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
     z-index: 10 !important;
+
+    /* РАЗМЕРЫ */
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  .logo-image {
+  .site-header .header-logo .logo-link {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+  }
+
+  .site-header .header-logo .logo-image {
     height: 160px !important;
     max-width: 400px !important;
+    width: auto !important;
     filter: drop-shadow(0 2px 8px rgba(28, 166, 248, 0.25)) !important;
+    display: block !important;
   }
 
-  /* === МОБИЛЬНАЯ КНОПКА МЕНЮ === */
-  .mobile-menu-toggle {
+  /* === МОБИЛЬНАЯ КНОПКА МЕНЮ - ПРИВЯЗКА К ЛЕВОМУ КРАЮ === */
+  .site-header .mobile-menu-toggle {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     width: 44px !important;
     height: 44px !important;
     flex-shrink: 0 !important;
-    order: 1 !important; /* Слева */
 
-    /* ПРОЗРАЧНЫЙ ФОН БЕЗ ЦВЕТНЫХ ГРАДИЕНТОВ */
+    /* ПОЗИЦИОНИРОВАНИЕ */
+    position: absolute !important;
+    left: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 10001 !important;
+
+    /* СТИЛИ */
     background: rgba(255, 255, 255, 0.08) !important;
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     border-radius: 12px !important;
     backdrop-filter: blur(15px) !important;
     -webkit-backdrop-filter: blur(15px) !important;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
-
-    z-index: 10001 !important;
     transition: all 0.3s ease !important;
   }
 
-  .mobile-menu-toggle:active {
+  .site-header .mobile-menu-toggle:active {
     background: rgba(255, 255, 255, 0.12) !important;
-    transform: scale(0.95) !important;
+    transform: translateY(-50%) scale(0.95) !important;
     box-shadow: 0 1px 8px rgba(0, 0, 0, 0.08) !important;
   }
 
-  .burger-line {
+  .site-header .burger-line {
     width: 24px !important;
     height: 3px !important;
     background: rgba(255, 255, 255, 0.95) !important;
@@ -813,34 +854,45 @@ body {
   }
 
   /* Анимация бургер-меню */
-  .mobile-menu-toggle.active .burger-line:nth-child(1) {
+  .site-header .mobile-menu-toggle.active .burger-line:nth-child(1) {
     transform: translateX(-50%) rotate(45deg) translate(6px, 6px) !important;
     background: #1ca6f8 !important;
   }
 
-  .mobile-menu-toggle.active .burger-line:nth-child(2) {
+  .site-header .mobile-menu-toggle.active .burger-line:nth-child(2) {
     opacity: 0 !important;
     transform: translateX(-100%) !important;
   }
 
-  .mobile-menu-toggle.active .burger-line:nth-child(3) {
+  .site-header .mobile-menu-toggle.active .burger-line:nth-child(3) {
     transform: translateX(-50%) rotate(-45deg) translate(6px, -6px) !important;
     background: #1ca6f8 !important;
   }
 
-  /* === КОРЗИНА === */
-  .header-actions {
-    gap: 10px !important;
-    display: flex !important;
-    align-items: center !important;
+  /* === КОРЗИНА - МАКСИМАЛЬНО К ПРАВОМУ КРАЮ === */
+  .site-header .header-actions {
+    /* ПОЗИЦИОНИРОВАНИЕ */
+    position: absolute !important;
+    right: 4px !important; /* ОЧЕНЬ БЛИЗКО К КРАЮ */
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    z-index: 10001 !important;
+
+    /* УБИРАЕМ FLEX */
+    gap: 0 !important;
+    display: block !important;
     flex-shrink: 0 !important;
-    order: 3 !important; /* Справа */
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  .cart-btn {
-    padding: 15px !important;
-    min-width: 88px !important;
-    min-height: 88px !important;
+  .site-header .header-actions .cart-btn {
+    /* РАЗМЕРЫ КНОПКИ */
+    padding: 8px !important; /* ЕЩЕ МЕНЬШЕ */
+    min-width: 64px !important; /* УМЕНЬШЕНО ЕЩЕ БОЛЬШЕ */
+    min-height: 64px !important; /* УМЕНЬШЕНО ЕЩЕ БОЛЬШЕ */
+    width: 64px !important;
+    height: 64px !important;
 
     /* УБИРАЕМ ВСЕ ФОНОВЫЕ ЭФФЕКТЫ */
     background: transparent !important;
@@ -849,42 +901,46 @@ body {
     -webkit-backdrop-filter: none !important;
     box-shadow: none !important;
 
+    /* ПОЗИЦИОНИРОВАНИЕ */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     text-decoration: none !important;
     position: relative !important;
     transition: all 0.3s ease !important;
+    margin: 0 !important;
   }
 
-  .cart-btn:active {
+  .site-header .header-actions .cart-btn:active {
     transform: scale(0.95) !important;
   }
 
-  .cart-icon {
-    width: 44px !important;
-    height: 44px !important;
+  .site-header .header-actions .cart-icon {
+    width: 36px !important; /* ЕЩЕ МЕНЬШЕ */
+    height: 36px !important; /* ЕЩЕ МЕНЬШЕ */
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(181deg) brightness(100%) contrast(100%) !important;
   }
 
-  .cart-badge {
+  /* === БЕЙДЖ КОРЗИНЫ - МАКСИМАЛЬНО МАЛЕНЬКИЙ И БЛИЗКИЙ === */
+  .site-header .header-actions .cart-badge {
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 1px 4px rgba(239, 68, 68, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
 
     position: absolute !important;
-    top: -4px !important;
-    right: -4px !important;
-    font-size: 0.65rem !important;
+    top: 0px !important; /* ПРАКТИЧЕСКИ НА ИКОНКЕ */
+    right: 0px !important; /* ПРАКТИЧЕСКИ НА ИКОНКЕ */
+    font-size: 0.55rem !important; /* ОЧЕНЬ МАЛЕНЬКИЙ */
     font-weight: 800 !important;
-    padding: 3px 6px !important;
-    border-radius: 8px !important;
-    min-width: 16px !important;
-    height: 16px !important;
+    padding: 1px 3px !important; /* МИНИМАЛЬНЫЙ ОТСТУП */
+    border-radius: 4px !important; /* МАЛЕНЬКИЙ РАДИУС */
+    min-width: 12px !important; /* ОЧЕНЬ МАЛЕНЬКИЙ */
+    height: 12px !important; /* ОЧЕНЬ МАЛЕНЬКИЙ */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     color: white !important;
+    line-height: 1 !important;
   }
 
   /* === МОБИЛЬНОЕ МЕНЮ === */
@@ -895,7 +951,7 @@ body {
 
   /* === ОТСТУП ДЛЯ BODY === */
   body {
-    padding-top: 95px !important;
+    padding-top: 95px !important; /* ИСПРАВЛЕНО: учитываем хедер 90px + отступ */
   }
 
   /* === МОБИЛЬНОЕ МЕНЮ С ПРОЗРАЧНОСТЬЮ === */
@@ -928,12 +984,31 @@ body {
 /* === ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ === */
 @media (max-width: 480px) {
   .site-header {
-    height: 85px !important;
+    height: 75px !important; /* ИСПРАВЛЕНО: пропорционально логотипу 60px */
   }
 
   .header-container {
     padding: 0 12px !important;
     gap: 8px !important;
+  }
+
+  /* === ЛОГОТИП - СОХРАНЯЕМ ПРАВИЛЬНОЕ ЦЕНТРИРОВАНИЕ === */
+  .header-logo {
+    /* УБИРАЕМ КОНФЛИКТУЮЩИЕ СТИЛИ */
+    display: block !important;
+    flex: none !important;
+    order: unset !important;
+
+    /* ПРАВИЛЬНОЕ ПОЗИЦИОНИРОВАНИЕ */
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 10 !important;
+
+    /* ПРАВИЛЬНЫЕ РАЗМЕРЫ */
+    height: auto !important;
+    width: auto !important;
   }
 
   .logo-image {
@@ -947,15 +1022,36 @@ body {
     padding: 8px !important;
   }
 
+  /* === КОРЗИНА НА МАЛЕНЬКИХ ЭКРАНАХ === */
+  .header-actions {
+    margin-right: 4px !important; /* УМЕНЬШЕНО: от 8px до 4px */
+  }
+
   .cart-btn {
     width: 70px !important;
     height: 70px !important;
-    padding: 12px !important;
+    padding: 10px !important; /* УМЕНЬШЕНО: от 12px до 10px */
   }
 
   .cart-icon {
-    width: 35px !important;
-    height: 35px !important;
+    width: 32px !important; /* УМЕНЬШЕНО: от 35px до 32px */
+    height: 32px !important; /* УМЕНЬШЕНО: от 35px до 32px */
+  }
+
+  /* === БЕЙДЖ НА МАЛЕНЬКИХ ЭКРАНАХ - КРУГЛЫЙ === */
+  .cart-badge {
+    top: -6px !important; /* ИСПРАВЛЕНО: правильное позиционирование */
+    right: -6px !important; /* ИСПРАВЛЕНО: правильное позиционирование */
+
+    /* КРУГЛЫЙ СЧЕТЧИК ДЛЯ МАЛЕНЬКИХ ЭКРАНОВ */
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px !important;
+    border-radius: 50% !important;
+
+    font-size: 0.55rem !important;
+    font-weight: 900 !important;
+    padding: 0 !important;
   }
 
   .burger-line {
@@ -969,6 +1065,6 @@ body {
   }
 
   body {
-    padding-top: 90px !important;
+    padding-top: 80px !important; /* ИСПРАВЛЕНО: учитываем хедер 75px + отступ */
   }
 }

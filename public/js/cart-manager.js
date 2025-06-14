@@ -1,4 +1,4 @@
-/* === CART-MANAGER.JS - ОБНОВЛЕННАЯ ВЕРСИЯ === */
+/* === CART-MANAGER.JS - МИНИМАЛЬНОЕ ИСПРАВЛЕНИЕ === */
 
 (function() {
     'use strict';
@@ -13,11 +13,14 @@
                 const data = localStorage.getItem('cartData');
                 const parsed = data ? JSON.parse(data) : {};
 
-                return {
+                const result = {
                     cameraCount: parsed.cameraCount || 0,
                     memoryCount: parsed.memoryCount || 0,
                     cartColor: parsed.cartColor || 'Чёрный'
                 };
+
+                console.log('[CartManager] getCartData:', { raw: data, parsed, result });
+                return result;
             } catch (error) {
                 console.error('[CartManager] Ошибка чтения данных:', error);
                 return { cameraCount: 0, memoryCount: 0, cartColor: 'Чёрный' };
@@ -52,7 +55,9 @@
         // Получить общее количество товаров
         getTotalCount: function() {
             const data = this.getCartData();
-            return data.cameraCount + data.memoryCount;
+            const total = data.cameraCount + data.memoryCount;
+            console.log('[CartManager] getTotalCount:', { cameraCount: data.cameraCount, memoryCount: data.memoryCount, total });
+            return total;
         },
 
         // Добавить товар
@@ -106,27 +111,36 @@
             }
         },
 
-        // Обновить счетчик в UI
+        // ВОЗВРАЩАЕМ ОРИГИНАЛЬНУЮ РАБОЧУЮ ЛОГИКУ
         updateCartCounter: function() {
             const count = this.getTotalCount();
             const counters = document.querySelectorAll('.cart-count, #cart-count, .cart-badge');
 
-            counters.forEach(counter => {
+            console.log(`[CartManager] Обновление счетчика: count=${count}, найдено элементов=${counters.length}`);
+
+            counters.forEach((counter, index) => {
                 if (counter) {
+                    const oldText = counter.textContent;
                     counter.textContent = count;
-                    counter.style.display = count > 0 ? 'flex' : 'flex';
+
+                    // ИСПРАВЛЕНО: правильная логика показа/скрытия
+                    counter.style.display = count > 0 ? 'flex' : 'none';
+
+                    console.log(`[CartManager] Элемент ${index}: ${counter.className || counter.id} - было "${oldText}", стало "${count}", display="${counter.style.display}"`);
 
                     // Анимация при изменении
-                    if (parseInt(counter.textContent) !== count) {
+                    if (parseInt(oldText) !== count && count > 0) {
                         counter.style.animation = 'cartBounce 0.3s ease';
                         setTimeout(() => {
                             counter.style.animation = '';
                         }, 300);
                     }
+                } else {
+                    console.warn(`[CartManager] Элемент ${index} не найден`);
                 }
             });
 
-            console.log('[CartManager] Счетчик обновлен:', count);
+            console.log(`[CartManager] Счетчик обновлен: ${count}`);
         },
 
         // Принудительное обновление счетчика
@@ -159,13 +173,36 @@
     // Делаем доступным глобально
     window.CartManager = CartManager;
 
+    // ОТЛАДОЧНЫЕ ФУНКЦИИ
+    window.debugCart = function() {
+        console.log('=== DEBUG CART ===');
+        console.log('CartData:', CartManager.getCartData());
+        console.log('TotalCount:', CartManager.getTotalCount());
+        console.log('Counters:', document.querySelectorAll('.cart-count, #cart-count, .cart-badge'));
+        CartManager.updateCartCounter();
+    };
+
+    window.testAddToCart = function() {
+        console.log('=== TEST ADD TO CART ===');
+        CartManager.addItem('camera', 1);
+        console.log('Added camera, new count:', CartManager.getTotalCount());
+    };
+
     // Автоматическое обновление счетчика при загрузке
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
-            CartManager.updateCartCounter();
+            // ПРИНУДИТЕЛЬНО обновляем счетчик при загрузке
+            setTimeout(() => {
+                CartManager.updateCartCounter();
+                console.log('[CartManager] Принудительное обновление при загрузке');
+            }, 100);
         });
     } else {
-        CartManager.updateCartCounter();
+        // ПРИНУДИТЕЛЬНО обновляем счетчик сразу
+        setTimeout(() => {
+            CartManager.updateCartCounter();
+            console.log('[CartManager] Принудительное обновление сразу');
+        }, 100);
     }
 
     // Слушаем storage события для синхронизации между вкладками
