@@ -695,166 +695,250 @@ body {
   }
 }
 
-/* === КРАСИВЫЕ МОБИЛЬНЫЕ СТИЛИ БЕЗ BACKDROP-FILTER === */
+/* === ПРОЗРАЧНЫЙ МОБИЛЬНЫЙ ХЕДЕР === */
 @media (max-width: 768px) {
-  /* ПРИНУДИТЕЛЬНОЕ ОТОБРАЖЕНИЕ + КРАСОТА */
+
+  /* === ПРОЗРАЧНЫЙ GLASSMORPHISM ХЕДЕР === */
   .site-header {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
-    height: 80px !important;
+    height: 75px !important;
     display: flex !important;
     visibility: visible !important;
     opacity: 1 !important;
     z-index: 9999 !important;
 
-    /* КРАСИВЫЙ ГРАДИЕНТНЫЙ ФОН БЕЗ BACKDROP-FILTER */
-    background: linear-gradient(135deg,
-    rgba(28, 166, 248, 0.95) 0%,
-    rgba(0, 26, 58, 0.98) 50%,
-    rgba(0, 15, 35, 0.98) 100%) !important;
+    /* ПРОЗРАЧНЫЙ ФОН С GLASSMORPHISM */
+    background: rgba(255, 255, 255, 0.05) !important;
+    background-image: none !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
 
-    /* Красивая тень */
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    /* МИНИМАЛЬНАЯ ТЕНЬ И ГРАНИЦА */
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 
-    /* Плавные переходы */
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* ПЛАВНЫЕ ПЕРЕХОДЫ */
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
   }
 
   .site-header.scrolled {
     height: 70px !important;
-    background: linear-gradient(135deg,
-    rgba(28, 166, 248, 0.98) 0%,
-    rgba(0, 26, 58, 0.99) 50%,
-    rgba(0, 15, 35, 0.99) 100%) !important;
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(25px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(25px) saturate(200%) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.12) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.15) !important;
   }
 
+  /* === КОНТЕЙНЕР === */
   .header-container {
-    padding: 0 12px !important;
+    padding: 0 16px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
+    gap: 12px !important;
+    width: 100% !important;
+    height: 100% !important;
   }
 
+  /* === СКРЫВАЕМ НАВИГАЦИЮ === */
   .header-nav {
     display: none !important;
   }
 
+  /* === ЛОГОТИП === */
+  .header-logo {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    flex-shrink: 1 !important;
+    max-width: 60% !important;
+    order: 2 !important; /* Логотип в центре */
+  }
+
+  .logo-image {
+    height: 50px !important;
+    max-width: 150px !important;
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3)) !important;
+  }
+
+  /* === МОБИЛЬНАЯ КНОПКА МЕНЮ === */
   .mobile-menu-toggle {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background: rgba(255, 255, 255, 0.2) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    width: 44px !important;
+    height: 44px !important;
+    flex-shrink: 0 !important;
+    order: 1 !important; /* Слева */
+
+    /* ПРОЗРАЧНЫЙ GLASSMORPHISM ФОН */
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(15px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+
     z-index: 10001 !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
   }
 
-  .mobile-menu-toggle:hover {
-    background: rgba(255, 255, 255, 0.25) !important;
-    border-color: rgba(255, 255, 255, 0.4) !important;
-    transform: scale(1.05);
+  .mobile-menu-toggle:active {
+    background: rgba(255, 255, 255, 0.18) !important;
+    transform: scale(0.95) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15) !important;
   }
 
+  .burger-line {
+    width: 18px !important;
+    height: 2px !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 2px !important;
+    margin: 3px 0 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+
+    display: block !important;
+    position: relative !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
+  }
+
+  /* === КОРЗИНА === */
+  .header-actions {
+    gap: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+    order: 3 !important; /* Справа */
+  }
+
+  .cart-btn {
+    padding: 10px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+
+    /* ПРОЗРАЧНЫЙ GLASSMORPHISM ФОН */
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 12px !important;
+    backdrop-filter: blur(15px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(15px) saturate(150%) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-decoration: none !important;
+    position: relative !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+  }
+
+  .cart-btn:active {
+    background: rgba(255, 255, 255, 0.18) !important;
+    transform: scale(0.95) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15) !important;
+  }
+
+  .cart-icon {
+    width: 22px !important;
+    height: 22px !important;
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(181deg) brightness(100%) contrast(100%) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3)) !important;
+  }
+
+  .cart-badge {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+    box-shadow: 0 3px 12px rgba(239, 68, 68, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+
+    position: absolute !important;
+    top: -4px !important;
+    right: -4px !important;
+    font-size: 0.65rem !important;
+    font-weight: 800 !important;
+    padding: 3px 6px !important;
+    border-radius: 8px !important;
+    min-width: 16px !important;
+    height: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+  }
+
+  /* === МОБИЛЬНОЕ МЕНЮ === */
   .mobile-menu {
     display: block !important;
     z-index: 9998 !important;
   }
 
-  .logo-image {
-    height: 120px !important;
-    filter: drop-shadow(0 2px 10px rgba(255, 255, 255, 0.3)) !important;
-  }
-
-  .mobile-logo-image {
-    height: 90px !important;
-  }
-
-  .cart-btn {
-    padding: 8px !important;
-    min-width: 44px !important;
-    min-height: 44px !important;
-    background: rgba(255, 255, 255, 0.2) !important;
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  }
-
-  .cart-btn:hover {
-    background: rgba(255, 255, 255, 0.25) !important;
-    transform: translateY(-2px) scale(1.05) !important;
-  }
-
-  .cart-icon {
-    width: 32px !important;
-    height: 32px !important;
-    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(181deg) brightness(100%) contrast(100%) !important;
-  }
-
-  .cart-badge {
-    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%) !important;
-    box-shadow: 0 3px 10px rgba(255, 107, 107, 0.4) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  }
-
-  .header-actions {
-    gap: 10px !important;
-    display: flex !important;
-  }
-
+  /* === ОТСТУП ДЛЯ BODY === */
   body {
-    padding-top: 85px !important;
+    padding-top: 80px !important;
   }
 
-  /* Исправление для логотипа на мобильном */
-  .header-logo {
-    display: flex !important;
-    align-items: center !important;
-    gap: 12px !important;
-  }
-
-  /* Мобильное меню с красивым фоном */
+  /* === МОБИЛЬНОЕ МЕНЮ С ПРОЗРАЧНОСТЬЮ === */
   .mobile-menu-backdrop {
-    background: rgba(0, 26, 58, 0.9) !important;
+    background: rgba(0, 26, 58, 0.85) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
   }
 
   .mobile-menu-content {
-    background: rgba(255, 255, 255, 0.98) !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
     box-shadow: -15px 0 40px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /* === FALLBACK ДЛЯ СТАРЫХ БРАУЗЕРОВ === */
+  @supports not (backdrop-filter: blur(20px)) {
+    .site-header {
+      background: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    .mobile-menu-toggle,
+    .cart-btn {
+      background: rgba(255, 255, 255, 0.2) !important;
+    }
   }
 }
 
+/* === ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ === */
 @media (max-width: 480px) {
   .site-header {
-    height: 75px !important;
+    height: 70px !important;
   }
 
   .header-container {
-    padding: 0 8px !important;
+    padding: 0 12px !important;
+    gap: 8px !important;
   }
 
   .logo-image {
-    height: 100px !important;
-    max-width: 300px !important;
+    height: 45px !important;
+    max-width: 130px !important;
   }
 
-  .mobile-logo-image {
-    height: 75px !important;
-  }
-
+  .mobile-menu-toggle,
   .cart-btn {
-    padding: 6px !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 8px !important;
   }
 
   .cart-icon {
-    width: 28px !important;
-    height: 28px !important;
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .burger-line {
+    width: 16px !important;
   }
 
   .mobile-menu-content {
@@ -863,6 +947,6 @@ body {
   }
 
   body {
-    padding-top: 80px !important;
+    padding-top: 75px !important;
   }
 }

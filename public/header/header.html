@@ -1,22 +1,24 @@
-<!-- Header HTML - Оригинальная версия с viewport -->
+<!-- ИСПРАВЛЕННЫЙ HEADER HTML -->
 
 <header id="siteHeader" class="site-header">
   <div class="header-container">
-    <!-- Логотип (левый край) -->
+
+    <!-- Логотип + мобильная кнопка (левый край) -->
     <div class="header-logo">
-      <!-- Мобильное меню (показывается только на мобильных, заменяет лого) -->
+      <!-- Мобильная кнопка меню -->
       <button class="mobile-menu-toggle" aria-label="Открыть меню">
         <span class="burger-line"></span>
         <span class="burger-line"></span>
         <span class="burger-line"></span>
       </button>
 
+      <!-- Логотип -->
       <a href="/index.html" class="logo-link">
         <img src="/assets/logo.png" alt="clip & go" class="logo-image">
       </a>
     </div>
 
-    <!-- Навигация (равномерно распределена по всему хедеру) -->
+    <!-- Навигация (центр) -->
     <nav class="header-nav">
       <a href="/index.html#main" class="nav-link" data-section="main">
         <span class="nav-text">Главная</span>
@@ -44,7 +46,6 @@
       <a href="/cart/cart.html" class="cart-btn">
         <img src="/assets/icons/carticon.png" alt="Корзина" class="cart-icon">
         <div class="cart-badge" id="cartBadge">0</div>
-        <div class="btn-shimmer"></div>
       </a>
     </div>
   </div>
@@ -53,6 +54,8 @@
   <div class="mobile-menu" id="mobileMenu">
     <div class="mobile-menu-backdrop"></div>
     <div class="mobile-menu-content">
+
+      <!-- Заголовок мобильного меню -->
       <div class="mobile-menu-header">
         <div class="mobile-logo">
           <img src="/assets/logo.png" alt="clip & go" class="mobile-logo-image">
@@ -60,6 +63,7 @@
         <button class="mobile-close" aria-label="Закрыть меню">✕</button>
       </div>
 
+      <!-- Навигация в мобильном меню -->
       <nav class="mobile-nav">
         <a href="/index.html#main" class="mobile-nav-link" data-section="main">
           <span>Главная</span>
@@ -83,6 +87,7 @@
         </a>
       </nav>
 
+      <!-- Действия в мобильном меню -->
       <div class="mobile-actions">
         <a href="/profile/profile.html" class="mobile-action-btn profile-mobile">
           <div class="action-icon">👤</div>

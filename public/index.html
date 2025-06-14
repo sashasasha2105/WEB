@@ -2,17 +2,78 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
   <title>clip & go</title>
 
   <!-- Google Fonts Montserrat с дополнительными весами -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-  <!-- Стили - используем только существующие файлы -->
+  <!-- Стили - ПРАВИЛЬНЫЙ ПОРЯДОК -->
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/css/responsive.css" media="(max-width:768px)" />
   <link rel="stylesheet" href="/header/header.css" />
+  <link rel="stylesheet" href="/header/mobile-fix.css" />
+  <link rel="stylesheet" href="/css/responsive.css" media="(max-width:768px)" />
+
+  <!-- Дополнительные мобильные стили -->
+  <style>
+    /* Критические мобильные стили встроены для быстрой загрузки */
+    @media (max-width: 768px) {
+      /* Обеспечиваем корректное отображение мобильного хедера */
+      .site-header {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 80px !important;
+        z-index: 9999 !important;
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      /* Убираем возможные конфликты */
+      .header-nav {
+        display: none !important;
+      }
+
+      .mobile-menu-toggle {
+        display: flex !important;
+      }
+
+      .mobile-menu {
+        display: block !important;
+      }
+
+      /* Правильный отступ для body */
+      body {
+        padding-top: 85px !important;
+      }
+
+      /* Исправляем позиционирование логотипа */
+      .header-logo {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+      }
+
+      /* Обеспечиваем правильное отображение кнопок */
+      .header-actions {
+        display: flex !important;
+        gap: 10px !important;
+      }
+    }
+
+    /* Дополнительные улучшения для старых браузеров */
+    @supports not (backdrop-filter: blur(20px)) {
+      @media (max-width: 768px) {
+        .site-header {
+          background: linear-gradient(135deg, rgba(0, 15, 35, 0.98), rgba(10, 30, 60, 0.98)) !important;
+        }
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -216,7 +277,7 @@
 <script src="/js/cart-manager.js"></script>
 <script src="/js/script.js"></script>
 
-<!-- Скрипт загрузки хедера - ИСПРАВЛЕН ПУТЬ -->
+<!-- Скрипт загрузки хедера - УЛУЧШЕННАЯ ВЕРСИЯ -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     console.log('[Index] 🚀 Начинаем загрузку премиального хедера');
@@ -224,10 +285,10 @@
     // Показываем индикатор загрузки
     const headerContainer = document.getElementById('header-container');
     headerContainer.innerHTML = `
-    <div style="position: fixed; top: 0; left: 0; right: 0; height: 100px; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); z-index: 1000; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.8);">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <div style="width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid #1ca6f8; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-        <span>Загрузка хедера...</span>
+    <div style="position: fixed; top: 0; left: 0; right: 0; height: 80px; background: linear-gradient(135deg, rgba(28, 166, 248, 0.95), rgba(0, 26, 58, 0.98)); backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.9); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); border-top: 2px solid #ffffff; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <span style="font-weight: 600;">Загрузка хедера...</span>
       </div>
     </div>
     <style>
@@ -235,7 +296,7 @@
     </style>
   `;
 
-    // Загружаем хедер - ИСПРАВЛЕН ПУТЬ!
+    // Загружаем хедер
     fetch('/header/header.html')
             .then(response => {
               if (!response.ok) {
@@ -281,10 +342,10 @@
 
               // Fallback на простой хедер в случае ошибки
               headerContainer.innerHTML = `
-        <header style="position: fixed; top: 0; left: 0; right: 0; height: 80px; background: rgba(255,255,255,0.9); backdrop-filter: blur(15px); z-index: 1000; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-          <div style="display: flex; align-items: center; gap: 20px;">
-            <h1 style="margin: 0; color: #1ca6f8; font-size: 1.8rem; font-weight: 900;">clip & go</h1>
-            <span style="color: #666; font-size: 0.9rem;">Ошибка загрузки хедера</span>
+        <header style="position: fixed; top: 0; left: 0; right: 0; height: 80px; background: linear-gradient(135deg, rgba(28, 166, 248, 0.95), rgba(0, 26, 58, 0.98)); backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255, 255, 255, 0.2);">
+          <div style="display: flex; align-items: center; gap: 20px; color: white;">
+            <h1 style="margin: 0; color: #ffffff; font-size: 1.8rem; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">clip & go</h1>
+            <span style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">Ошибка загрузки хедера</span>
           </div>
         </header>
       `;
@@ -298,6 +359,31 @@
       console.log('[Index] 🔄 Принудительное обновление бейджей выполнено');
     } else {
       console.warn('[Index] ⚠️ HeaderManager не найден');
+    }
+  };
+
+  // Дополнительная мобильная диагностика
+  window.debugMobileHeader = function() {
+    console.log('[Index] 🔍 === МОБИЛЬНАЯ ДИАГНОСТИКА ===');
+    console.log('Размер экрана:', window.innerWidth + 'x' + window.innerHeight);
+    console.log('User Agent:', navigator.userAgent);
+    console.log('Viewport meta:', document.querySelector('meta[name="viewport"]')?.content);
+
+    const header = document.querySelector('.site-header');
+    if (header) {
+      const rect = header.getBoundingClientRect();
+      const styles = window.getComputedStyle(header);
+      console.log('Хедер размеры:', rect);
+      console.log('Хедер стили:', {
+        display: styles.display,
+        position: styles.position,
+        zIndex: styles.zIndex,
+        background: styles.background
+      });
+    }
+
+    if (window.headerManager) {
+      window.headerManager.diagnoseMobile();
     }
   };
 </script>

@@ -1,8 +1,8 @@
-// === HEADER JS - ИСПРАВЛЕННАЯ ВЕРСИЯ БЕЗ КОНФЛИКТОВ ===
+// === ИСПРАВЛЕННЫЙ HEADER JS ===
 
 class HeaderManager {
     constructor() {
-        console.log('[Header] 🚀 Инициализация...');
+        console.log('[Header] 🚀 Инициализация HeaderManager...');
 
         // Основные элементы
         this.header = document.getElementById('siteHeader');
@@ -27,6 +27,7 @@ class HeaderManager {
         this.isMenuOpen = false;
         this.scrollThreshold = 30;
         this.isMobile = window.innerWidth <= 768;
+        this.isInitialized = false;
 
         if (!this.header) {
             console.error('[Header] ❌ Хедер не найден!');
@@ -39,9 +40,7 @@ class HeaderManager {
     init() {
         console.log('[Header] ✅ Найден хедер:', this.header.id);
 
-        // НЕ применяем inline стили - пусть работает CSS!
-        // Удалена функция fixMobileHeader()
-
+        // Убираем принудительные стили - пусть работает CSS
         this.setupScrollHandler();
         this.setupMobileMenu();
         this.setupSmoothScroll();
@@ -50,6 +49,9 @@ class HeaderManager {
 
         // Инициальная проверка скролла
         this.handleScroll();
+
+        // Помечаем как инициализированный
+        this.isInitialized = true;
 
         console.log('[Header] ✅ Инициализирован успешно');
     }
@@ -63,13 +65,9 @@ class HeaderManager {
                     const currentScroll = window.pageYOffset;
 
                     if (currentScroll > this.scrollThreshold) {
-                        if (!this.header.classList.contains('scrolled')) {
-                            this.header.classList.add('scrolled');
-                        }
+                        this.header.classList.add('scrolled');
                     } else {
-                        if (this.header.classList.contains('scrolled')) {
-                            this.header.classList.remove('scrolled');
-                        }
+                        this.header.classList.remove('scrolled');
                     }
 
                     this.lastScroll = currentScroll;
@@ -90,7 +88,11 @@ class HeaderManager {
         }
 
         // Открытие/закрытие меню
-        this.mobileToggle.addEventListener('click', this.toggleMobileMenu.bind(this));
+        this.mobileToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.toggleMobileMenu();
+        });
+
         this.mobileToggle.addEventListener('touchend', (e) => {
             e.preventDefault();
             this.toggleMobileMenu();
@@ -98,7 +100,11 @@ class HeaderManager {
 
         // Закрытие меню кнопкой X
         if (this.mobileClose) {
-            this.mobileClose.addEventListener('click', this.closeMobileMenu.bind(this));
+            this.mobileClose.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.closeMobileMenu();
+            });
+
             this.mobileClose.addEventListener('touchend', (e) => {
                 e.preventDefault();
                 this.closeMobileMenu();
@@ -107,7 +113,11 @@ class HeaderManager {
 
         // Закрытие по бэкдропу
         if (this.mobileBackdrop) {
-            this.mobileBackdrop.addEventListener('click', this.closeMobileMenu.bind(this));
+            this.mobileBackdrop.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.closeMobileMenu();
+            });
+
             this.mobileBackdrop.addEventListener('touchend', (e) => {
                 e.preventDefault();
                 this.closeMobileMenu();
@@ -117,7 +127,7 @@ class HeaderManager {
         // Закрытие по клику на ссылку
         if (this.mobileMenu) {
             this.mobileMenu.addEventListener('click', (e) => {
-                if (e.target.matches('a')) {
+                if (e.target.matches('a') || e.target.closest('a')) {
                     setTimeout(() => this.closeMobileMenu(), 200);
                 }
             });
@@ -144,30 +154,19 @@ class HeaderManager {
         this.isMenuOpen = !this.isMenuOpen;
 
         // Анимация кнопки бургер
-        this.mobileToggle?.classList.toggle('active', this.isMenuOpen);
-
-        // Показ/скрытие меню
-        this.mobileMenu?.classList.toggle('active', this.isMenuOpen);
-
-        // Блокировка скролла
-        if (this.isMenuOpen) {
-            const scrollY = window.scrollY;
-            document.body.style.overflow = 'hidden';
-            document.body.style.position = 'fixed';
-            document.body.style.width = '100%';
-            document.body.style.top = `-${scrollY}px`;
-        } else {
-            const scrollY = document.body.style.top;
-            document.body.style.overflow = '';
-            document.body.style.position = '';
-            document.body.style.width = '';
-            document.body.style.top = '';
-            if (scrollY) {
-                window.scrollTo(0, parseInt(scrollY) * -1);
-            }
+        if (this.mobileToggle) {
+            this.mobileToggle.classList.toggle('active', this.isMenuOpen);
         }
 
-        // Haptic feedback
+        // Показ/скрытие меню
+        if (this.mobileMenu) {
+            this.mobileMenu.classList.toggle('active', this.isMenuOpen);
+        }
+
+        // Блокировка скролла
+        this.toggleBodyScroll(!this.isMenuOpen);
+
+        // Haptic feedback для мобильных
         if ('vibrate' in navigator && this.isMenuOpen) {
             navigator.vibrate(30);
         }
@@ -179,20 +178,40 @@ class HeaderManager {
         if (!this.isMenuOpen) return;
 
         this.isMenuOpen = false;
-        this.mobileToggle?.classList.remove('active');
-        this.mobileMenu?.classList.remove('active');
 
-        // Разблокировка скролла
-        const scrollY = document.body.style.top;
-        document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-        document.body.style.top = '';
-        if (scrollY) {
-            window.scrollTo(0, parseInt(scrollY) * -1);
+        if (this.mobileToggle) {
+            this.mobileToggle.classList.remove('active');
         }
 
+        if (this.mobileMenu) {
+            this.mobileMenu.classList.remove('active');
+        }
+
+        // Разблокировка скролла
+        this.toggleBodyScroll(true);
+
         console.log('[Header] 📱 Мобильное меню закрыто');
+    }
+
+    toggleBodyScroll(enable) {
+        if (enable) {
+            // Включаем скролл
+            const scrollY = document.body.style.top;
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.top = '';
+            if (scrollY) {
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            }
+        } else {
+            // Блокируем скролл
+            const scrollY = window.scrollY;
+            document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            document.body.style.top = `-${scrollY}px`;
+        }
     }
 
     setupSmoothScroll() {
@@ -213,8 +232,8 @@ class HeaderManager {
                     if (targetElement) {
                         e.preventDefault();
 
-                        // Обновленный расчет с учетом новой высоты хедера
-                        const headerHeight = this.header.offsetHeight || 100;
+                        // Расчет с учетом высоты хедера
+                        const headerHeight = this.header.offsetHeight || 80;
                         const targetPosition = targetElement.offsetTop - headerHeight - 20;
 
                         window.scrollTo({
@@ -347,10 +366,6 @@ class HeaderManager {
     }
 
     // Геттеры для отладки
-    get isInitialized() {
-        return !!this.header;
-    }
-
     get currentCartCount() {
         return this.getCartCount();
     }
@@ -388,13 +403,13 @@ class HeaderManager {
                 position: styles.position,
                 zIndex: styles.zIndex,
                 visibility: styles.visibility,
-                opacity: styles.opacity,
-                background: styles.background
+                opacity: styles.opacity
             });
         }
 
         console.log('- Мобильная кнопка:', !!this.mobileToggle);
         console.log('- Мобильное меню:', !!this.mobileMenu);
+        console.log('- Инициализирован:', this.isInitialized);
     }
 }
 
@@ -422,7 +437,7 @@ function initHeader() {
             // Первичное обновление бейджей
             setTimeout(() => headerInstance.forceUpdateBadges(), 300);
 
-            // Мобильная диагностика
+            // Мобильная диагностика для отладки
             if (window.innerWidth <= 768) {
                 setTimeout(() => headerInstance.diagnoseMobile(), 500);
             }
@@ -456,7 +471,7 @@ if (window.innerWidth <= 768) {
     console.log('[Header] 📱 Мобильное устройство - дополнительные проверки...');
 
     let mobileRetries = 0;
-    const maxMobileRetries = 5;
+    const maxMobileRetries = 3;
 
     const mobileInit = setInterval(() => {
         if (!headerInstance || !headerInstance.isInitialized) {
@@ -514,7 +529,7 @@ setTimeout(waitForCartManager, 200);
 window.initHeader = initHeader;
 
 window.updateHeaderBadges = function() {
-    if (headerInstance) {
+    if (headerInstance && headerInstance.isInitialized) {
         headerInstance.forceUpdateBadges();
         console.log('[Header] 🔄 Принудительное обновление выполнено');
     } else {
@@ -528,10 +543,10 @@ window.debugMobileHeader = function() {
     console.log('Размер экрана:', window.innerWidth + 'x' + window.innerHeight);
     console.log('User Agent:', navigator.userAgent);
 
-    if (headerInstance) {
+    if (headerInstance && headerInstance.isInitialized) {
         headerInstance.diagnoseMobile();
     } else {
-        console.error('[Header] ❌ HeaderInstance не найден');
+        console.error('[Header] ❌ HeaderInstance не найден или не инициализирован');
         console.log('Попытка принудительной инициализации...');
         initHeader();
     }
