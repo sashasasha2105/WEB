@@ -1,0 +1,398 @@
+/* === MOBILE GLASSMORPHISM - ДОПОЛНИТЕЛЬНЫЕ СТИЛИ === */
+
+/* Импортируем этот файл после header.css для расширенных мобильных стилей */
+
+@media (max-width: 768px) {
+    /* === РАСШИРЕННЫЕ GLASSMORPHISM ЭФФЕКТЫ === */
+
+    /* Хедер с многослойным glassmorphism */
+    .site-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+                135deg,
+                rgba(28, 166, 248, 0.05) 0%,
+                rgba(135, 206, 235, 0.05) 25%,
+                rgba(0, 26, 58, 0.05) 50%,
+                rgba(28, 166, 248, 0.05) 75%,
+                rgba(0, 15, 35, 0.05) 100%
+        );
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    /* Анимированный градиент для хедера */
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .site-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+                270deg,
+                rgba(28, 166, 248, 0.1),
+                rgba(135, 206, 235, 0.1),
+                rgba(0, 26, 58, 0.1),
+                rgba(28, 166, 248, 0.1)
+        );
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+        pointer-events: none;
+        z-index: 0;
+        opacity: 0.5;
+    }
+
+    /* Контейнер хедера с повышенным z-index */
+    .header-container {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Премиальная кнопка меню */
+    .mobile-menu-toggle {
+        background: rgba(255, 255, 255, 0.08) !important;
+        backdrop-filter: blur(20px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+        box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mobile-menu-toggle::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+                circle,
+                rgba(255, 255, 255, 0.1) 0%,
+                transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    .mobile-menu-toggle:hover::before {
+        opacity: 1;
+    }
+
+    /* Премиальная кнопка корзины */
+    .cart-btn {
+        position: relative;
+        overflow: hidden;
+        box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .cart-btn::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+                circle,
+                rgba(28, 166, 248, 0.1) 0%,
+                transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    .cart-btn:hover::before {
+        opacity: 1;
+    }
+
+    /* Премиальный логотип с glow эффектом */
+    .logo-image {
+        filter:
+                drop-shadow(0 2px 10px rgba(28, 166, 248, 0.4))
+                drop-shadow(0 0 20px rgba(28, 166, 248, 0.2)) !important;
+        animation: logoGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes logoGlow {
+        0% {
+            filter:
+                    drop-shadow(0 2px 10px rgba(28, 166, 248, 0.4))
+                    drop-shadow(0 0 20px rgba(28, 166, 248, 0.2));
+        }
+        100% {
+            filter:
+                    drop-shadow(0 2px 15px rgba(28, 166, 248, 0.6))
+                    drop-shadow(0 0 30px rgba(28, 166, 248, 0.3));
+        }
+    }
+
+    /* === ПРЕМИАЛЬНОЕ МОБИЛЬНОЕ МЕНЮ === */
+
+    /* Бэкдроп с размытием */
+    .mobile-menu-backdrop {
+        background: rgba(0, 15, 35, 0.4) !important;
+        backdrop-filter: blur(15px) brightness(0.7) !important;
+        -webkit-backdrop-filter: blur(15px) brightness(0.7) !important;
+    }
+
+    /* Контент меню с многослойным glassmorphism */
+    .mobile-menu-content {
+        background: linear-gradient(
+                135deg,
+                rgba(10, 25, 50, 0.9) 0%,
+                rgba(0, 15, 35, 0.85) 100%
+        ) !important;
+        box-shadow:
+                -10px 0 30px rgba(0, 0, 0, 0.3),
+                -20px 0 60px rgba(0, 0, 0, 0.2),
+                inset 1px 0 0 rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .mobile-menu-content::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+                to bottom,
+                rgba(28, 166, 248, 0.05) 0%,
+                transparent 20%,
+                transparent 80%,
+                rgba(28, 166, 248, 0.05) 100%
+        );
+        pointer-events: none;
+    }
+
+    /* Хедер мобильного меню */
+    .mobile-menu-header {
+        background: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Кнопка закрытия с эффектом */
+    .mobile-close {
+        background: rgba(255, 255, 255, 0.08) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .mobile-close:hover {
+        background: rgba(255, 255, 255, 0.12) !important;
+        box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+    }
+
+    /* Премиальные ссылки меню */
+    .mobile-nav-link {
+        background: rgba(255, 255, 255, 0.03) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+        box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mobile-nav-link::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+                circle,
+                rgba(28, 166, 248, 0.1) 0%,
+                transparent 70%
+        );
+        transform: translate(-50%, -50%) scale(0);
+        transition: transform 0.3s ease;
+        pointer-events: none;
+    }
+
+    .mobile-nav-link:active::after {
+        transform: translate(-50%, -50%) scale(2);
+    }
+
+    /* Премиальные кнопки действий */
+    .mobile-action-btn {
+        background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.08) 0%,
+                rgba(255, 255, 255, 0.05) 100%
+        ) !important;
+        box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mobile-action-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+        );
+        transition: left 0.6s ease;
+    }
+
+    .mobile-action-btn:hover::before,
+    .mobile-action-btn:active::before {
+        left: 100%;
+    }
+
+    /* Красивые бейджи с glow */
+    .cart-badge,
+    .orders-badge {
+        box-shadow:
+                0 2px 8px rgba(239, 68, 68, 0.4),
+                0 0 20px rgba(239, 68, 68, 0.2) !important;
+        animation: badgePulse 2s ease-in-out infinite;
+    }
+
+    .orders-badge {
+        box-shadow:
+                0 3px 10px rgba(16, 185, 129, 0.4),
+                0 0 20px rgba(16, 185, 129, 0.2) !important;
+    }
+
+    @keyframes badgePulse {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+    }
+
+    /* Улучшенная навигация */
+    .mobile-nav {
+        position: relative;
+        z-index: 1;
+    }
+
+    .mobile-nav-link span {
+        position: relative;
+        z-index: 1;
+    }
+
+    .mobile-nav-arrow {
+        position: relative;
+        z-index: 1;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    /* Секция действий с градиентом */
+    .mobile-actions {
+        background: linear-gradient(
+                to top,
+                rgba(255, 255, 255, 0.05),
+                rgba(255, 255, 255, 0.02)
+        ) !important;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Анимация появления элементов меню */
+    @keyframes mobileSlideInPremium {
+        from {
+            transform: translateX(50px);
+            opacity: 0;
+            filter: blur(5px);
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+            filter: blur(0);
+        }
+    }
+
+    .mobile-menu.active .mobile-nav-link {
+        animation: mobileSlideInPremium 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    .mobile-menu.active .mobile-action-btn {
+        animation: mobileSlideInPremium 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s forwards;
+        opacity: 0;
+    }
+
+    /* Микроанимации */
+    .burger-line {
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+    }
+
+    .mobile-menu-toggle.active .burger-line {
+        box-shadow: 0 0 8px rgba(28, 166, 248, 0.5);
+    }
+
+    /* Улучшенная поддержка старых устройств */
+    @supports not (backdrop-filter: blur(20px)) {
+        .site-header {
+            background: linear-gradient(
+                    135deg,
+                    rgba(0, 15, 35, 0.95) 0%,
+                    rgba(10, 30, 60, 0.95) 50%,
+                    rgba(0, 15, 35, 0.95) 100%
+            ) !important;
+        }
+
+        .mobile-menu-toggle,
+        .cart-btn {
+            background: rgba(255, 255, 255, 0.15) !important;
+        }
+
+        .mobile-menu-content {
+            background: rgba(10, 25, 50, 0.98) !important;
+        }
+
+        .mobile-nav-link,
+        .mobile-action-btn {
+            background: rgba(255, 255, 255, 0.1) !important;
+        }
+    }
+}

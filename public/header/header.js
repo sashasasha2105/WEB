@@ -1,4 +1,4 @@
-// === HEADER JS - Оригинальная версия + мобильные исправления ===
+// === HEADER JS - ИСПРАВЛЕННАЯ ВЕРСИЯ БЕЗ КОНФЛИКТОВ ===
 
 class HeaderManager {
     constructor() {
@@ -39,10 +39,8 @@ class HeaderManager {
     init() {
         console.log('[Header] ✅ Найден хедер:', this.header.id);
 
-        // ТОЛЬКО для мобильных устройств применяем принудительные стили
-        if (this.isMobile) {
-            this.fixMobileHeader();
-        }
+        // НЕ применяем inline стили - пусть работает CSS!
+        // Удалена функция fixMobileHeader()
 
         this.setupScrollHandler();
         this.setupMobileMenu();
@@ -54,30 +52,6 @@ class HeaderManager {
         this.handleScroll();
 
         console.log('[Header] ✅ Инициализирован успешно');
-    }
-
-    fixMobileHeader() {
-        console.log('[Header] 📱 Применение мобильных исправлений...');
-
-        // Принудительные стили ТОЛЬКО для мобильных
-        this.header.style.cssText += `
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100% !important;
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            z-index: 9999 !important;
-            height: 85px !important;
-            background: rgba(0, 26, 58, 0.95) !important;
-        `;
-
-        // Обновляем отступ body для мобильных
-        document.body.style.paddingTop = '90px';
-
-        console.log('[Header] 📱 Мобильные исправления применены');
     }
 
     setupScrollHandler() {
@@ -414,7 +388,8 @@ class HeaderManager {
                 position: styles.position,
                 zIndex: styles.zIndex,
                 visibility: styles.visibility,
-                opacity: styles.opacity
+                opacity: styles.opacity,
+                background: styles.background
             });
         }
 

@@ -16,7 +16,7 @@
 </head>
 <body>
 
-<!-- Премиальная шапка загружается через JS из /header.html -->
+<!-- Премиальная шапка загружается через JS из /header/header.html -->
 <div id="header-container"></div>
 
 <!-- Баннер cookies -->
@@ -216,7 +216,7 @@
 <script src="/js/cart-manager.js"></script>
 <script src="/js/script.js"></script>
 
-<!-- Скрипт загрузки хедера -->
+<!-- Скрипт загрузки хедера - ИСПРАВЛЕН ПУТЬ -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     console.log('[Index] 🚀 Начинаем загрузку премиального хедера');
@@ -235,8 +235,8 @@
     </style>
   `;
 
-    // Загружаем хедер
-    fetch('/header.html')
+    // Загружаем хедер - ИСПРАВЛЕН ПУТЬ!
+    fetch('/header/header.html')
             .then(response => {
               if (!response.ok) {
                 throw new Error(`Ошибка HTTP: ${response.status} ${response.statusText}`);
@@ -247,9 +247,9 @@
               console.log('[Index] ✅ Хедер загружен, вставляем в DOM');
               headerContainer.innerHTML = html;
 
-              // Даем время на инициализацию premium-header.js
+              // Даем время на инициализацию header.js
               setTimeout(() => {
-                console.log('[Index] 🔄 Проверяем инициализацию PremiumHeader');
+                console.log('[Index] 🔄 Проверяем инициализацию HeaderManager');
 
                 if (window.headerManager && window.headerManager.isInitialized) {
                   console.log('[Index] ✅ HeaderManager найден и инициализирован');
