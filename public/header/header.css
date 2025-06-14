@@ -383,9 +383,14 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 26, 58, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  /* ПРЕМИАЛЬНЫЙ GLASSMORPHISM ФОН */
+  background: linear-gradient(135deg,
+  rgba(0, 26, 58, 0.85) 0%,
+  rgba(0, 56, 117, 0.9) 30%,
+  rgba(0, 87, 194, 0.85) 70%,
+  rgba(28, 166, 248, 0.8) 100%);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
 }
 
 .mobile-menu-content {
@@ -395,15 +400,16 @@
   width: 320px;
   max-width: 85vw;
   height: 100%;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  /* ПРЕМИАЛЬНЫЙ GLASSMORPHISM ДИЗАЙН */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
   display: flex;
   flex-direction: column;
   transform: translateX(100%);
-  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: -15px 0 60px rgba(0, 0, 0, 0.15);
 }
 
 .mobile-menu.active .mobile-menu-content {
@@ -414,9 +420,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.1);
+  padding: 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  /* ПРЕМИАЛЬНЫЙ GLASSMORPHISM ЗАГОЛОВОК */
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
 }
 
 .mobile-logo {
@@ -425,60 +434,94 @@
 }
 
 .mobile-logo-image {
-  height: 40px;
+  height: 45px;
   width: auto;
-  max-width: 160px;
+  max-width: 180px;
   object-fit: contain;
   animation: logoFloat 10s ease-in-out infinite;
+  filter: drop-shadow(0 2px 8px rgba(28, 166, 248, 0.3));
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .mobile-close {
-  background: rgba(0, 0, 0, 0.1);
-  border: none;
-  border-radius: 12px;
-  width: 36px;
-  height: 36px;
+  /* ПРЕМИАЛЬНАЯ GLASSMORPHISM КНОПКА */
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1.1rem;
-  color: #001a3a;
-  transition: all 0.3s ease;
+  font-size: 1.2rem;
+  color: white;
+  font-weight: 600;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
 .mobile-close:hover {
-  background: rgba(0, 0, 0, 0.15);
-  transform: rotate(90deg);
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
 }
 
 .mobile-nav {
   flex: 1;
-  padding: 20px;
+  padding: 30px 25px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0px; /* Убираем gap, используем margin в ссылках */
   overflow-y: auto;
+  /* КАСТОМНЫЙ СКРОЛЛБАР В СТИЛЕ GLASSMORPHISM */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.mobile-nav::-webkit-scrollbar {
+  width: 8px;
+}
+
+.mobile-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mobile-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+}
+
+.mobile-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .mobile-nav-link {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 14px 18px;
-  color: #001a3a;
+  gap: 20px;
+  padding: 20px 24px;
+  color: white;
   text-decoration: none;
-  border-radius: 12px;
+  border-radius: 18px;
   font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-  background: rgba(0, 26, 58, 0.05);
-  border: 1px solid rgba(0, 26, 58, 0.1);
+  font-size: 1.05rem;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* ПРЕМИАЛЬНЫЙ GLASSMORPHISM ДИЗАЙН */
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   position: relative;
   overflow: hidden;
-  animation: mobileSlideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  animation: premiumSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   animation-fill-mode: both;
+  margin-bottom: 12px;
 }
 
 .mobile-nav-link::before {
@@ -488,8 +531,8 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(28, 166, 248, 0.1), transparent);
-  transition: left 0.5s ease;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.6s ease;
 }
 
 .mobile-nav-link:active::before {
@@ -497,73 +540,89 @@
 }
 
 .mobile-nav-link:active {
-  background: rgba(28, 166, 248, 0.1);
+  background: rgba(255, 255, 255, 0.2);
   transform: scale(0.98);
-  border-color: rgba(28, 166, 248, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 35px rgba(28, 166, 248, 0.2);
 }
 
 .mobile-nav-arrow {
-  font-size: 1.1rem;
-  color: rgba(0, 26, 58, 0.5);
-  transition: all 0.2s ease;
+  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
 .mobile-nav-link:active .mobile-nav-arrow {
-  transform: translateX(4px);
+  transform: translateX(8px) scale(1.2);
   color: #1ca6f8;
+  filter: drop-shadow(0 0 8px rgba(28, 166, 248, 0.5));
 }
 
 .mobile-actions {
-  padding: 20px;
+  padding: 25px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.1);
+  gap: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  /* ПРЕМИАЛЬНЫЙ GLASSMORPHISM FOOTER */
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
 }
 
 .mobile-action-btn {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 16px;
+  gap: 20px;
+  padding: 20px 24px;
   text-decoration: none;
-  border-radius: 14px;
+  border-radius: 18px;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   overflow: hidden;
+  /* ПРЕМИАЛЬНЫЙ GLASSMORPHISM ДИЗАЙН */
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.profile-mobile {
-  background: transparent;
-  color: rgba(0, 26, 58, 0.9);
-  border: 2px solid rgba(0, 26, 58, 0.2);
+.mobile-action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  transition: left 0.6s ease;
 }
 
-.profile-mobile:active {
-  background: rgba(0, 26, 58, 0.1);
+.mobile-action-btn:active::before {
+  left: 100%;
+}
+
+.mobile-action-btn:active {
+  background: rgba(255, 255, 255, 0.2);
   transform: scale(0.98);
-}
-
-.cart-mobile {
-  background: transparent;
-  color: rgba(0, 26, 58, 0.9);
-  border: 2px solid rgba(0, 26, 58, 0.2);
-  box-shadow: none;
-}
-
-.cart-mobile:active {
-  background: rgba(0, 26, 58, 0.1);
-  transform: scale(0.98);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 15px 40px rgba(28, 166, 248, 0.15);
 }
 
 .mobile-action-btn .cart-icon {
-  width: 20px;
-  height: 20px;
-  filter: brightness(0) saturate(100%) invert(12%) sepia(38%) saturate(1737%) hue-rotate(199deg) brightness(96%) contrast(100%);
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(181deg) brightness(100%) contrast(100%);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.mobile-action-btn:active .cart-icon {
+  transform: scale(1.1) rotate(5deg);
+  filter: brightness(0) saturate(100%) invert(58%) sepia(100%) saturate(1000%) hue-rotate(180deg) brightness(100%) contrast(100%);
 }
 
 .action-content {
@@ -574,14 +633,17 @@
 }
 
 .action-title {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 700;
+  color: white;
+  letter-spacing: -0.02em;
 }
 
 .action-subtitle {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   opacity: 0.8;
   font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .cart-badge.mobile,
@@ -590,18 +652,38 @@
   top: auto;
   right: auto;
   margin: 0;
-  font-size: 0.7rem;
-  padding: 4px 7px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 12px;
+  /* ПРЕМИАЛЬНЫЙ ДИЗАЙН БЕЙДЖЕЙ */
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: premiumBadgeEntry 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.orders-badge.mobile {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
 }
 
 .mobile-action-btn .action-icon {
-  font-size: 1.6rem;
-  transition: transform 0.2s ease;
-  background: linear-gradient(135deg, #87CEEB 0%, #1ca6f8 50%, #001a3a 100%);
+  font-size: 1.8rem;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  background: linear-gradient(135deg, #87CEEB 0%, #1ca6f8 50%, #ffffff 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 0 2px rgba(28, 166, 248, 0.3));
+  filter: drop-shadow(0 2px 8px rgba(28, 166, 248, 0.3));
+}
+
+.mobile-action-btn:active .action-icon {
+  transform: scale(1.15) rotate(-5deg);
+  filter: drop-shadow(0 4px 12px rgba(28, 166, 248, 0.5));
 }
 
 /* === ОТСТУП ДЛЯ BODY === */
@@ -637,13 +719,27 @@ body {
   100% { transform: scale(1) rotate(0deg); opacity: 1; }
 }
 
-@keyframes mobileSlideIn {
+@keyframes premiumSlideIn {
   from {
-    transform: translateX(40px);
+    transform: translateX(50px);
     opacity: 0;
   }
   to {
     transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes premiumBadgeEntry {
+  0% {
+    transform: scale(0) rotate(180deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2) rotate(-10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
     opacity: 1;
   }
 }
@@ -656,11 +752,11 @@ body {
 .nav-link:nth-child(5) { animation-delay: 0.25s; }
 .nav-link:nth-child(6) { animation-delay: 0.3s; }
 
-.mobile-nav-link:nth-child(1) { animation-delay: 0.05s; }
-.mobile-nav-link:nth-child(2) { animation-delay: 0.1s; }
-.mobile-nav-link:nth-child(3) { animation-delay: 0.15s; }
-.mobile-nav-link:nth-child(4) { animation-delay: 0.2s; }
-.mobile-nav-link:nth-child(5) { animation-delay: 0.25s; }
+.mobile-nav-link:nth-child(1) { animation-delay: 0.1s; }
+.mobile-nav-link:nth-child(2) { animation-delay: 0.2s; }
+.mobile-nav-link:nth-child(3) { animation-delay: 0.3s; }
+.mobile-nav-link:nth-child(4) { animation-delay: 0.4s; }
+.mobile-nav-link:nth-child(5) { animation-delay: 0.5s; }
 
 /* === МЕДИА ЗАПРОСЫ === */
 @media (max-width: 1200px) {
@@ -830,7 +926,7 @@ body {
     display: block !important;
   }
 
-  /* === ИСПРАВЛЕННАЯ МОБИЛЬНАЯ КНОПКА МЕНЮ - ЧИСТЫЕ ПОЛОСКИ === */
+  /* === ИСПРАВЛЕННАЯ МОБИЛЬНАЯ КНОПКА МЕНЮ - УВЕЛИЧЕННАЯ === */
   .site-header .mobile-menu-toggle {
     display: flex !important;
 
@@ -841,10 +937,10 @@ body {
     transform: translateY(-50%) !important;
     z-index: 10001 !important;
 
-    /* РАЗМЕРЫ */
-    width: 44px !important;
-    height: 44px !important;
-    padding: 10px !important;
+    /* УВЕЛИЧЕННЫЕ РАЗМЕРЫ - ОДИНАКОВЫЕ С КОРЗИНОЙ */
+    width: 80px !important;
+    height: 80px !important;
+    padding: 20px !important;
 
     /* УБИРАЕМ ВСЕ ФОНОВЫЕ ЭФФЕКТЫ */
     background: transparent !important;
@@ -858,20 +954,22 @@ body {
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 5px !important;
+    gap: 6px !important;
   }
 
   .site-header .mobile-menu-toggle:active {
-    background: transparent !important;
+    background: rgba(255, 255, 255, 0.1) !important; /* ДОБАВЛЕН: легкий фон при нажатии */
     transform: translateY(-50%) scale(0.95) !important;
+    border-radius: 12px !important; /* ДОБАВЛЕН: скругление для красоты */
+    transition: all 0.2s ease !important;
   }
 
-  /* ИСПРАВЛЕННЫЕ МОБИЛЬНЫЕ ЛИНИИ - ПРОСТЫЕ ПОЛОСКИ */
+  /* ИСПРАВЛЕННЫЕ МОБИЛЬНЫЕ ЛИНИИ - УВЕЛИЧЕННЫЕ */
   .site-header .burger-line {
-    width: 24px !important;
-    height: 3px !important;
+    width: 32px !important; /* УВЕЛИЧЕНО: с 24px до 32px */
+    height: 4px !important; /* УВЕЛИЧЕНО: с 3px до 4px */
     background: rgba(255, 255, 255, 0.95) !important;
-    border-radius: 1px !important;
+    border-radius: 2px !important; /* УВЕЛИЧЕНО: с 1px до 2px */
     margin: 0 !important;
     position: relative !important;
     left: 0 !important;
@@ -881,13 +979,13 @@ body {
     display: block !important;
   }
 
-  /* АКТИВНАЯ АНИМАЦИЯ НА МОБИЛЬНОМ */
+  /* АКТИВНАЯ АНИМАЦИЯ НА МОБИЛЬНОМ - СКОРРЕКТИРОВАННАЯ ДЛЯ НОВЫХ РАЗМЕРОВ */
   .site-header .mobile-menu-toggle.active {
     gap: 0 !important;
   }
 
   .site-header .mobile-menu-toggle.active .burger-line:nth-child(1) {
-    transform: rotate(45deg) translate(0, 8px) !important;
+    transform: rotate(45deg) translate(0, 10px) !important; /* УВЕЛИЧЕНО: с 8px до 10px */
     background: #1ca6f8 !important;
   }
 
@@ -897,15 +995,15 @@ body {
   }
 
   .site-header .mobile-menu-toggle.active .burger-line:nth-child(3) {
-    transform: rotate(-45deg) translate(0, -8px) !important;
+    transform: rotate(-45deg) translate(0, -10px) !important; /* УВЕЛИЧЕНО: с -8px до -10px */
     background: #1ca6f8 !important;
   }
 
-  /* === КОРЗИНА - МАКСИМАЛЬНО К ПРАВОМУ КРАЮ === */
+  /* === ИСПРАВЛЕННАЯ КОРЗИНА - НЕ УЕЗЖАЕТ ЗА ГРАНИЦЫ ЭКРАНА === */
   .site-header .header-actions {
-    /* ПОЗИЦИОНИРОВАНИЕ */
+    /* ПОЗИЦИОНИРОВАНИЕ - ИСПРАВЛЕНО! */
     position: absolute !important;
-    right: -35px !important; /* ИСПРАВЛЕНО: еще больше вправо с -20px до -35px */
+    right: 8px !important; /* ИСПРАВЛЕНО: с -35px на 8px - теперь не уезжает за экран */
     top: 50% !important;
     transform: translateY(-50%) !important;
     z-index: 10001 !important;
@@ -916,15 +1014,19 @@ body {
     flex-shrink: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
+
+    /* ДОПОЛНИТЕЛЬНАЯ ЗАЩИТА ОТ ВЫЕЗДА ЗА ЭКРАН */
+    max-width: calc(100vw - 100px) !important; /* Учитываем ширину бургера */
+    overflow: visible !important;
   }
 
   .site-header .header-actions .cart-btn {
     /* РАЗМЕРЫ КНОПКИ */
     padding: 8px !important;
-    min-width: 96px !important; /* УВЕЛИЧЕНО: 64 * 1.5 = 96 */
-    min-height: 96px !important; /* УВЕЛИЧЕНО: 64 * 1.5 = 96 */
-    width: 96px !important;
-    height: 96px !important;
+    min-width: 80px !important; /* ИСПРАВЛЕНО: уменьшили с 96px до 80px */
+    min-height: 80px !important; /* ИСПРАВЛЕНО: уменьшили с 96px до 80px */
+    width: 80px !important;
+    height: 80px !important;
 
     /* УБИРАЕМ ВСЕ ФОНОВЫЕ ЭФФЕКТЫ */
     background: transparent !important;
@@ -945,33 +1047,36 @@ body {
 
   .site-header .header-actions .cart-btn:active {
     transform: scale(0.95) !important;
+    background: rgba(255, 255, 255, 0.1) !important; /* ДОБАВЛЕН: фон при нажатии как у меню */
+    border-radius: 12px !important; /* ДОБАВЛЕН: скругление для единообразия */
+    transition: all 0.2s ease !important;
   }
 
   .site-header .header-actions .cart-icon {
-    width: 54px !important; /* УВЕЛИЧЕНО: 36 * 1.5 = 54 */
-    height: 54px !important; /* УВЕЛИЧЕНО: 36 * 1.5 = 54 */
+    width: 48px !important; /* ИСПРАВЛЕНО: уменьшили с 54px до 48px */
+    height: 48px !important; /* ИСПРАВЛЕНО: уменьшили с 54px до 48px */
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(181deg) brightness(100%) contrast(100%) !important;
   }
 
-  /* === ИСПРАВЛЕННЫЙ БЕЙДЖ КОРЗИНЫ - КРУГЛЫЙ И ПРАВИЛЬНО ПОЗИЦИОНИРОВАННЫЙ === */
+  /* === ИСПРАВЛЕННЫЙ СЧЕТЧИК КОРЗИНЫ - КРУГЛЫЙ И ВИДИМЫЙ === */
   .site-header .header-actions .cart-badge {
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
     box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4) !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
 
-    /* ИСПРАВЛЕНО: КОМПЕНСИРУЕМ СДВИГ КОРЗИНЫ */
+    /* ИСПРАВЛЕНО: ПРАВИЛЬНОЕ ПОЗИЦИОНИРОВАНИЕ */
     position: absolute !important;
-    top: 25px !important; /* ОСТАВЛЯЕМ КАК БЫЛО */
-    right: 20px !important; /* ИСПРАВЛЕНО: сдвинули влево чтобы компенсировать сдвиг корзины */
+    top: 18px !important; /* ИСПРАВЛЕНО: оптимальная позиция для видимости */
+    right: 12px !important; /* ИСПРАВЛЕНО: правильная позиция относительно корзины */
 
     /* ИСПРАВЛЕНО: КРУГЛЫЙ И ПРАВИЛЬНОГО РАЗМЕРА */
-    width: 16px !important; /* ИСПРАВЛЕНО: оптимальный размер для мобильного */
-    height: 16px !important; /* ИСПРАВЛЕНО: оптимальный размер для мобильного */
-    min-width: 16px !important;
-    border-radius: 50% !important; /* ИСПРАВЛЕНО: круглый как на десктопе */
+    width: 18px !important; /* ИСПРАВЛЕНО: оптимальный размер */
+    height: 18px !important; /* ИСПРАВЛЕНО: оптимальный размер */
+    min-width: 18px !important;
+    border-radius: 50% !important; /* ИСПРАВЛЕНО: круглый */
 
     /* РАЗМЕР ШРИФТА */
-    font-size: 0.6rem !important; /* ИСПРАВЛЕНО: подходящий размер шрифта */
+    font-size: 0.65rem !important; /* ИСПРАВЛЕНО: подходящий размер шрифта */
     font-weight: 800 !important;
     padding: 0 !important;
 
@@ -981,6 +1086,10 @@ body {
     justify-content: center !important;
     color: white !important;
     line-height: 1 !important;
+
+    /* ДОПОЛНИТЕЛЬНАЯ ЗАЩИТА ОТ ОБРЕЗАНИЯ */
+    overflow: visible !important;
+    white-space: nowrap !important;
   }
 
   /* === МОБИЛЬНОЕ МЕНЮ === */
@@ -994,29 +1103,47 @@ body {
     padding-top: 95px !important;
   }
 
-  /* === МОБИЛЬНОЕ МЕНЮ С ПРОЗРАЧНОСТЬЮ === */
+  /* === МОБИЛЬНОЕ МЕНЮ С ПРЕМИАЛЬНЫМ GLASSMORPHISM === */
   .mobile-menu-backdrop {
-    background: rgba(0, 26, 58, 0.8) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
+    background: linear-gradient(135deg,
+    rgba(0, 26, 58, 0.85) 0%,
+    rgba(0, 56, 117, 0.9) 30%,
+    rgba(0, 87, 194, 0.85) 70%,
+    rgba(28, 166, 248, 0.8) 100%) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
   }
 
   .mobile-menu-content {
-    background: rgba(255, 255, 255, 0.95) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(25px) !important;
+    -webkit-backdrop-filter: blur(25px) !important;
+    box-shadow: -15px 0 60px rgba(0, 0, 0, 0.15) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.3) !important;
   }
 
-  /* === FALLBACK ДЛЯ СТАРЫХ БРАУЗЕРОВ === */
+  /* === ПРЕМИАЛЬНЫЙ FALLBACK ДЛЯ СТАРЫХ БРАУЗЕРОВ === */
   @supports not (backdrop-filter: blur(12px)) {
     .site-header {
-      background: rgba(255, 255, 255, 0.9) !important;
+      background: linear-gradient(135deg, #001a3a 0%, #003875 50%, #1ca6f8 100%) !important;
     }
 
-    .mobile-menu-toggle,
-    .cart-btn {
-      background: rgba(255, 255, 255, 0.15) !important;
+    .mobile-menu-backdrop {
+      background: linear-gradient(135deg, #001a3a 0%, #003875 50%, #0057c2 100%) !important;
+    }
+
+    .mobile-menu-content {
+      background: rgba(255, 255, 255, 0.95) !important;
+    }
+
+    .mobile-nav-link {
+      background: rgba(255, 255, 255, 0.9) !important;
+      color: #001a3a !important;
+    }
+
+    .mobile-action-btn {
+      background: rgba(255, 255, 255, 0.9) !important;
+      color: #001a3a !important;
     }
   }
 }
@@ -1028,8 +1155,8 @@ body {
   }
 
   .header-container {
-    padding: 0 12px !important;
-    gap: 8px !important;
+    padding: 0 6px !important; /* ИСПРАВЛЕНО: уменьшили отступы */
+    gap: 6px !important;
   }
 
   /* === ЛОГОТИП - СОХРАНЯЕМ ПРАВИЛЬНОЕ ЦЕНТРИРОВАНИЕ === */
@@ -1051,55 +1178,57 @@ body {
   }
 
   .logo-image {
-    height: 140px !important;
-    max-width: 350px !important;
+    height: 120px !important; /* ИСПРАВЛЕНО: уменьшили для малых экранов */
+    max-width: 300px !important; /* ИСПРАВЛЕНО: уменьшили для малых экранов */
   }
 
-  /* === ИСПРАВЛЕННАЯ МОБИЛЬНАЯ КНОПКА НА МАЛЕНЬКИХ ЭКРАНАХ === */
+  /* === ИСПРАВЛЕННАЯ МОБИЛЬНАЯ КНОПКА НА МАЛЕНЬКИХ ЭКРАНАХ - ОДИНАКОВОГО РАЗМЕРА === */
   .site-header .mobile-menu-toggle {
-    width: 40px !important;
-    height: 40px !important;
-    padding: 8px !important;
-    left: 12px !important;
+    width: 70px !important; /* УВЕЛИЧЕНО: одинаковый размер с корзиной */
+    height: 70px !important;
+    padding: 17px !important; /* СКОРРЕКТИРОВАНО: пропорционально */
+    left: 6px !important; /* ИСПРАВЛЕНО: ближе к краю */
   }
 
-  /* === КОРЗИНА НА МАЛЕНЬКИХ ЭКРАНАХ === */
-  .header-actions {
-    margin-right: 4px !important;
+  /* === ИСПРАВЛЕННАЯ КОРЗИНА НА МАЛЕНЬКИХ ЭКРАНАХ === */
+  .site-header .header-actions {
+    right: 6px !important; /* ИСПРАВЛЕНО: ближе к краю но не за экран */
   }
 
-  .cart-btn {
+  .site-header .header-actions .cart-btn {
     width: 70px !important;
     height: 70px !important;
-    padding: 10px !important;
+    min-width: 70px !important;
+    min-height: 70px !important;
+    padding: 8px !important;
   }
 
-  .cart-icon {
-    width: 32px !important;
-    height: 32px !important;
+  .site-header .header-actions .cart-icon {
+    width: 40px !important; /* ИСПРАВЛЕНО: уменьшили */
+    height: 40px !important; /* ИСПРАВЛЕНО: уменьшили */
   }
 
-  /* === ИСПРАВЛЕННЫЙ БЕЙДЖ НА МАЛЕНЬКИХ ЭКРАНАХ === */
-  .cart-badge {
+  /* === ИСПРАВЛЕННЫЙ СЧЕТЧИК НА МАЛЕНЬКИХ ЭКРАНАХ === */
+  .site-header .header-actions .cart-badge {
     /* ИСПРАВЛЕНО: ПРАВИЛЬНАЯ ПОЗИЦИЯ ДЛЯ МАЛЕНЬКИХ ЭКРАНОВ */
-    top: 20px !important; /* ИСПРАВЛЕНО: немного выше для маленьких экранов */
-    right: 4px !important; /* ИСПРАВЛЕНО: немного правее */
+    top: 16px !important; /* ИСПРАВЛЕНО: немного выше для маленьких экранов */
+    right: 10px !important; /* ИСПРАВЛЕНО: корректная позиция */
 
     /* РАЗМЕР ДЛЯ МАЛЕНЬКИХ ЭКРАНОВ */
-    width: 14px !important; /* ИСПРАВЛЕНО: немного меньше для очень маленьких экранов */
-    height: 14px !important; /* ИСПРАВЛЕНО: немного меньше для очень маленьких экранов */
-    min-width: 14px !important;
+    width: 16px !important; /* ИСПРАВЛЕНО: немного меньше для очень маленьких экранов */
+    height: 16px !important; /* ИСПРАВЛЕНО: немного меньше для очень маленьких экранов */
+    min-width: 16px !important;
     border-radius: 50% !important; /* КОНСИСТЕНТНО */
 
-    font-size: 0.55rem !important; /* ИСПРАВЛЕНО: меньший шрифт для маленьких экранов */
+    font-size: 0.6rem !important; /* ИСПРАВЛЕНО: меньший шрифт для маленьких экранов */
     font-weight: 800 !important;
     padding: 0 !important;
   }
 
-  /* === ИСПРАВЛЕННЫЕ ЛИНИИ БУРГЕРА НА МАЛЕНЬКИХ ЭКРАНАХ === */
+  /* === ИСПРАВЛЕННЫЕ ЛИНИИ БУРГЕРА НА МАЛЕНЬКИХ ЭКРАНАХ - УВЕЛИЧЕННЫЕ === */
   .site-header .burger-line {
-    width: 20px !important;
-    height: 2.5px !important;
+    width: 28px !important; /* УВЕЛИЧЕНО: с 20px до 28px */
+    height: 3.5px !important; /* УВЕЛИЧЕНО: с 2.5px до 3.5px */
   }
 
   .mobile-menu-content {
@@ -1109,5 +1238,53 @@ body {
 
   body {
     padding-top: 80px !important;
+  }
+}
+
+/* === ДОПОЛНИТЕЛЬНАЯ ЗАЩИТА ОТ ВЫЕЗДА ЗА ЭКРАН === */
+@media (max-width: 320px) {
+  /* ЭКСТРА МАЛЕНЬКИЕ ЭКРАНЫ - ОДИНАКОВЫЕ РАЗМЕРЫ КНОПОК */
+  .site-header .header-actions {
+    right: 4px !important;
+  }
+
+  .site-header .header-actions .cart-btn {
+    width: 60px !important;
+    height: 60px !important;
+    min-width: 60px !important;
+    min-height: 60px !important;
+  }
+
+  .site-header .header-actions .cart-icon {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .site-header .header-actions .cart-badge {
+    top: 14px !important;
+    right: 8px !important;
+    width: 14px !important;
+    height: 14px !important;
+    min-width: 14px !important;
+    font-size: 0.55rem !important;
+  }
+
+  /* МОБИЛЬНАЯ КНОПКА МЕНЮ - ТАКОГО ЖЕ РАЗМЕРА КАК КОРЗИНА */
+  .site-header .mobile-menu-toggle {
+    width: 60px !important;
+    height: 60px !important;
+    padding: 15px !important;
+    left: 4px !important;
+  }
+
+  /* ЛИНИИ БУРГЕРА ДЛЯ ЭКСТРА МАЛЕНЬКИХ ЭКРАНОВ */
+  .site-header .burger-line {
+    width: 24px !important;
+    height: 3px !important;
+  }
+
+  .logo-image {
+    height: 100px !important;
+    max-width: 250px !important;
   }
 }

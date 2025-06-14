@@ -1,4 +1,4 @@
-// === ИСПРАВЛЕННЫЙ HEADER JS БЕЗ ПРИНУДИТЕЛЬНОЙ СТИЛИЗАЦИИ ===
+// === ИСПРАВЛЕННЫЙ HEADER JS С СКРЫТИЕМ ЛОГОТИПА ===
 
 class HeaderManager {
     constructor() {
@@ -157,6 +157,13 @@ class HeaderManager {
 
         console.log(`[Header] 📱 Переключение меню: ${this.isMenuOpen ? 'открыть' : 'закрыть'}`);
 
+        // ИСПРАВЛЕНО: Скрываем/показываем логотип
+        if (this.isMenuOpen) {
+            document.body.classList.add('mobile-menu-open');
+        } else {
+            document.body.classList.remove('mobile-menu-open');
+        }
+
         // Анимация кнопки бургер
         if (this.mobileToggle) {
             this.mobileToggle.classList.toggle('active', this.isMenuOpen);
@@ -186,6 +193,9 @@ class HeaderManager {
         console.log('[Header] 📱 Закрытие мобильного меню');
 
         this.isMenuOpen = false;
+
+        // ИСПРАВЛЕНО: Показываем логотип обратно
+        document.body.classList.remove('mobile-menu-open');
 
         if (this.mobileToggle) {
             this.mobileToggle.classList.remove('active');
@@ -277,7 +287,7 @@ class HeaderManager {
         }
     }
 
-    // ИСПРАВЛЕННАЯ ФУНКЦИЯ setBadge - УБРАНА ПРИНУДИТЕЛЬНАЯ СТИЛИЗАЦИЯ
+    // ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ФУНКЦИЯ setBadge - УБРАНА ВСЯ ПРИНУДИТЕЛЬНАЯ СТИЛИЗАЦИЯ
     setBadge(badges, count) {
         Object.values(badges).forEach(badge => {
             if (badge) {
@@ -286,13 +296,16 @@ class HeaderManager {
                 if (count > 0) {
                     badge.style.display = 'flex';
 
-                    // Анимация появления
+                    // ТОЛЬКО анимация появления - БЕЗ изменения размеров и позиций
                     badge.style.animation = 'none';
                     badge.offsetHeight; // Принудительный reflow
                     badge.style.animation = 'badgeEntry 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
                 } else {
                     badge.style.display = 'none';
                 }
+
+                // ИСПРАВЛЕНО: НЕ ТРОГАЕМ НИКАКИЕ ПОЗИЦИИ И РАЗМЕРЫ!
+                // Убираем все принудительные стили, которые перезаписывают CSS
             }
         });
     }
@@ -352,10 +365,10 @@ class HeaderManager {
         // Обновление при фокусе на страницу
         window.addEventListener('focus', debouncedUpdate, { passive: true });
 
-        // УБРАНА ПРИНУДИТЕЛЬНАЯ СТИЛИЗАЦИЯ ПРИ RESIZE
+        // ИСПРАВЛЕНО: УБРАНА ВСЯ ПРИНУДИТЕЛЬНАЯ СТИЛИЗАЦИЯ ПРИ RESIZE
         window.addEventListener('resize', () => {
             this.isMobile = window.innerWidth <= 768;
-            // Просто обновляем бейджи без принудительной стилизации
+            // ТОЛЬКО обновляем бейджи без любых стилей
             setTimeout(() => this.updateBadges(), 100);
         });
 
@@ -446,6 +459,63 @@ class HeaderManager {
                 background: toggleStyles.background,
                 border: toggleStyles.border,
                 zIndex: toggleStyles.zIndex
+            });
+        }
+
+        // ИСПРАВЛЕНО: Диагностика корзины БЕЗ ИЗМЕНЕНИЯ СТИЛЕЙ
+        const cartActions = document.querySelector('.site-header .header-actions');
+        const cartBtn = document.querySelector('.site-header .header-actions .cart-btn');
+        const cartBadge = document.querySelector('.site-header .header-actions .cart-badge');
+
+        if (cartActions) {
+            const actionsRect = cartActions.getBoundingClientRect();
+            const actionsStyles = window.getComputedStyle(cartActions);
+
+            console.log('- Корзина контейнер:', {
+                width: actionsRect.width,
+                height: actionsRect.height,
+                left: actionsRect.left,
+                right: actionsRect.right,
+                top: actionsRect.top,
+                position: actionsStyles.position,
+                rightStyle: actionsStyles.right,
+                visible: actionsRect.width > 0 && actionsRect.height > 0,
+                outsideScreen: actionsRect.right > window.innerWidth || actionsRect.left < 0
+            });
+        }
+
+        if (cartBtn) {
+            const btnRect = cartBtn.getBoundingClientRect();
+            const btnStyles = window.getComputedStyle(cartBtn);
+
+            console.log('- Корзина кнопка:', {
+                width: btnRect.width,
+                height: btnRect.height,
+                left: btnRect.left,
+                right: btnRect.right,
+                visible: btnRect.width > 0 && btnRect.height > 0,
+                outsideScreen: btnRect.right > window.innerWidth || btnRect.left < 0
+            });
+        }
+
+        if (cartBadge) {
+            const badgeRect = cartBadge.getBoundingClientRect();
+            const badgeStyles = window.getComputedStyle(cartBadge);
+
+            console.log('- Счетчик корзины:', {
+                width: badgeRect.width,
+                height: badgeRect.height,
+                left: badgeRect.left,
+                right: badgeRect.right,
+                top: badgeRect.top,
+                bottom: badgeRect.bottom,
+                position: badgeStyles.position,
+                topStyle: badgeStyles.top,
+                rightStyle: badgeStyles.right,
+                borderRadius: badgeStyles.borderRadius,
+                display: badgeStyles.display,
+                visible: badgeRect.width > 0 && badgeRect.height > 0,
+                outsideScreen: badgeRect.right > window.innerWidth || badgeRect.left < 0 || badgeRect.top < 0
             });
         }
 
@@ -603,6 +673,44 @@ window.debugMobileHeader = function() {
         console.error('[Header] ❌ HeaderInstance не найден или не инициализирован');
         console.log('Попытка принудительной инициализации...');
         initHeader();
+    }
+};
+
+// ИСПРАВЛЕНО: Функция исправления мобильной корзины БЕЗ ПРИНУДИТЕЛЬНОЙ СТИЛИЗАЦИИ
+window.fixMobileCart = function() {
+    console.log('[Header] 🔧 === ИСПРАВЛЕНИЕ МОБИЛЬНОЙ КОРЗИНЫ ===');
+
+    // ТОЛЬКО диагностика, БЕЗ изменения стилей
+    const cartActions = document.querySelector('.site-header .header-actions');
+    const cartBadge = document.querySelector('.site-header .header-actions .cart-badge');
+
+    if (cartActions) {
+        const rect = cartActions.getBoundingClientRect();
+        console.log('Корзина:', {
+            left: rect.left,
+            right: rect.right,
+            width: rect.width,
+            outsideScreen: rect.right > window.innerWidth
+        });
+
+        if (rect.right > window.innerWidth) {
+            console.error('❌ Корзина выходит за границы экрана!');
+            console.log('💡 Проверьте CSS правила для @media (max-width: 768px)');
+        } else {
+            console.log('✅ Корзина в пределах экрана');
+        }
+    }
+
+    if (cartBadge) {
+        const badgeRect = cartBadge.getBoundingClientRect();
+        const badgeStyles = window.getComputedStyle(cartBadge);
+        console.log('Счетчик:', {
+            top: badgeRect.top,
+            width: badgeRect.width,
+            height: badgeRect.height,
+            borderRadius: badgeStyles.borderRadius,
+            isRound: badgeStyles.borderRadius === '50%' || parseFloat(badgeStyles.borderRadius) >= Math.min(badgeRect.width, badgeRect.height) / 2
+        });
     }
 };
 
