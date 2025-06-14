@@ -1,6 +1,6 @@
-/* === HEADER CSS - Объединенная оптимизированная версия === */
+/* === HEADER CSS - Красивая iOS совместимая версия === */
 
-/* === ОСНОВНЫЕ СТИЛИ === */
+/* === ОСНОВНЫЕ СТИЛИ (ОРИГИНАЛЬНЫЕ) === */
 .site-header {
   position: fixed;
   top: 0;
@@ -261,8 +261,6 @@
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
   transition: left 0.6s ease;
 }
-
-
 
 /* === МОБИЛЬНОЕ МЕНЮ === */
 .mobile-menu-toggle {
@@ -697,86 +695,174 @@ body {
   }
 }
 
+/* === КРАСИВЫЕ МОБИЛЬНЫЕ СТИЛИ БЕЗ BACKDROP-FILTER === */
 @media (max-width: 768px) {
+  /* ПРИНУДИТЕЛЬНОЕ ОТОБРАЖЕНИЕ + КРАСОТА */
   .site-header {
-    height: 85px;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 80px !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 9999 !important;
+
+    /* КРАСИВЫЙ ГРАДИЕНТНЫЙ ФОН БЕЗ BACKDROP-FILTER */
+    background: linear-gradient(135deg,
+    rgba(28, 166, 248, 0.95) 0%,
+    rgba(0, 26, 58, 0.98) 50%,
+    rgba(0, 15, 35, 0.98) 100%) !important;
+
+    /* Красивая тень */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+
+    /* Плавные переходы */
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .site-header.scrolled {
-    height: 75px;
+    height: 70px !important;
+    background: linear-gradient(135deg,
+    rgba(28, 166, 248, 0.98) 0%,
+    rgba(0, 26, 58, 0.99) 50%,
+    rgba(0, 15, 35, 0.99) 100%) !important;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4) !important;
   }
 
   .header-container {
-    padding: 0 8px;
+    padding: 0 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
   }
 
   .header-nav {
-    display: none;
+    display: none !important;
   }
 
   .mobile-menu-toggle {
-    display: block;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    z-index: 10001 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .mobile-menu-toggle:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    transform: scale(1.05);
   }
 
   .mobile-menu {
-    display: block;
+    display: block !important;
+    z-index: 9998 !important;
   }
 
   .logo-image {
-    height: 130px;
+    height: 120px !important;
+    filter: drop-shadow(0 2px 10px rgba(255, 255, 255, 0.3)) !important;
   }
 
   .mobile-logo-image {
-    height: 105px;
+    height: 90px !important;
   }
 
   .cart-btn {
-    padding: 6px;
-    min-width: 42px;
-    min-height: 42px;
+    padding: 8px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .cart-btn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    transform: translateY(-2px) scale(1.05) !important;
   }
 
   .cart-icon {
-    width: 34px;
-    height: 34px;
+    width: 32px !important;
+    height: 32px !important;
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(181deg) brightness(100%) contrast(100%) !important;
+  }
+
+  .cart-badge {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%) !important;
+    box-shadow: 0 3px 10px rgba(255, 107, 107, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
   }
 
   .header-actions {
-    gap: 8px;
+    gap: 10px !important;
+    display: flex !important;
   }
 
   body {
-    padding-top: 90px;
+    padding-top: 85px !important;
+  }
+
+  /* Исправление для логотипа на мобильном */
+  .header-logo {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+
+  /* Мобильное меню с красивым фоном */
+  .mobile-menu-backdrop {
+    background: rgba(0, 26, 58, 0.9) !important;
+  }
+
+  .mobile-menu-content {
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: -15px 0 40px rgba(0, 0, 0, 0.2) !important;
   }
 }
 
 @media (max-width: 480px) {
+  .site-header {
+    height: 75px !important;
+  }
+
   .header-container {
-    padding: 0 5px;
+    padding: 0 8px !important;
   }
 
   .logo-image {
-    height: 105px;
-    max-width: 550px;
+    height: 100px !important;
+    max-width: 300px !important;
   }
 
   .mobile-logo-image {
-    height: 85px;
+    height: 75px !important;
   }
 
   .cart-btn {
-    padding: 5px;
-    min-width: 38px;
-    min-height: 38px;
+    padding: 6px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
   }
 
   .cart-icon {
-    width: 32px;
-    height: 32px;
+    width: 28px !important;
+    height: 28px !important;
   }
 
   .mobile-menu-content {
-    width: 100%;
-    max-width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  body {
+    padding-top: 80px !important;
   }
 }

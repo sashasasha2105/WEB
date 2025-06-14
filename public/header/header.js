@@ -1,4 +1,4 @@
-// === HEADER JS - Объединенная оптимизированная версия ===
+// === HEADER JS - Оригинальная версия + мобильные исправления ===
 
 class HeaderManager {
     constructor() {
@@ -25,7 +25,8 @@ class HeaderManager {
         // Состояние
         this.lastScroll = 0;
         this.isMenuOpen = false;
-        this.scrollThreshold = 30; // Обновлен порог для нового размера хедера
+        this.scrollThreshold = 30;
+        this.isMobile = window.innerWidth <= 768;
 
         if (!this.header) {
             console.error('[Header] ❌ Хедер не найден!');
@@ -38,6 +39,11 @@ class HeaderManager {
     init() {
         console.log('[Header] ✅ Найден хедер:', this.header.id);
 
+        // ТОЛЬКО для мобильных устройств применяем принудительные стили
+        if (this.isMobile) {
+            this.fixMobileHeader();
+        }
+
         this.setupScrollHandler();
         this.setupMobileMenu();
         this.setupSmoothScroll();
@@ -48,6 +54,30 @@ class HeaderManager {
         this.handleScroll();
 
         console.log('[Header] ✅ Инициализирован успешно');
+    }
+
+    fixMobileHeader() {
+        console.log('[Header] 📱 Применение мобильных исправлений...');
+
+        // Принудительные стили ТОЛЬКО для мобильных
+        this.header.style.cssText += `
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 9999 !important;
+            height: 85px !important;
+            background: rgba(0, 26, 58, 0.95) !important;
+        `;
+
+        // Обновляем отступ body для мобильных
+        document.body.style.paddingTop = '90px';
+
+        console.log('[Header] 📱 Мобильные исправления применены');
     }
 
     setupScrollHandler() {
@@ -87,15 +117,27 @@ class HeaderManager {
 
         // Открытие/закрытие меню
         this.mobileToggle.addEventListener('click', this.toggleMobileMenu.bind(this));
+        this.mobileToggle.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            this.toggleMobileMenu();
+        });
 
         // Закрытие меню кнопкой X
         if (this.mobileClose) {
             this.mobileClose.addEventListener('click', this.closeMobileMenu.bind(this));
+            this.mobileClose.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                this.closeMobileMenu();
+            });
         }
 
         // Закрытие по бэкдропу
         if (this.mobileBackdrop) {
             this.mobileBackdrop.addEventListener('click', this.closeMobileMenu.bind(this));
+            this.mobileBackdrop.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                this.closeMobileMenu();
+            });
         }
 
         // Закрытие по клику на ссылку
@@ -110,6 +152,7 @@ class HeaderManager {
             const mobileContent = this.mobileMenu.querySelector('.mobile-menu-content');
             if (mobileContent) {
                 mobileContent.addEventListener('click', (e) => e.stopPropagation());
+                mobileContent.addEventListener('touchend', (e) => e.stopPropagation());
             }
         }
 
@@ -341,6 +384,43 @@ class HeaderManager {
     get currentOrdersCount() {
         return this.getOrdersCount();
     }
+
+    // Мобильная диагностика
+    diagnoseMobile() {
+        if (!this.isMobile) {
+            console.log('[Header] 💻 Это десктопное устройство');
+            return;
+        }
+
+        console.log('[Header] 📱 МОБИЛЬНАЯ ДИАГНОСТИКА:');
+        console.log('- Ширина экрана:', window.innerWidth);
+        console.log('- Высота экрана:', window.innerHeight);
+        console.log('- User Agent:', navigator.userAgent);
+        console.log('- Хедер найден:', !!this.header);
+
+        if (this.header) {
+            const rect = this.header.getBoundingClientRect();
+            const styles = window.getComputedStyle(this.header);
+
+            console.log('- Размеры хедера:', {
+                width: rect.width,
+                height: rect.height,
+                top: rect.top,
+                visible: rect.width > 0 && rect.height > 0
+            });
+
+            console.log('- CSS стили:', {
+                display: styles.display,
+                position: styles.position,
+                zIndex: styles.zIndex,
+                visibility: styles.visibility,
+                opacity: styles.opacity
+            });
+        }
+
+        console.log('- Мобильная кнопка:', !!this.mobileToggle);
+        console.log('- Мобильное меню:', !!this.mobileMenu);
+    }
 }
 
 // === ИНИЦИАЛИЗАЦИЯ ===
@@ -367,6 +447,11 @@ function initHeader() {
             // Первичное обновление бейджей
             setTimeout(() => headerInstance.forceUpdateBadges(), 300);
 
+            // Мобильная диагностика
+            if (window.innerWidth <= 768) {
+                setTimeout(() => headerInstance.diagnoseMobile(), 500);
+            }
+
             return headerInstance;
         } else {
             console.error('[Header] ❌ Не удалось инициализировать');
@@ -387,6 +472,32 @@ if (document.readyState === 'loading') {
     });
 } else {
     setTimeout(initHeader, 100);
+}
+
+// === ДОПОЛНИТЕЛЬНАЯ МОБИЛЬНАЯ ИНИЦИАЛИЗАЦИЯ ===
+
+// Для мобильных устройств - дополнительные попытки инициализации
+if (window.innerWidth <= 768) {
+    console.log('[Header] 📱 Мобильное устройство - дополнительные проверки...');
+
+    let mobileRetries = 0;
+    const maxMobileRetries = 5;
+
+    const mobileInit = setInterval(() => {
+        if (!headerInstance || !headerInstance.isInitialized) {
+            mobileRetries++;
+            console.log(`[Header] 📱 Мобильная попытка ${mobileRetries}/${maxMobileRetries}`);
+            initHeader();
+
+            if (mobileRetries >= maxMobileRetries) {
+                clearInterval(mobileInit);
+                console.error('[Header] 📱 Не удалось инициализировать на мобильном после', maxMobileRetries, 'попыток');
+            }
+        } else {
+            clearInterval(mobileInit);
+            console.log('[Header] 📱 Мобильная инициализация успешна');
+        }
+    }, 300);
 }
 
 // === ИНТЕГРАЦИЯ С CART-MANAGER ===
@@ -433,6 +544,21 @@ window.updateHeaderBadges = function() {
         console.log('[Header] 🔄 Принудительное обновление выполнено');
     } else {
         console.warn('[Header] ⚠️ Header не инициализирован');
+    }
+};
+
+// Мобильная диагностика
+window.debugMobileHeader = function() {
+    console.log('[Header] 🔍 === МОБИЛЬНАЯ ДИАГНОСТИКА ===');
+    console.log('Размер экрана:', window.innerWidth + 'x' + window.innerHeight);
+    console.log('User Agent:', navigator.userAgent);
+
+    if (headerInstance) {
+        headerInstance.diagnoseMobile();
+    } else {
+        console.error('[Header] ❌ HeaderInstance не найден');
+        console.log('Попытка принудительной инициализации...');
+        initHeader();
     }
 };
 
