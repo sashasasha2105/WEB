@@ -715,7 +715,7 @@ body {
   }
 }
 
-/* === ИСПРАВЛЕННАЯ МОБИЛЬНАЯ ВЕРСИЯ - РАДИКАЛЬНЫЕ ИЗМЕНЕНИЯ === */
+/* === ИСПРАВЛЕННАЯ МОБИЛЬНАЯ ВЕРСИЯ === */
 @media (max-width: 768px) {
 
   /* === ПОЛНОСТЬЮ ПРОЗРАЧНЫЙ ХЕДЕР === */
@@ -756,11 +756,11 @@ body {
 
   /* === КОНТЕЙНЕР === */
   .site-header .header-container {
-    padding: 0 8px !important; /* УМЕНЬШЕНО: больше места для корзины */
+    padding: 0 8px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 8px !important; /* УМЕНЬШЕНО */
+    gap: 8px !important;
     width: 100% !important;
     height: 100% !important;
     position: relative !important;
@@ -773,7 +773,6 @@ body {
 
   /* === ЛОГОТИП - РАДИКАЛЬНОЕ ЦЕНТРИРОВАНИЕ === */
   .site-header .header-logo {
-    /* УБИРАЕМ ВСЕ FLEX НАСТРОЙКИ */
     display: block !important;
     flex: none !important;
     order: unset !important;
@@ -873,7 +872,7 @@ body {
   .site-header .header-actions {
     /* ПОЗИЦИОНИРОВАНИЕ */
     position: absolute !important;
-    right: 4px !important; /* ОЧЕНЬ БЛИЗКО К КРАЮ */
+    right: -35px !important; /* ИСПРАВЛЕНО: еще больше вправо с -20px до -35px */
     top: 50% !important;
     transform: translateY(-50%) !important;
     z-index: 10001 !important;
@@ -888,11 +887,11 @@ body {
 
   .site-header .header-actions .cart-btn {
     /* РАЗМЕРЫ КНОПКИ */
-    padding: 8px !important; /* ЕЩЕ МЕНЬШЕ */
-    min-width: 64px !important; /* УМЕНЬШЕНО ЕЩЕ БОЛЬШЕ */
-    min-height: 64px !important; /* УМЕНЬШЕНО ЕЩЕ БОЛЬШЕ */
-    width: 64px !important;
-    height: 64px !important;
+    padding: 8px !important;
+    min-width: 96px !important; /* УВЕЛИЧЕНО: 64 * 1.5 = 96 */
+    min-height: 96px !important; /* УВЕЛИЧЕНО: 64 * 1.5 = 96 */
+    width: 96px !important;
+    height: 96px !important;
 
     /* УБИРАЕМ ВСЕ ФОНОВЫЕ ЭФФЕКТЫ */
     background: transparent !important;
@@ -916,26 +915,34 @@ body {
   }
 
   .site-header .header-actions .cart-icon {
-    width: 36px !important; /* ЕЩЕ МЕНЬШЕ */
-    height: 36px !important; /* ЕЩЕ МЕНЬШЕ */
+    width: 54px !important; /* УВЕЛИЧЕНО: 36 * 1.5 = 54 */
+    height: 54px !important; /* УВЕЛИЧЕНО: 36 * 1.5 = 54 */
     filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(181deg) brightness(100%) contrast(100%) !important;
   }
 
-  /* === БЕЙДЖ КОРЗИНЫ - МАКСИМАЛЬНО МАЛЕНЬКИЙ И БЛИЗКИЙ === */
+  /* === ИСПРАВЛЕННЫЙ БЕЙДЖ КОРЗИНЫ - КРУГЛЫЙ И ПРАВИЛЬНО ПОЗИЦИОНИРОВАННЫЙ === */
   .site-header .header-actions .cart-badge {
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-    box-shadow: 0 1px 4px rgba(239, 68, 68, 0.5) !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
 
+    /* ИСПРАВЛЕНО: КОМПЕНСИРУЕМ СДВИГ КОРЗИНЫ */
     position: absolute !important;
-    top: 0px !important; /* ПРАКТИЧЕСКИ НА ИКОНКЕ */
-    right: 0px !important; /* ПРАКТИЧЕСКИ НА ИКОНКЕ */
-    font-size: 0.55rem !important; /* ОЧЕНЬ МАЛЕНЬКИЙ */
+    top: 25px !important; /* ОСТАВЛЯЕМ КАК БЫЛО */
+    right: 20px !important; /* ИСПРАВЛЕНО: сдвинули влево чтобы компенсировать сдвиг корзины */
+
+    /* ИСПРАВЛЕНО: КРУГЛЫЙ И ПРАВИЛЬНОГО РАЗМЕРА */
+    width: 16px !important; /* ИСПРАВЛЕНО: оптимальный размер для мобильного */
+    height: 16px !important; /* ИСПРАВЛЕНО: оптимальный размер для мобильного */
+    min-width: 16px !important;
+    border-radius: 50% !important; /* ИСПРАВЛЕНО: круглый как на десктопе */
+
+    /* РАЗМЕР ШРИФТА */
+    font-size: 0.6rem !important; /* ИСПРАВЛЕНО: подходящий размер шрифта */
     font-weight: 800 !important;
-    padding: 1px 3px !important; /* МИНИМАЛЬНЫЙ ОТСТУП */
-    border-radius: 4px !important; /* МАЛЕНЬКИЙ РАДИУС */
-    min-width: 12px !important; /* ОЧЕНЬ МАЛЕНЬКИЙ */
-    height: 12px !important; /* ОЧЕНЬ МАЛЕНЬКИЙ */
+    padding: 0 !important;
+
+    /* ПОЗИЦИОНИРОВАНИЕ СОДЕРЖИМОГО */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -951,7 +958,7 @@ body {
 
   /* === ОТСТУП ДЛЯ BODY === */
   body {
-    padding-top: 95px !important; /* ИСПРАВЛЕНО: учитываем хедер 90px + отступ */
+    padding-top: 95px !important;
   }
 
   /* === МОБИЛЬНОЕ МЕНЮ С ПРОЗРАЧНОСТЬЮ === */
@@ -984,7 +991,7 @@ body {
 /* === ОЧЕНЬ МАЛЕНЬКИЕ ЭКРАНЫ === */
 @media (max-width: 480px) {
   .site-header {
-    height: 75px !important; /* ИСПРАВЛЕНО: пропорционально логотипу 60px */
+    height: 75px !important;
   }
 
   .header-container {
@@ -994,7 +1001,6 @@ body {
 
   /* === ЛОГОТИП - СОХРАНЯЕМ ПРАВИЛЬНОЕ ЦЕНТРИРОВАНИЕ === */
   .header-logo {
-    /* УБИРАЕМ КОНФЛИКТУЮЩИЕ СТИЛИ */
     display: block !important;
     flex: none !important;
     order: unset !important;
@@ -1024,33 +1030,34 @@ body {
 
   /* === КОРЗИНА НА МАЛЕНЬКИХ ЭКРАНАХ === */
   .header-actions {
-    margin-right: 4px !important; /* УМЕНЬШЕНО: от 8px до 4px */
+    margin-right: 4px !important;
   }
 
   .cart-btn {
     width: 70px !important;
     height: 70px !important;
-    padding: 10px !important; /* УМЕНЬШЕНО: от 12px до 10px */
+    padding: 10px !important;
   }
 
   .cart-icon {
-    width: 32px !important; /* УМЕНЬШЕНО: от 35px до 32px */
-    height: 32px !important; /* УМЕНЬШЕНО: от 35px до 32px */
+    width: 32px !important;
+    height: 32px !important;
   }
 
-  /* === БЕЙДЖ НА МАЛЕНЬКИХ ЭКРАНАХ - КРУГЛЫЙ === */
+  /* === ИСПРАВЛЕННЫЙ БЕЙДЖ НА МАЛЕНЬКИХ ЭКРАНАХ === */
   .cart-badge {
-    top: -6px !important; /* ИСПРАВЛЕНО: правильное позиционирование */
-    right: -6px !important; /* ИСПРАВЛЕНО: правильное позиционирование */
+    /* ИСПРАВЛЕНО: ПРАВИЛЬНАЯ ПОЗИЦИЯ ДЛЯ МАЛЕНЬКИХ ЭКРАНОВ */
+    top: 20px !important; /* ИСПРАВЛЕНО: немного выше для маленьких экранов */
+    right: 4px !important; /* ИСПРАВЛЕНО: немного правее */
 
-    /* КРУГЛЫЙ СЧЕТЧИК ДЛЯ МАЛЕНЬКИХ ЭКРАНОВ */
-    width: 20px !important;
-    height: 20px !important;
-    min-width: 20px !important;
-    border-radius: 50% !important;
+    /* РАЗМЕР ДЛЯ МАЛЕНЬКИХ ЭКРАНОВ */
+    width: 14px !important; /* ИСПРАВЛЕНО: немного меньше для очень маленьких экранов */
+    height: 14px !important; /* ИСПРАВЛЕНО: немного меньше для очень маленьких экранов */
+    min-width: 14px !important;
+    border-radius: 50% !important; /* КОНСИСТЕНТНО */
 
-    font-size: 0.55rem !important;
-    font-weight: 900 !important;
+    font-size: 0.55rem !important; /* ИСПРАВЛЕНО: меньший шрифт для маленьких экранов */
+    font-weight: 800 !important;
     padding: 0 !important;
   }
 
@@ -1065,6 +1072,6 @@ body {
   }
 
   body {
-    padding-top: 80px !important; /* ИСПРАВЛЕНО: учитываем хедер 75px + отступ */
+    padding-top: 80px !important;
   }
 }
