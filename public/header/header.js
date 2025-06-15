@@ -4,8 +4,26 @@ class HeaderManager {
     constructor() {
         console.log('[Header] 🚀 Инициализация HeaderManager...');
 
-        // Основные элементы
-        this.header = document.getElementById('siteHeader');
+        // ИЩЕМ ХЕДЕР РАЗНЫМИ СПОСОБАМИ
+        this.header = document.getElementById('siteHeader') ||
+            document.querySelector('.site-header') ||
+            document.querySelector('header') ||
+            document.querySelector('[id*="header"]');
+
+        if (!this.header) {
+            console.error('[Header] ❌ Хедер не найден! Доступные элементы:');
+            console.log('- По ID siteHeader:', !!document.getElementById('siteHeader'));
+            console.log('- По классу .site-header:', !!document.querySelector('.site-header'));
+            console.log('- По тегу header:', !!document.querySelector('header'));
+            console.log('- Все header элементы:', document.querySelectorAll('header').length);
+
+            // Попытаемся найти через некоторое время
+            setTimeout(() => {
+                this.findHeader();
+            }, 500);
+            return;
+        }
+
         this.mobileToggle = document.querySelector('.mobile-menu-toggle');
         this.mobileMenu = document.getElementById('mobileMenu');
         this.mobileBackdrop = document.querySelector('.mobile-menu-backdrop');
@@ -24,16 +42,40 @@ class HeaderManager {
         // Состояние
         this.lastScroll = 0;
         this.isMenuOpen = false;
-        this.scrollThreshold = 30;
+        this.scrollThreshold = 20; // Уменьшил порог для быстрого срабатывания
         this.isMobile = window.innerWidth <= 768;
         this.isInitialized = false;
 
-        if (!this.header) {
-            console.error('[Header] ❌ Хедер не найден!');
-            return;
-        }
-
         this.init();
+    }
+
+    findHeader() {
+        console.log('[Header] 🔍 Повторный поиск хедера...');
+
+        this.header = document.getElementById('siteHeader') ||
+            document.querySelector('.site-header') ||
+            document.querySelector('header');
+
+        if (this.header) {
+            console.log('[Header] ✅ Хедер найден при повторном поиске:', this.header.tagName, this.header.id, this.header.className);
+            this.init();
+        } else {
+            console.error('[Header] ❌ Хедер все еще не найден!');
+
+            // Показываем все возможные элементы для отладки
+            const allHeaders = document.querySelectorAll('header');
+            const allWithSiteHeader = document.querySelectorAll('[class*="header"]');
+
+            console.log('Найденные header элементы:', allHeaders.length);
+            allHeaders.forEach((h, i) => {
+                console.log(`  ${i + 1}. Tag: ${h.tagName}, ID: "${h.id}", Class: "${h.className}"`);
+            });
+
+            console.log('Элементы с "header" в классе:', allWithSiteHeader.length);
+            allWithSiteHeader.forEach((h, i) => {
+                console.log(`  ${i + 1}. Tag: ${h.tagName}, ID: "${h.id}", Class: "${h.className}"`);
+            });
+        }
     }
 
     init() {
@@ -46,6 +88,10 @@ class HeaderManager {
         this.updateBadges();
         this.setupCartManager();
 
+        // КРИТИЧЕСКИ ВАЖНО: Экспорт в глобальную область СРАЗУ
+        window.headerManager = this;
+        window.HeaderManager = HeaderManager;
+
         // Инициальная проверка скролла
         this.handleScroll();
 
@@ -53,6 +99,9 @@ class HeaderManager {
         this.isInitialized = true;
 
         console.log('[Header] ✅ Инициализирован успешно');
+        console.log('[Header] 🎨 Glassmorphism эффект будет появляться при скролле больше', this.scrollThreshold, 'px');
+        console.log('[Header] 🔧 Для тестирования используйте: testGlassmorphism() или window.scrollTo(0, 50)');
+        console.log('[Header] 🌟 window.headerManager доступен:', !!window.headerManager);
     }
 
     setupScrollHandler() {
@@ -63,10 +112,17 @@ class HeaderManager {
                 requestAnimationFrame(() => {
                     const currentScroll = window.pageYOffset;
 
+                    // Плавное появление glassmorphism эффекта
                     if (currentScroll > this.scrollThreshold) {
-                        this.header.classList.add('scrolled');
+                        if (!this.header.classList.contains('scrolled')) {
+                            this.header.classList.add('scrolled');
+                            console.log('[Header] 🎨 Glassmorphism активирован при скролле:', currentScroll + 'px');
+                        }
                     } else {
-                        this.header.classList.remove('scrolled');
+                        if (this.header.classList.contains('scrolled')) {
+                            this.header.classList.remove('scrolled');
+                            console.log('[Header] 🎨 Glassmorphism деактивирован при скролле:', currentScroll + 'px');
+                        }
                     }
 
                     this.lastScroll = currentScroll;
@@ -76,8 +132,28 @@ class HeaderManager {
             }
         };
 
+        // Привязываем scroll handler НЕМЕДЛЕННО
         window.addEventListener('scroll', this.handleScroll, { passive: true });
-        console.log('[Header] 📜 Scroll handler настроен');
+
+        // Дополнительная привязка через setTimeout для гарантии
+        setTimeout(() => {
+            window.addEventListener('scroll', this.handleScroll, { passive: true });
+            console.log('[Header] 🔄 Дополнительная привязка scroll handler');
+        }, 100);
+
+        console.log('[Header] 📜 Scroll handler настроен с порогом', this.scrollThreshold, 'px');
+
+        // ТЕСТИРУЕМ СРАЗУ
+        setTimeout(() => {
+            console.log('[Header] 🧪 Тестовый скролл для проверки...');
+            const testScroll = this.scrollThreshold + 10;
+            window.scrollTo(0, testScroll);
+
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+                console.log('[Header] ✅ Тестовый скролл завершен');
+            }, 1000);
+        }, 2000);
     }
 
     setupMobileMenu() {
@@ -400,6 +476,28 @@ class HeaderManager {
         return this.getOrdersCount();
     }
 
+    // НОВЫЕ МЕТОДЫ ДЛЯ УПРАВЛЕНИЯ GLASSMORPHISM
+    forceGlassmorphism(enable = true) {
+        if (enable) {
+            this.header.classList.add('scrolled');
+            console.log('[Header] 🎨 Glassmorphism принудительно включен');
+        } else {
+            this.header.classList.remove('scrolled');
+            console.log('[Header] 🎨 Glassmorphism принудительно выключен');
+        }
+    }
+
+    isGlassmorphismActive() {
+        return this.header.classList.contains('scrolled');
+    }
+
+    setScrollThreshold(threshold) {
+        this.scrollThreshold = threshold;
+        console.log('[Header] 🎨 Новый порог для glassmorphism:', threshold, 'px');
+        // Немедленно проверяем текущее состояние
+        this.handleScroll();
+    }
+
     // ИСПРАВЛЕНО: Мобильная диагностика БЕЗ ЛОГОТИПА В МЕНЮ
     diagnoseMobile() {
         if (!this.isMobile) {
@@ -412,6 +510,9 @@ class HeaderManager {
         console.log('- Высота экрана:', window.innerHeight);
         console.log('- User Agent:', navigator.userAgent);
         console.log('- Хедер найден:', !!this.header);
+        console.log('- Glassmorphism активен:', this.isGlassmorphismActive());
+        console.log('- Scroll threshold:', this.scrollThreshold, 'px');
+        console.log('- Текущий scroll:', window.pageYOffset, 'px');
 
         if (this.header) {
             const rect = this.header.getBoundingClientRect();
@@ -429,7 +530,9 @@ class HeaderManager {
                 position: styles.position,
                 zIndex: styles.zIndex,
                 visibility: styles.visibility,
-                opacity: styles.opacity
+                opacity: styles.opacity,
+                background: styles.background,
+                backdropFilter: styles.backdropFilter || styles.webkitBackdropFilter
             });
         }
 
@@ -944,6 +1047,139 @@ window.forceEnableScroll = function() {
     console.log('🎉 Принудительное включение скролла завершено!');
 };
 
+// === ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ SCROLL HANDLER ===
+window.fixScrollHandler = function() {
+    console.log('[Header] 🔧 === ПРИНУДИТЕЛЬНОЕ ИСПРАВЛЕНИЕ SCROLL HANDLER ===');
+
+    if (!window.headerManager) {
+        console.error('[Header] ❌ HeaderManager не найден! Попытка создания...');
+        waitForHeaderElement().then(() => {
+            initHeader();
+            setTimeout(() => {
+                if (window.headerManager) {
+                    console.log('[Header] ✅ HeaderManager создан, повторяем исправление...');
+                    window.fixScrollHandler();
+                }
+            }, 500);
+        });
+        return;
+    }
+
+    const header = document.getElementById('siteHeader') ||
+        document.querySelector('.site-header') ||
+        document.querySelector('header');
+
+    if (!header) {
+        console.error('[Header] ❌ Header элемент не найден!');
+        console.log('Поиск всех возможных элементов...');
+        window.diagnoseGlassmorphism();
+        return;
+    }
+
+    console.log('[Header] ✅ Header найден:', header.tagName, header.id);
+
+    // Удаляем старые обработчики
+    if (window.headerManager.handleScroll) {
+        window.removeEventListener('scroll', window.headerManager.handleScroll);
+    }
+
+    // Создаем новый обработчик
+    const scrollHandler = function() {
+        const currentScroll = window.pageYOffset;
+        const threshold = window.headerManager.scrollThreshold || 20;
+
+        console.log(`[Header] 📜 Scroll: ${currentScroll}px (порог: ${threshold}px)`);
+
+        if (currentScroll > threshold) {
+            if (!header.classList.contains('scrolled')) {
+                header.classList.add('scrolled');
+                console.log('[Header] 🎨 ✅ Glassmorphism ВКЛЮЧЕН');
+            }
+        } else {
+            if (header.classList.contains('scrolled')) {
+                header.classList.remove('scrolled');
+                console.log('[Header] 🎨 ❌ Glassmorphism ВЫКЛЮЧЕН');
+            }
+        }
+    };
+
+    // Привязываем новый обработчик
+    window.addEventListener('scroll', scrollHandler, { passive: true });
+    window.headerManager.handleScroll = scrollHandler;
+
+    console.log('[Header] ✅ Новый scroll handler установлен');
+
+    // Тестируем
+    setTimeout(() => {
+        console.log('[Header] 🧪 Тестируем scroll handler...');
+        window.scrollTo(0, 50);
+
+        setTimeout(() => {
+            console.log('[Header] 🔄 Возвращаем скролл в начало');
+            window.scrollTo(0, 0);
+        }, 1500);
+    }, 1000);
+};
+
+// === БЫСТРАЯ ДИАГНОСТИКА GLASSMORPHISM ===
+window.diagnoseGlassmorphism = function() {
+    console.log('[Header] 🔍 === ДИАГНОСТИКА GLASSMORPHISM ===');
+
+    const header = document.getElementById('siteHeader') ||
+        document.querySelector('.site-header') ||
+        document.querySelector('header');
+
+    if (!header) {
+        console.error('❌ Header не найден!');
+        console.log('Доступные элементы:');
+        console.log('- Headers:', document.querySelectorAll('header').length);
+        console.log('- .site-header:', document.querySelectorAll('.site-header').length);
+        console.log('- #siteHeader:', !!document.getElementById('siteHeader'));
+        return;
+    }
+
+    const currentScroll = window.pageYOffset;
+    const hasScrolledClass = header.classList.contains('scrolled');
+    const computedStyles = window.getComputedStyle(header);
+
+    console.log('📊 Текущее состояние:');
+    console.log('- Header найден:', header.tagName, `#${header.id}`, `.${header.className}`);
+    console.log('- Scroll position:', currentScroll + 'px');
+    console.log('- Класс .scrolled:', hasScrolledClass);
+    console.log('- Background:', computedStyles.background);
+    console.log('- Backdrop-filter:', computedStyles.backdropFilter || computedStyles.webkitBackdropFilter || 'не поддерживается');
+    console.log('- Box-shadow:', computedStyles.boxShadow);
+    console.log('- Border-bottom:', computedStyles.borderBottom);
+
+    // Проверяем поддержку backdrop-filter
+    const supportsBackdropFilter = CSS.supports('backdrop-filter', 'blur(1px)') || CSS.supports('-webkit-backdrop-filter', 'blur(1px)');
+    console.log('- Поддержка backdrop-filter:', supportsBackdropFilter);
+
+    if (window.headerManager) {
+        console.log('- Scroll threshold:', window.headerManager.scrollThreshold + 'px');
+        console.log('- Should be active:', currentScroll > window.headerManager.scrollThreshold);
+    }
+
+    // Попробуем принудительно активировать
+    console.log('\n🧪 Принудительная активация...');
+    header.classList.add('scrolled');
+
+    setTimeout(() => {
+        const newStyles = window.getComputedStyle(header);
+        console.log('✅ После активации:');
+        console.log('- Background:', newStyles.background);
+        console.log('- Backdrop-filter:', newStyles.backdropFilter || newStyles.webkitBackdropFilter || 'не поддерживается');
+        console.log('- Box-shadow:', newStyles.boxShadow !== 'none' ? '✅ Есть' : '❌ Нет');
+        console.log('- Border-bottom:', newStyles.borderBottom);
+
+        // Возвращаем к нормальному состоянию
+        if (currentScroll <= (window.headerManager?.scrollThreshold || 20)) {
+            header.classList.remove('scrolled');
+            console.log('🔄 Вернули к нормальному состоянию');
+        }
+    }, 1000);
+};
+
 // === БЫСТРОЕ ИСПРАВЛЕНИЕ ===
 window.quickFixScroll = function() {
     console.log('[Mobile] ⚡ === БЫСТРОЕ ИСПРАВЛЕНИЕ СКРОЛЛА ===');
@@ -963,6 +1199,47 @@ window.quickFixScroll = function() {
             window.testMobileScroll();
         }, 500);
     }, 200);
+};
+
+// === ФУНКЦИИ ДЛЯ ТЕСТИРОВАНИЯ GLASSMORPHISM ===
+window.testGlassmorphism = function() {
+    console.log('[Header] 🎨 === ТЕСТ GLASSMORPHISM ЭФФЕКТА ===');
+
+    if (!window.headerManager) {
+        console.error('[Header] ❌ HeaderManager не найден');
+        return;
+    }
+
+    console.log('🔍 Текущее состояние:');
+    console.log('- Scroll position:', window.pageYOffset);
+    console.log('- Scroll threshold:', window.headerManager.scrollThreshold);
+    console.log('- Glassmorphism активен:', window.headerManager.isGlassmorphismActive());
+
+    console.log('\n🎭 Принудительно включаем glassmorphism на 3 секунды...');
+    window.headerManager.forceGlassmorphism(true);
+
+    setTimeout(() => {
+        console.log('🎭 Принудительно выключаем glassmorphism на 2 секунды...');
+        window.headerManager.forceGlassmorphism(false);
+
+        setTimeout(() => {
+            console.log('🔄 Возвращаем автоматический режим');
+            window.headerManager.handleScroll(); // Проверяем текущий скролл
+            console.log('✅ Тест завершен. Glassmorphism работает по скроллу');
+        }, 2000);
+    }, 3000);
+};
+
+window.setGlassmorphismThreshold = function(pixels = 50) {
+    console.log(`[Header] 🎨 Устанавливаем новый порог: ${pixels}px`);
+
+    if (!window.headerManager) {
+        console.error('[Header] ❌ HeaderManager не найден');
+        return;
+    }
+
+    window.headerManager.setScrollThreshold(pixels);
+    console.log('✅ Новый порог установлен. Попробуйте прокрутить страницу');
 };
 
 // === АВТОМАТИЧЕСКОЕ ВКЛЮЧЕНИЕ НА МОБИЛЬНЫХ ===
@@ -1009,12 +1286,28 @@ function initHeader() {
         console.log('[Header] 🚀 Начинаем инициализацию...');
         headerInstance = new HeaderManager();
 
-        if (headerInstance.isInitialized) {
-            // Экспорт в глобальную область
+        if (headerInstance && headerInstance.isInitialized) {
+            // КРИТИЧЕСКИ ВАЖНО: Экспорт в глобальную область
             window.headerManager = headerInstance;
             window.HeaderManager = HeaderManager;
 
             console.log('[Header] ✅ Успешно инициализирован');
+            console.log('[Header] 🎨 Доступные команды для glassmorphism:');
+            console.log('  - diagnoseGlassmorphism() - быстрая диагностика');
+            console.log('  - testGlassmorphism() - тест эффекта');
+            console.log('  - setGlassmorphismThreshold(pixels) - изменить порог');
+            console.log('  - headerManager.forceGlassmorphism(true/false) - принудительно вкл/выкл');
+            console.log('  - window.scrollTo(0, 50) - прокрутить для тестирования');
+
+            // ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА
+            setTimeout(() => {
+                if (window.headerManager) {
+                    console.log('[Header] ✅ window.headerManager подтвержден');
+                } else {
+                    console.error('[Header] ❌ window.headerManager НЕ СОЗДАН!');
+                    window.headerManager = headerInstance;
+                }
+            }, 100);
 
             // Первичное обновление бейджей
             setTimeout(() => headerInstance.forceUpdateBadges(), 300);
@@ -1040,14 +1333,61 @@ function initHeader() {
     }
 }
 
-// === АВТОИНИЦИАЛИЗАЦИЯ ===
+// === АВТОИНИЦИАЛИЗАЦИЯ С ПРОВЕРКОЙ DOM ===
+
+function waitForHeaderElement() {
+    return new Promise((resolve) => {
+        // Проверяем, есть ли элемент сейчас
+        const header = document.getElementById('siteHeader') ||
+            document.querySelector('.site-header') ||
+            document.querySelector('header');
+
+        if (header) {
+            console.log('[Header] ✅ Элемент найден сразу:', header.tagName, header.id);
+            resolve(header);
+            return;
+        }
+
+        // Если нет - ждем через MutationObserver
+        console.log('[Header] ⏳ Ждем появления элемента в DOM...');
+
+        const observer = new MutationObserver((mutations) => {
+            const header = document.getElementById('siteHeader') ||
+                document.querySelector('.site-header') ||
+                document.querySelector('header');
+
+            if (header) {
+                console.log('[Header] ✅ Элемент появился в DOM:', header.tagName, header.id);
+                observer.disconnect();
+                resolve(header);
+            }
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+
+        // Таймаут на случай если элемент так и не появится
+        setTimeout(() => {
+            observer.disconnect();
+            console.error('[Header] ❌ Элемент не найден за 10 секунд!');
+            resolve(null);
+        }, 10000);
+    });
+}
 
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+        console.log('[Header] 📄 DOM загружен, ищем header...');
+        await waitForHeaderElement();
         setTimeout(initHeader, 50);
     });
 } else {
-    setTimeout(initHeader, 100);
+    console.log('[Header] 📄 DOM уже загружен, ищем header...');
+    waitForHeaderElement().then(() => {
+        setTimeout(initHeader, 100);
+    });
 }
 
 // === ДОПОЛНИТЕЛЬНАЯ МОБИЛЬНАЯ ИНИЦИАЛИЗАЦИЯ ===
@@ -1132,6 +1472,7 @@ window.fixAllMobileIssues = function() {
     console.log('[Header] 🔧 === ИСПРАВЛЕНИЕ ВСЕХ МОБИЛЬНЫХ ПРОБЛЕМ ===');
     window.fixMenuDuplication();
     window.fixMobileCart();
+    window.fixScrollHandler();
     window.quickFixScroll();
     window.debugMobileHeader();
 };
@@ -1236,11 +1577,17 @@ if (window.innerWidth <= 768) {
         setTimeout(() => {
             console.log('[Header] 🚀 Автоматическая диагностика через 3 секунды...');
             console.log('[Header] 💡 Доступные команды:');
+            console.log('  - diagnoseGlassmorphism() - полная диагностика эффекта');
+            console.log('  - fixScrollHandler() - исправление scroll handler');
+            console.log('  - testGlassmorphism() - тест glassmorphism эффекта');
+            console.log('  - setGlassmorphismThreshold(50) - изменить порог скролла');
+            console.log('  - window.scrollTo(0, 50) - прокрутить для тестирования');
             console.log('  - fullMobileTest() - полное тестирование');
             console.log('  - debugMobileScroll() - диагностика скролла');
             console.log('  - forceEnableScroll() - принудительное включение скролла');
             console.log('  - quickFixScroll() - быстрое исправление с тестом');
             console.log('  - fixAllMobileIssues() - исправление всех проблем');
+            console.log('[Header] 🌟 Для быстрой проверки: diagnoseGlassmorphism()');
         }, 1000);
     });
 }
@@ -1251,4 +1598,46 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = { HeaderManager, initHeader };
 }
 
-console.log('[Header] 🎉 Обновленный скрипт с исправлениями скролла загружен и готов к работе!');
+console.log('[Header] 🎉 Улучшенный скрипт с настоящим glassmorphism эффектом загружен!');
+console.log('[Header] 🔍 Система автоматического поиска header элемента активна');
+console.log('[Header] 🎨 При скролле >20px появится стеклянный эффект с размытием фона');
+
+// === АВТОМАТИЧЕСКАЯ ПРОВЕРКА ЧЕРЕЗ 3 СЕКУНДЫ ===
+setTimeout(() => {
+    if (!window.headerManager) {
+        console.warn('[Header] ⚠️ Критическая ошибка: HeaderManager не создан! Принудительное исправление...');
+        waitForHeaderElement().then(() => {
+            initHeader();
+            setTimeout(() => {
+                if (window.headerManager) {
+                    window.fixScrollHandler();
+                }
+            }, 500);
+        });
+    } else {
+        console.log('[Header] ✅ HeaderManager работает нормально');
+
+        // Проверяем работает ли scroll handler
+        setTimeout(() => {
+            const originalScroll = window.pageYOffset;
+            window.scrollTo(0, 30);
+
+            setTimeout(() => {
+                const header = document.getElementById('siteHeader') ||
+                    document.querySelector('.site-header') ||
+                    document.querySelector('header');
+
+                if (header && !header.classList.contains('scrolled')) {
+                    console.warn('[Header] ⚠️ Scroll handler не сработал! Исправляем...');
+                    window.fixScrollHandler();
+                } else {
+                    console.log('[Header] ✅ Scroll handler работает корректно');
+                    console.log('[Header] 🎨 Glassmorphism эффект активен');
+                }
+
+                // Возвращаем исходную позицию
+                window.scrollTo(0, originalScroll);
+            }, 200);
+        }, 1000);
+    }
+}, 3000);
