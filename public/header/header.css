@@ -1,4 +1,4 @@
-/* === ИСПРАВЛЕННЫЙ HEADER CSS БЕЗ ОШИБОК === */
+/* === ИСПРАВЛЕННЫЙ HEADER CSS С УЛУЧШЕННОЙ СОВМЕСТИМОСТЬЮ === */
 
 /* === ОСНОВНЫЕ СТИЛИ === */
 .site-header {
@@ -7,9 +7,15 @@
   left: 0;
   right: 0;
   height: 100px;
+  /* Fallback для старых браузеров */
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
+  background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+  /* Backdrop filter с fallback */
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 1000;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -19,9 +25,13 @@
 
 .site-header.scrolled {
   height: 85px;
+  /* Fallback для старых браузеров */
   background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(20px);
+  background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.15) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.15) 100%);
+
   -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
   border-bottom-color: rgba(255, 255, 255, 0.15);
 }
@@ -92,8 +102,8 @@
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   overflow: hidden;
-  background: transparent;
-  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0);
+  border: 1px solid rgba(255, 255, 255, 0);
   animation: fadeInUp 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   animation-fill-mode: both;
   white-space: nowrap;
@@ -106,7 +116,9 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+  /* Совместимый градиент */
+  background: -webkit-linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.12) 50%, rgba(255, 255, 255, 0) 100%);
   transition: left 0.6s ease;
 }
 
@@ -138,10 +150,14 @@
 
 .profile-icon {
   font-size: 1.8rem;
+  /* Fallback для старых браузеров */
+  color: #1ca6f8;
+  background: -webkit-linear-gradient(135deg, #87CEEB 0%, #1ca6f8 50%, #001a3a 100%);
   background: linear-gradient(135deg, #87CEEB 0%, #1ca6f8 50%, #001a3a 100%);
   -webkit-background-clip: text;
   background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0);
+  text-fill-color: rgba(255, 255, 255, 0);
   transition: all 0.3s ease;
   filter: drop-shadow(0 0 2px rgba(28, 166, 248, 0.3));
   isolation: isolate;
@@ -156,6 +172,9 @@
   position: absolute;
   top: -6px;
   right: -6px;
+  /* Совместимый градиент */
+  background: #10b981;
+  background: -webkit-linear-gradient(135deg, #10b981 0%, #059669 100%);
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   font-size: 0.65rem;
@@ -232,6 +251,9 @@
   position: absolute;
   top: -6px;
   right: -6px;
+  /* Совместимый градиент */
+  background: #ef4444;
+  background: -webkit-linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
   font-size: 0.65rem;
@@ -251,6 +273,8 @@
 }
 
 .orders-badge {
+  background: #10b981;
+  background: -webkit-linear-gradient(135deg, #10b981 0%, #059669 100%);
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
   width: 20px;
@@ -315,13 +339,13 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg,
-  rgba(0, 26, 58, 0.85) 0%,
-  rgba(0, 56, 117, 0.9) 30%,
-  rgba(0, 87, 194, 0.85) 70%,
-  rgba(28, 166, 248, 0.8) 100%);
-  backdrop-filter: blur(25px);
+  /* Fallback для старых браузеров */
+  background: #001a3a;
+  /* Совместимые градиенты */
+  background: -webkit-linear-gradient(135deg, rgba(0, 26, 58, 0.85) 0%, rgba(0, 56, 117, 0.9) 30%, rgba(0, 87, 194, 0.85) 70%, rgba(28, 166, 248, 0.8) 100%);
+  background: linear-gradient(135deg, rgba(0, 26, 58, 0.85) 0%, rgba(0, 56, 117, 0.9) 30%, rgba(0, 87, 194, 0.85) 70%, rgba(28, 166, 248, 0.8) 100%);
   -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(25px);
 }
 
 .mobile-menu-content {
@@ -331,9 +355,11 @@
   width: 320px;
   max-width: 85vw;
   height: 100%;
+  /* Fallback для старых браузеров */
+  background: rgba(255, 255, 255, 0.9);
   background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(25px);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
   display: flex;
   flex-direction: column;
@@ -355,7 +381,7 @@
   gap: 0;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0);
 }
 
 .mobile-nav::-webkit-scrollbar {
@@ -363,15 +389,15 @@
 }
 
 .mobile-nav::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(255, 255, 255, 0);
   border-radius: 10px;
 }
 
 .mobile-nav::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 10px;
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -401,8 +427,8 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
   animation: premiumSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   animation-fill-mode: both;
@@ -416,7 +442,8 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background: -webkit-linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0) 100%);
   transition: left 0.6s ease;
 }
 
@@ -452,13 +479,13 @@
   gap: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
   max-height: 300px;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0);
   -webkit-overflow-scrolling: touch;
 }
 
@@ -467,15 +494,15 @@
 }
 
 .mobile-actions::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(255, 255, 255, 0);
   border-radius: 8px;
 }
 
 .mobile-actions::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 8px;
-  backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -497,8 +524,8 @@
   background: rgba(255, 255, 255, 0.12);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
@@ -509,7 +536,8 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+  background: -webkit-linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0) 100%);
   transition: left 0.6s ease;
 }
 
@@ -566,16 +594,21 @@
   font-weight: 800;
   padding: 6px 10px;
   border-radius: 12px;
+  /* Совместимый градиент */
+  background: #ef4444;
+  background: -webkit-linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
-  backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   animation: premiumBadgeEntry 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .orders-badge.mobile {
+  background: #10b981;
+  background: -webkit-linear-gradient(135deg, #10b981 0%, #059669 100%);
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
 }
@@ -583,10 +616,14 @@
 .mobile-action-btn .action-icon {
   font-size: 1.8rem;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Fallback для старых браузеров */
+  color: #1ca6f8;
+  background: -webkit-linear-gradient(135deg, #87CEEB 0%, #1ca6f8 50%, #ffffff 100%);
   background: linear-gradient(135deg, #87CEEB 0%, #1ca6f8 50%, #ffffff 100%);
   -webkit-background-clip: text;
   background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0);
+  text-fill-color: rgba(255, 255, 255, 0);
   filter: drop-shadow(0 2px 8px rgba(28, 166, 248, 0.3));
 }
 
@@ -766,9 +803,12 @@ body {
     visibility: visible;
     opacity: 1;
     z-index: 9998;
+    /* Упрощенный фон для мобильных */
     background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(12px);
+    background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%);
     -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
     box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -777,8 +817,10 @@ body {
   .site-header.scrolled {
     height: 85px;
     background: rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(20px);
+    background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.15) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.15) 100%);
     -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
     box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
     border-bottom-color: rgba(255, 255, 255, 0.15);
   }
@@ -798,14 +840,15 @@ body {
     display: none;
   }
 
+  /* === ИСПРАВЛЕННЫЕ СТИЛИ ЛОГОТИПА === */
   .site-header .header-logo {
     display: block;
     flex: none;
-    position: fixed;
+    position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 100000;
+    z-index: 10000;
     width: auto;
     height: auto;
     margin: 0;
@@ -826,21 +869,22 @@ body {
     display: block;
   }
 
+  /* === ИСПРАВЛЕННЫЕ СТИЛИ КНОПКИ МЕНЮ === */
   .site-header .mobile-menu-toggle {
     display: flex;
     position: absolute;
     left: 8px;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 9997;
+    z-index: 10001;
     width: 80px;
     height: 80px;
     padding: 20px;
-    background: transparent;
+    background: rgba(255, 255, 255, 0);
     border: none;
     border-radius: 0;
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     box-shadow: none;
     flex-direction: column;
     align-items: center;
@@ -849,7 +893,7 @@ body {
   }
 
   .site-header .mobile-menu-toggle:active {
-    background: transparent;
+    background: rgba(255, 255, 255, 0);
     transform: translateY(-50%) scale(0.95);
     border-radius: 0;
     transition: all 0.3s ease;
@@ -897,12 +941,13 @@ body {
     visibility: visible;
   }
 
+  /* === ИСПРАВЛЕННЫЕ СТИЛИ КОРЗИНЫ === */
   .site-header .header-actions {
     position: absolute;
     right: 8px;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 9997;
+    z-index: 10001;
     gap: 0;
     display: block;
     flex-shrink: 0;
@@ -918,10 +963,10 @@ body {
     min-height: 80px;
     width: 80px;
     height: 80px;
-    background: transparent;
+    background: rgba(255, 255, 255, 0);
     border: none;
-    backdrop-filter: none;
     -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     box-shadow: none;
     display: flex;
     align-items: center;
@@ -946,6 +991,9 @@ body {
   }
 
   .site-header .header-actions .cart-badge {
+    /* Совместимый градиент */
+    background: #ef4444;
+    background: -webkit-linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.3);
@@ -991,7 +1039,7 @@ body {
     overscroll-behavior: contain;
     padding: 120px 25px 20px 25px;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.6) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.6) rgba(255, 255, 255, 0);
   }
 
   .mobile-nav::-webkit-scrollbar {
@@ -1007,8 +1055,8 @@ body {
     background: rgba(255, 255, 255, 0.6);
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   }
 
@@ -1030,7 +1078,7 @@ body {
     overscroll-behavior: contain;
     padding: 20px 25px 30px 25px;
     scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+    scrollbar-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0);
   }
 
   .mobile-actions::-webkit-scrollbar {
@@ -1046,8 +1094,8 @@ body {
     background: rgba(255, 255, 255, 0.5);
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
   }
 
   .mobile-actions::-webkit-scrollbar-thumb:hover {
@@ -1073,19 +1121,20 @@ body {
   }
 
   .mobile-menu-backdrop {
-    background: linear-gradient(135deg,
-    rgba(0, 26, 58, 0.85) 0%,
-    rgba(0, 56, 117, 0.9) 30%,
-    rgba(0, 87, 194, 0.85) 70%,
-    rgba(28, 166, 248, 0.8) 100%);
-    backdrop-filter: blur(25px);
+    /* Fallback для старых браузеров */
+    background: #001a3a;
+    background: -webkit-linear-gradient(135deg, rgba(0, 26, 58, 0.85) 0%, rgba(0, 56, 117, 0.9) 30%, rgba(0, 87, 194, 0.85) 70%, rgba(28, 166, 248, 0.8) 100%);
+    background: linear-gradient(135deg, rgba(0, 26, 58, 0.85) 0%, rgba(0, 56, 117, 0.9) 30%, rgba(0, 87, 194, 0.85) 70%, rgba(28, 166, 248, 0.8) 100%);
     -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(25px);
   }
 
   .mobile-menu-content {
+    /* Fallback для старых браузеров */
+    background: rgba(255, 255, 255, 0.9);
     background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(25px);
     box-shadow: -15px 0 60px rgba(0, 0, 0, 0.15);
     border-left: 1px solid rgba(255, 255, 255, 0.3);
   }
@@ -1132,12 +1181,18 @@ body {
     }
   }
 
-  @supports not (backdrop-filter: blur(12px)) {
+  /* === УЛУЧШЕННЫЙ FALLBACK ДЛЯ СТАРЫХ SAFARI === */
+  @supports not (-webkit-backdrop-filter: blur(12px)) {
     .site-header {
+      /* Сплошной градиентный фон вместо прозрачного */
+      background: #001a3a;
+      background: -webkit-linear-gradient(135deg, #001a3a 0%, #003875 50%, #1ca6f8 100%);
       background: linear-gradient(135deg, #001a3a 0%, #003875 50%, #1ca6f8 100%);
     }
 
     .mobile-menu-backdrop {
+      background: #001a3a;
+      background: -webkit-linear-gradient(135deg, #001a3a 0%, #003875 50%, #0057c2 100%);
       background: linear-gradient(135deg, #001a3a 0%, #003875 50%, #0057c2 100%);
     }
 
@@ -1154,47 +1209,64 @@ body {
       background: rgba(255, 255, 255, 0.9);
       color: #001a3a;
     }
+
+    /* Альтернативные цвета для элементов без backdrop-filter */
+    .mobile-nav-link .mobile-nav-arrow {
+      color: #1ca6f8;
+    }
+
+    .mobile-action-btn .action-icon {
+      color: #1ca6f8;
+    }
+
+    .action-title,
+    .action-subtitle {
+      color: #001a3a;
+    }
   }
 }
 
+/* === ИСПРАВЛЕНИЯ ДЛЯ IPHONE 8 И СТАРЫХ УСТРОЙСТВ === */
 @media (max-width: 480px) {
   .site-header {
     height: 75px;
   }
 
-  .header-container {
+  .site-header .header-container {
     padding: 0 6px;
     gap: 6px;
   }
 
-  .header-logo {
+  /* === ЕДИНООБРАЗНЫЕ СТИЛИ ЛОГОТИПА === */
+  .site-header .header-logo {
     display: block;
     flex: none;
     position: absolute;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 10;
+    z-index: 10000;
     height: auto;
     width: auto;
   }
 
-  .logo-image {
+  .site-header .header-logo .logo-image {
     height: 120px;
     max-width: 300px;
   }
 
+  /* === ЕДИНООБРАЗНЫЕ СТИЛИ КНОПКИ МЕНЮ === */
   .site-header .mobile-menu-toggle {
     width: 70px;
     height: 70px;
     padding: 17px;
     left: 6px;
-    z-index: 100001;
-    position: fixed;
+    z-index: 10001;
+    position: absolute;
   }
 
   .site-header .mobile-menu-toggle:active {
-    background: transparent;
+    background: rgba(255, 255, 255, 0);
     border-radius: 0;
     transform: translateY(-50%) scale(0.95);
     transition: all 0.3s ease;
@@ -1204,6 +1276,7 @@ body {
     display: none;
   }
 
+  /* === ЕДИНООБРАЗНЫЕ СТИЛИ КОРЗИНЫ === */
   .site-header .header-actions {
     right: 6px;
   }
@@ -1282,12 +1355,12 @@ body {
     height: 60px;
     padding: 15px;
     left: 4px;
-    z-index: 100001;
-    position: fixed;
+    z-index: 10001;
+    position: absolute;
   }
 
   .site-header .mobile-menu-toggle:active {
-    background: transparent;
+    background: rgba(255, 255, 255, 0);
     border-radius: 0;
     transform: translateY(-50%) scale(0.95);
     transition: all 0.3s ease;
@@ -1305,7 +1378,7 @@ body {
     visibility: visible;
   }
 
-  .logo-image {
+  .site-header .header-logo .logo-image {
     height: 100px;
     max-width: 250px;
   }

@@ -1,0 +1,464 @@
+/* === MAIN/RESPONSIVE.CSS - МОБИЛЬНЫЕ СТИЛИ ДЛЯ ГЛАВНОЙ СТРАНИЦЫ === */
+/* Этот файл загружается только на мобильных устройствах через media="(max-width:768px)" */
+
+/* ========================= ДОПОЛНИТЕЛЬНЫЕ МОБИЛЬНЫЕ ИСПРАВЛЕНИЯ ========================= */
+
+/* Исправления для очень маленьких экранов */
+@media (max-width: 360px) {
+    .hero-overlay h1 {
+        font-size: 1.4em;
+        line-height: 1.1;
+    }
+
+    .hero-overlay p {
+        font-size: 0.9em;
+    }
+
+    .purchase-section {
+        padding: 20px 10px;
+    }
+
+    .purchase-section h2 {
+        font-size: 1.4em;
+    }
+
+    .price-display {
+        font-size: 1.3em;
+    }
+
+    .slider-wrapper {
+        height: 280px;
+    }
+
+    .option-btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    #colorOptions {
+        gap: 12px;
+    }
+
+    .memory-btn {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+
+    #addToCartBtn {
+        padding: 14px 30px;
+        font-size: 0.95em;
+    }
+}
+
+/* Исправления для устройств в альбомной ориентации */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero-gif {
+        max-height: 400px;
+    }
+
+    .hero-overlay {
+        top: 50%;
+        padding: 10px 20px;
+    }
+
+    .hero-overlay h1 {
+        font-size: 1.8em;
+        margin-bottom: 8px;
+    }
+
+    .hero-overlay p {
+        font-size: 1em;
+    }
+
+    .slider-wrapper {
+        height: 300px;
+    }
+
+    .main-container {
+        margin-top: 20px;
+    }
+}
+
+/* Улучшения для touch-устройств */
+@media (pointer: coarse) {
+    .slider-arrow {
+        padding: 15px 20px;
+        font-size: 2em;
+    }
+
+    .option-btn,
+    .memory-btn {
+        min-height: 44px; /* Минимальный размер для touch */
+    }
+
+    .option-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .tab-header {
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+    }
+
+    #addToCartBtn {
+        min-height: 50px;
+    }
+}
+
+/* Исправления для устройств с высоким DPI */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .hero-overlay {
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+    }
+
+    .slider-img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Улучшения для темной темы (если поддерживается системой) */
+@media (prefers-color-scheme: dark) {
+    /* Пока оставляем пустым, можно добавить темную тему в будущем */
+}
+
+/* Исправления для устройств с ограниченной анимацией */
+@media (prefers-reduced-motion: reduce) {
+    .fade-in-on-scroll,
+    .slider-img,
+    .hero-overlay,
+    .purchase-section {
+        animation: none;
+        transition: none;
+    }
+
+    .fade-in-on-scroll {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Дополнительные исправления для старых Android браузеров */
+@supports not (backdrop-filter: blur(5px)) {
+    .hero-overlay {
+        background: rgba(0,0,0,0.7);
+    }
+
+    .cookie-banner {
+        background: rgba(0,0,0,0.9);
+    }
+}
+
+/* Исправления для iOS Safari */
+@supports (-webkit-appearance: none) and (not (contain: layout)) {
+    /* Исправляем проблемы с viewport на iOS */
+    body {
+        min-height: -webkit-fill-available;
+    }
+
+    .hero-gif {
+        min-height: -webkit-fill-available;
+    }
+}
+
+/* Улучшения для безопасной области (iPhone X+) */
+@supports (padding: max(0px)) {
+    .main-container,
+    .camera-description,
+    .tabs-block,
+    .product-section {
+        padding-left: max(20px, env(safe-area-inset-left));
+        padding-right: max(20px, env(safe-area-inset-right));
+    }
+
+    .cookie-banner {
+        right: max(20px, env(safe-area-inset-right));
+        bottom: max(20px, env(safe-area-inset-bottom));
+    }
+}
+
+/* Дополнительные исправления для таблиц на мобильных */
+@media (max-width: 480px) {
+    .char-table {
+        font-size: 0.85em;
+    }
+
+    .char-table th {
+        width: 35%;
+    }
+
+    .char-table th,
+    .char-table td {
+        padding: 6px 8px;
+        word-break: break-word;
+    }
+}
+
+/* Улучшения производительности на слабых устройствах */
+@media (max-width: 768px) {
+    .slider-img {
+        will-change: auto; /* Отключаем аппаратное ускорение для экономии ресурсов */
+    }
+
+    .hero-overlay {
+        will-change: auto;
+    }
+
+    /* Упрощаем анимации на мобильных */
+    .fade-in-on-scroll {
+        transition-duration: 0.3s;
+    }
+
+    .slider-img {
+        transition-duration: 0.4s;
+    }
+}
+
+/* Исправления для очень широких мобильных экранов (планшеты в портретной ориентации) */
+@media (max-width: 768px) and (min-width: 600px) {
+    .main-container {
+        max-width: 90%;
+    }
+
+    .purchase-section {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .slider-wrapper {
+        height: 500px;
+    }
+
+    .hero-overlay h1 {
+        font-size: 2.2em;
+    }
+
+    .hero-overlay p {
+        font-size: 1.2em;
+    }
+}
+
+/* Исправления для устройств с маленькой высотой экрана */
+@media (max-height: 600px) {
+    .hero-gif {
+        max-height: 300px;
+    }
+
+    .hero-overlay {
+        padding: 8px 15px;
+    }
+
+    .hero-overlay h1 {
+        font-size: 1.4em;
+        margin-bottom: 5px;
+    }
+
+    .hero-overlay p {
+        font-size: 0.9em;
+    }
+
+    .slider-wrapper {
+        height: 250px;
+    }
+
+    .main-container {
+        margin-top: 15px;
+    }
+}
+
+/* Дополнительные touch-оптимизации */
+@media (max-width: 768px) {
+    /* Увеличиваем область нажатия */
+    .slider-arrow {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .slider-arrow-left {
+        left: 10px;
+    }
+
+    .slider-arrow-right {
+        right: 10px;
+    }
+
+    /* Улучшаем видимость на мобильных */
+    .tab-content {
+        line-height: 1.6;
+    }
+
+    .faq-item strong {
+        font-size: 1em;
+        line-height: 1.4;
+    }
+
+    /* Оптимизируем кнопки для пальцев */
+    .memory-btn {
+        padding: 12px 16px;
+        margin-bottom: 8px;
+    }
+
+    #addToCartBtn {
+        padding: 16px 40px;
+        font-size: 1.1em;
+        font-weight: 700;
+    }
+}
+
+/* Исправления для проблем с overflow на iOS */
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+        position: relative;
+    }
+
+    .main-content {
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .slider-container,
+    .hero-gif {
+        width: 100%;
+        overflow: hidden;
+    }
+}
+
+/* Дополнительные исправления для cookie banner на мобильных */
+@media (max-width: 480px) {
+    .cookie-banner {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        font-size: 0.85em;
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .cookie-banner span {
+        margin-right: 0;
+    }
+
+    .cookie-banner button {
+        width: 100%;
+        margin-top: 5px;
+    }
+}
+
+/* Улучшения для уведомлений на мобильных */
+@media (max-width: 480px) {
+    .cart-notification {
+        top: 10px !important;
+        right: 10px !important;
+        left: 10px !important;
+        max-width: none !important;
+        font-size: 0.9em !important;
+    }
+}
+
+/* Исправления для параллакс эффекта на мобильных */
+@media (max-width: 768px) {
+    .hero-gif {
+        transform: none !important; /* Отключаем параллакс на мобильных для производительности */
+    }
+}
+
+/* Дополнительные исправления для форм на мобильных */
+@media (max-width: 768px) {
+    .purchase-options {
+        margin-bottom: 25px;
+    }
+
+    .option-group {
+        margin-bottom: 18px;
+    }
+
+    .option-label {
+        font-size: 1em;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    #colorOptions {
+        justify-content: center;
+        padding: 10px 0;
+    }
+
+    #memoryOptions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .memory-btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+/* Исправления для товарных карточек на мобильных */
+@media (max-width: 768px) {
+    .product-item {
+        margin-bottom: 25px;
+        gap: 15px;
+    }
+
+    .product-text h3 {
+        text-align: center;
+        margin-bottom: 12px;
+    }
+
+    .product-text p {
+        text-align: center;
+        line-height: 1.6;
+    }
+
+    .product-img img {
+        border-radius: 8px;
+    }
+}
+
+/* Дополнительные улучшения для очень маленьких экранов */
+@media (max-width: 320px) {
+    .hero-overlay {
+        padding: 10px 15px;
+    }
+
+    .hero-overlay h1 {
+        font-size: 1.2em;
+        line-height: 1.1;
+    }
+
+    .hero-overlay p {
+        font-size: 0.8em;
+    }
+
+    .slider-wrapper {
+        height: 250px;
+    }
+
+    .purchase-section {
+        padding: 15px 8px;
+    }
+
+    .purchase-section h2 {
+        font-size: 1.3em;
+    }
+
+    .price-display {
+        font-size: 1.2em;
+    }
+
+    .description-container,
+    .product-section {
+        padding: 12px 8px;
+    }
+}

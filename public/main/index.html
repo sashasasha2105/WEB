@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
+  <title>clip & go</title>
+
+  <!-- Google Fonts Montserrat с дополнительными весами -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Стили главной страницы - ЛОКАЛЬНЫЕ ПУТИ -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" media="(max-width:768px)" />
+
+  <!-- Общий хедер - ПУТЬ К ОБЩИМ ФАЙЛАМ -->
+  <link rel="stylesheet" href="../header/header.css" />
+
+  <!-- Критические мобильные стили встроены для быстрой загрузки -->
+  <style>
+    /* Убираем конфликты с хедером */
+    body {
+      margin: 0;
+      padding: 0;
+      /* УБРАНО: padding-top будет задаваться после загрузки хедера */
+    }
+
+    /* Временный загрузочный хедер */
+    .loading-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      background: linear-gradient(135deg, rgba(28, 166, 248, 0.95), rgba(0, 26, 58, 0.98));
+      backdrop-filter: blur(10px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.9);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top: 2px solid #ffffff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Отступ для контента после загрузки хедера */
+    .content-loaded {
+      padding-top: 95px !important;
+    }
+
+    /* Скрываем основной контент до загрузки */
+    .main-content {
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .main-content.loaded {
+      opacity: 1;
+    }
+
+    /* Дополнительные улучшения для старых браузеров */
+    @supports not (backdrop-filter: blur(20px)) {
+      .loading-header {
+        background: linear-gradient(135deg, rgba(0, 15, 35, 0.98), rgba(10, 30, 60, 0.98)) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Временный загрузочный хедер -->
+<div class="loading-header" id="loadingHeader">
+  <div class="loading-spinner"></div>
+  <span style="font-weight: 600;">Загрузка...</span>
+</div>
+
+<!-- Премиальная шапка загружается через JS из ../header/header.html -->
+<div id="header-container"></div>
+
+<!-- Основной контент -->
+<div class="main-content" id="mainContent">
+
+  <!-- Баннер cookies -->
+  <div class="cookie-banner" style="display: none;">
+    <span>
+      Пользуясь сайтом, вы соглашаетесь с тем, что мы используем
+      <a href="../Policy/privacy-cookie-policy.html" class="cookie-link">cookies</a> 🍪
+    </span>
+    <button id="accept-cookies">Окей</button>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero" class="hero-gif fade-in-on-scroll">
+    <img src="../assets/images/main_page.GIF" alt="Презентация продукта" />
+    <div class="hero-overlay">
+      <h1>UNLOCK YOUR POTENTIAL<br />clip & go</h1>
+      <p>Уже в продаже • Уже в России</p>
+    </div>
+  </section>
+
+  <!-- Основной контейнер -->
+  <section id="main" class="main-container fade-in-on-scroll">
+    <div class="left-column">
+      <section class="slider-container">
+        <div class="slider-wrapper">
+          <img src="../assets/images/cam1.jpg" class="slider-img active" alt="Cam1" />
+          <img src="../assets/images/cam2.jpg" class="slider-img" alt="Cam2" />
+          <img src="../assets/images/cam3.jpg" class="slider-img" alt="Cam3" />
+          <img src="../assets/images/cam4.jpg" class="slider-img" alt="Cam4" />
+          <img src="../assets/images/cam5.jpg" class="slider-img" alt="Cam5" />
+        </div>
+        <button class="slider-arrow slider-arrow-left" onclick="prevSlide()">&#10094;</button>
+        <button class="slider-arrow slider-arrow-right" onclick="nextSlide()">&#10095;</button>
+      </section>
+    </div>
+
+    <div class="right-column">
+      <section class="purchase-section fade-in-on-scroll">
+        <h2>Выбор модификации</h2>
+        <div class="purchase-options">
+          <div class="option-group">
+            <span class="option-label">Цвет камеры</span>
+            <div id="colorOptions" class="option-buttons">
+              <button class="option-btn selected" data-color="black" aria-label="Чёрный"></button>
+              <button class="option-btn" data-color="white" aria-label="Белый"></button>
+            </div>
+          </div>
+          <div class="option-group">
+            <span class="option-label">Размер карты памяти</span>
+            <div id="memoryOptions" class="option-buttons">
+              <button class="memory-btn selected" data-memory="none">Без накопителя</button>
+              <button class="memory-btn" data-memory="8gb">8 ГБ</button>
+            </div>
+          </div>
+        </div>
+        <div id="priceDisplay" class="price-display"></div>
+        <div class="purchase-buttons">
+          <button id="addToCartBtn">Добавить в корзину</button>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- Описание продукта -->
+  <section class="camera-description fade-in-on-scroll">
+    <div class="description-container">
+      <h2>clip & go – компактная экшн-камера для любых задач</h2>
+      <p>
+        clip & go сочетает в себе портативность и высокое качество съёмки.
+        Благодаря удобному креплению вы сможете снимать на ходу, в путешествиях
+        или при занятиях спортом. Камера быстро реагирует на нажатие кнопки
+        и позволяет мгновенно начать запись. Небольшие габариты и малый вес
+        делают её незаметной в повседневном использовании. Широкоугольный
+        объектив захватывает максимум деталей, а поддержка 4K гарантирует
+        чёткую картинку.
+      </p>
+    </div>
+  </section>
+
+  <!-- Вкладки (характеристики, FAQ, доставка) -->
+  <section id="tabsBlock" class="tabs-block fade-in-on-scroll">
+    <div class="tab-item">
+      <div class="tab-header" onclick="toggleCharacteristics()">
+        <span>Характеристики</span><span class="arrow">▼</span>
+      </div>
+      <div id="charTableContainer" class="tab-content">
+        <table class="char-table">
+          <tbody>
+          <tr><th>Модель</th><td>clip & go 1st edition</td></tr>
+          <tr><th>Размер</th><td>65 × 28 × 21 мм</td></tr>
+          <tr><th>Тип</th><td>4K Wi-Fi камера большого пальца</td></tr>
+          <tr><th>Объектив/угол</th><td>120° широкоугольный</td></tr>
+          <tr><th>Wi-Fi</th><td>Поддержка Wi-Fi</td></tr>
+          <tr><th>Хранение</th><td>MicroSD до 256 GB (не входит)</td></tr>
+          <tr><th>Батарея</th><td>800 мА·ч, Li-Po</td></tr>
+          <tr><th>Видео</th><td>3840 × 2160 (4K)</td></tr>
+          <tr><th>Сертификация</th><td>CE, RoHS</td></tr>
+          <tr><th>Зарядка</th><td>5 В/2 А (120 мин)</td></tr>
+          <tr><th>Водонепр.</th><td>30 м в кейсе</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="tab-item">
+      <div class="tab-header" onclick="toggleFAQ()">
+        <span>Частые вопросы</span><span class="arrow">▼</span>
+      </div>
+      <div id="faqContainer" class="tab-content">
+        <div class="faq-item">
+          <strong>Может ли clip & go делать фотографии?</strong>
+          <p>Да, камера поддерживает фотосъёмку мгновенных снимков.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Как долго работает аккумулятор?</strong>
+          <p>800 мА·ч — до 90 мин видео в 4K.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Поставляется ли она с аксессуарами?</strong>
+          <p>В комплект входят все необходимые крепления и кабели.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Разрешение?</strong>
+          <p>До 4K (3840 × 2160) для максимальной чёткости.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Записывает ли камера звук?</strong>
+          <p>Да, встроенный микрофон хорошего качества.</p>
+        </div>
+        <div class="faq-item">
+          <strong>Как выгрузить видео?</strong>
+          <p>Через приложение по Wi-Fi или извлеките MicroSD и скопируйте на ПК.</p>
+        </div>
+      </div>
+    </div>
+    <div class="tab-item">
+      <div class="tab-header" onclick="toggleShipping()">
+        <span>Доставка и оплата</span><span class="arrow">▼</span>
+      </div>
+      <div id="shippingContainer" class="tab-content">
+        <p><strong>Доставка осуществляется через СДЭК:</strong></p>
+        <ul>
+          <li>Курьером до двери</li>
+          <li>В пункт выдачи заказов</li>
+          <li>В постамат</li>
+        </ul>
+        <p><strong>Сроки доставки:</strong> от 1 до 5 дней в зависимости от региона</p>
+        <p><strong>Оплата:</strong> Онлайн через YooKassa (карты, СБП)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- О продукте -->
+  <section id="product" class="product-section fade-in-on-scroll">
+    <h2>О продукте</h2>
+    <div class="product-item">
+      <div class="product-img">
+        <img src="../assets/images/description1.GIF" alt="Мгновенная съёмка" />
+      </div>
+      <div class="product-text">
+        <h3>Мгновенная съёмка</h3>
+        <p>
+          Компактная экшн-камера размером с большой палец и весом 35 г,
+          мгновенный отклик и широкий угол обзора.
+        </p>
+      </div>
+    </div>
+    <div class="product-item reverse">
+      <div class="product-img">
+        <img src="../assets/images/description2.GIF" alt="Экшн-камера GH88" />
+      </div>
+      <div class="product-text">
+        <h3>Экшн-камера GH88</h3>
+        <p>
+          До 180 мин 4K-видео, компактная и лёгкая — идеальна для спорта и путешествий.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Контакты -->
+  <section id="contact" class="fade-in-on-scroll">
+    <h2>Контакты</h2>
+    <p>По всем вопросам: <strong>email@example.com</strong></p>
+    <p>Телефон: <strong>+1 (234) 567-89-00</strong></p>
+  </section>
+
+  <footer class="fade-in-on-scroll">
+    <p>&copy; 2025 clip & go. Все права защищены.</p>
+    <p>
+      <a href="../Policy/privacy-cookie-policy.html">
+        Политика cookies и конфиденциальности
+      </a>
+    </p>
+  </footer>
+
+</div>
+
+<!-- Общие скрипты сайта - ПУТИ К ОБЩИМ JS -->
+<script src="../js/cart-manager.js"></script>
+<script src="../js/order-manager.js"></script>
+
+<!-- Скрипт главной страницы - ЛОКАЛЬНЫЙ ПУТЬ -->
+<script src="script.js"></script>
+
+<!-- Скрипт загрузки хедера - УЛУЧШЕННАЯ ВЕРСИЯ С ПРАВИЛЬНЫМ ПУТЕМ -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('[Main] 🚀 Начинаем загрузку главной страницы');
+
+    const headerContainer = document.getElementById('header-container');
+    const loadingHeader = document.getElementById('loadingHeader');
+    const mainContent = document.getElementById('mainContent');
+
+    // Загружаем хедер - ПРАВИЛЬНЫЙ ПУТЬ К ОБЩЕМУ ХЕДЕРУ
+    fetch('../header/header.html')
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Ошибка HTTP: ${response.status} ${response.statusText}`);
+              }
+              return response.text();
+            })
+            .then(html => {
+              console.log('[Main] ✅ Хедер загружен, вставляем в DOM');
+              headerContainer.innerHTML = html;
+
+              // Скрываем загрузочный хедер
+              loadingHeader.style.display = 'none';
+
+              // Показываем основной контент с правильным отступом
+              document.body.classList.add('content-loaded');
+              mainContent.classList.add('loaded');
+
+              // Даем время на инициализацию header.js
+              setTimeout(() => {
+                console.log('[Main] 🔄 Проверяем инициализацию HeaderManager');
+
+                if (window.headerManager && window.headerManager.isInitialized) {
+                  console.log('[Main] ✅ HeaderManager найден и инициализирован');
+                  window.headerManager.forceUpdateBadges();
+                } else {
+                  console.log('[Main] ⏳ HeaderManager еще не готов, ждем...');
+
+                  // Попытка подождать еще немного
+                  const checkInterval = setInterval(() => {
+                    if (window.headerManager && window.headerManager.isInitialized) {
+                      console.log('[Main] ✅ HeaderManager инициализирован позже');
+                      window.headerManager.forceUpdateBadges();
+                      clearInterval(checkInterval);
+                    }
+                  }, 150);
+
+                  // Останавливаем проверку через 4 секунд
+                  setTimeout(() => {
+                    clearInterval(checkInterval);
+                    if (!window.headerManager) {
+                      console.warn('[Main] ⚠️ HeaderManager не инициализирован за 4 секунды');
+                    }
+                  }, 4000);
+                }
+              }, 400);
+            })
+            .catch(error => {
+              console.error('[Main] ❌ Ошибка загрузки хедера:', error);
+
+              // Fallback на простой хедер в случае ошибки
+              headerContainer.innerHTML = `
+          <header style="position: fixed; top: 0; left: 0; right: 0; height: 80px; background: linear-gradient(135deg, rgba(28, 166, 248, 0.95), rgba(0, 26, 58, 0.98)); backdrop-filter: blur(15px); z-index: 9999; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(0,0,0,0.3); border-bottom: 1px solid rgba(255, 255, 255, 0.2);">
+            <div style="display: flex; align-items: center; gap: 20px; color: white;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 1.8rem; font-weight: 900; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">clip & go</h1>
+              <span style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">Ошибка загрузки хедера</span>
+            </div>
+          </header>
+        `;
+
+              // Скрываем загрузочный хедер
+              loadingHeader.style.display = 'none';
+
+              // Показываем основной контент
+              document.body.classList.add('content-loaded');
+              mainContent.classList.add('loaded');
+            });
+  });
+
+  // Глобальная функция для принудительного обновления бейджей (для отладки)
+  window.updateHeaderBadges = function() {
+    if (window.headerManager) {
+      window.headerManager.forceUpdateBadges();
+      console.log('[Main] 🔄 Принудительное обновление бейджей выполнено');
+    } else {
+      console.warn('[Main] ⚠️ HeaderManager не найден');
+    }
+  };
+
+  // Дополнительная мобильная диагностика
+  window.debugMobileHeader = function() {
+    console.log('[Main] 🔍 === МОБИЛЬНАЯ ДИАГНОСТИКА ===');
+    console.log('Размер экрана:', window.innerWidth + 'x' + window.innerHeight);
+    console.log('User Agent:', navigator.userAgent);
+    console.log('Viewport meta:', document.querySelector('meta[name="viewport"]')?.content);
+
+    const header = document.querySelector('.site-header');
+    if (header) {
+      const rect = header.getBoundingClientRect();
+      const styles = window.getComputedStyle(header);
+      console.log('Хедер размеры:', rect);
+      console.log('Хедер стили:', {
+        display: styles.display,
+        position: styles.position,
+        zIndex: styles.zIndex,
+        background: styles.background
+      });
+    }
+
+    if (window.headerManager) {
+      window.headerManager.diagnoseMobile();
+    }
+  };
+</script>
+
+</body>
+</html>
