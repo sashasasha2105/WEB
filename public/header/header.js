@@ -1,4 +1,4 @@
-// === ИСПРАВЛЕННЫЙ HEADER JS С СКРЫТИЕМ ЛОГОТИПА ===
+// === ИСПРАВЛЕННЫЙ HEADER JS - УБРАН ЛОГОТИП ИЗ МОБИЛЬНОГО МЕНЮ ===
 
 class HeaderManager {
     constructor() {
@@ -8,7 +8,6 @@ class HeaderManager {
         this.header = document.getElementById('siteHeader');
         this.mobileToggle = document.querySelector('.mobile-menu-toggle');
         this.mobileMenu = document.getElementById('mobileMenu');
-        this.mobileClose = document.querySelector('.mobile-close');
         this.mobileBackdrop = document.querySelector('.mobile-menu-backdrop');
 
         // Бейджи
@@ -100,19 +99,6 @@ class HeaderManager {
             this.toggleMobileMenu();
         });
 
-        // Закрытие меню кнопкой X
-        if (this.mobileClose) {
-            this.mobileClose.addEventListener('click', (e) => {
-                e.preventDefault();
-                this.closeMobileMenu();
-            });
-
-            this.mobileClose.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                this.closeMobileMenu();
-            });
-        }
-
         // Закрытие по бэкдропу
         if (this.mobileBackdrop) {
             this.mobileBackdrop.addEventListener('click', (e) => {
@@ -157,17 +143,23 @@ class HeaderManager {
 
         console.log(`[Header] 📱 Переключение меню: ${this.isMenuOpen ? 'открыть' : 'закрыть'}`);
 
-        // ИСПРАВЛЕНО: Скрываем/показываем логотип
+        // Управление body классами
         if (this.isMenuOpen) {
             document.body.classList.add('mobile-menu-open');
         } else {
             document.body.classList.remove('mobile-menu-open');
         }
 
-        // Анимация кнопки бургер
+        // Анимация кнопки бургер (поворот на 90 градусов)
         if (this.mobileToggle) {
             this.mobileToggle.classList.toggle('active', this.isMenuOpen);
-            console.log(`[Header] 🍔 Бургер кнопка: ${this.isMenuOpen ? 'активна' : 'неактивна'}`);
+            console.log(`[Header] 🍔 Бургер кнопка: ${this.isMenuOpen ? 'повернута на 90°' : 'в исходном положении'}`);
+
+            // ПРОВЕРЯЕМ НА ДУБЛИРОВАНИЕ
+            const allMenuToggles = document.querySelectorAll('.mobile-menu-toggle');
+            if (allMenuToggles.length > 1) {
+                console.warn(`[Header] ⚠️ ВНИМАНИЕ: Найдено ${allMenuToggles.length} кнопок меню! Может быть дублирование.`);
+            }
         }
 
         // Показ/скрытие меню
@@ -194,7 +186,7 @@ class HeaderManager {
 
         this.isMenuOpen = false;
 
-        // ИСПРАВЛЕНО: Показываем логотип обратно
+        // Убираем классы с body
         document.body.classList.remove('mobile-menu-open');
 
         if (this.mobileToggle) {
@@ -287,7 +279,6 @@ class HeaderManager {
         }
     }
 
-    // ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ФУНКЦИЯ setBadge - УБРАНА ВСЯ ПРИНУДИТЕЛЬНАЯ СТИЛИЗАЦИЯ
     setBadge(badges, count) {
         Object.values(badges).forEach(badge => {
             if (badge) {
@@ -303,9 +294,6 @@ class HeaderManager {
                 } else {
                     badge.style.display = 'none';
                 }
-
-                // ИСПРАВЛЕНО: НЕ ТРОГАЕМ НИКАКИЕ ПОЗИЦИИ И РАЗМЕРЫ!
-                // Убираем все принудительные стили, которые перезаписывают CSS
             }
         });
     }
@@ -365,7 +353,6 @@ class HeaderManager {
         // Обновление при фокусе на страницу
         window.addEventListener('focus', debouncedUpdate, { passive: true });
 
-        // ИСПРАВЛЕНО: УБРАНА ВСЯ ПРИНУДИТЕЛЬНАЯ СТИЛИЗАЦИЯ ПРИ RESIZE
         window.addEventListener('resize', () => {
             this.isMobile = window.innerWidth <= 768;
             // ТОЛЬКО обновляем бейджи без любых стилей
@@ -404,7 +391,7 @@ class HeaderManager {
         return this.getOrdersCount();
     }
 
-    // Мобильная диагностика
+    // ИСПРАВЛЕНО: Мобильная диагностика БЕЗ ЛОГОТИПА В МЕНЮ
     diagnoseMobile() {
         if (!this.isMobile) {
             console.log('[Header] 💻 Это десктопное устройство');
@@ -441,6 +428,23 @@ class HeaderManager {
         console.log('- Мобильное меню:', !!this.mobileMenu);
         console.log('- Инициализирован:', this.isInitialized);
 
+        // ПРОВЕРКА НА ДУБЛИРОВАНИЕ
+        const allMenuToggles = document.querySelectorAll('.mobile-menu-toggle');
+        console.log('- Найдено кнопок меню:', allMenuToggles.length);
+        if (allMenuToggles.length > 1) {
+            console.warn('⚠️ ДУБЛИРОВАНИЕ КНОПОК МЕНЮ!');
+            allMenuToggles.forEach((toggle, index) => {
+                const rect = toggle.getBoundingClientRect();
+                const styles = window.getComputedStyle(toggle);
+                console.log(`  Кнопка ${index + 1}:`, {
+                    display: styles.display,
+                    position: styles.position,
+                    zIndex: styles.zIndex,
+                    visible: rect.width > 0 && rect.height > 0
+                });
+            });
+        }
+
         // Дополнительная диагностика кнопки меню
         if (this.mobileToggle) {
             const toggleRect = this.mobileToggle.getBoundingClientRect();
@@ -462,7 +466,7 @@ class HeaderManager {
             });
         }
 
-        // ИСПРАВЛЕНО: Диагностика корзины БЕЗ ИЗМЕНЕНИЯ СТИЛЕЙ
+        // Диагностика корзины
         const cartActions = document.querySelector('.site-header .header-actions');
         const cartBtn = document.querySelector('.site-header .header-actions .cart-btn');
         const cartBadge = document.querySelector('.site-header .header-actions .cart-badge');
@@ -486,7 +490,6 @@ class HeaderManager {
 
         if (cartBtn) {
             const btnRect = cartBtn.getBoundingClientRect();
-            const btnStyles = window.getComputedStyle(cartBtn);
 
             console.log('- Корзина кнопка:', {
                 width: btnRect.width,
@@ -523,6 +526,11 @@ class HeaderManager {
         const burgerLines = document.querySelectorAll('.burger-line');
         console.log('- Количество линий бургера:', burgerLines.length);
 
+        // ПРОВЕРЯЕМ ЧТО РОВНО ТРИ ПОЛОСКИ
+        if (burgerLines.length !== 3) {
+            console.error(`❌ НЕПРАВИЛЬНОЕ КОЛИЧЕСТВО ПОЛОСОК! Ожидается 3, найдено ${burgerLines.length}`);
+        }
+
         burgerLines.forEach((line, index) => {
             const lineRect = line.getBoundingClientRect();
             const lineStyles = window.getComputedStyle(line);
@@ -531,9 +539,29 @@ class HeaderManager {
                 width: lineRect.width,
                 height: lineRect.height,
                 background: lineStyles.background,
-                visible: lineRect.width > 0 && lineRect.height > 0
+                display: lineStyles.display,
+                opacity: lineStyles.opacity,
+                visibility: lineStyles.visibility,
+                visible: lineRect.width > 0 && lineRect.height > 0 && lineStyles.opacity !== '0' && lineStyles.visibility !== 'hidden'
             });
         });
+
+        // ИСПРАВЛЕНО: Диагностика мобильного меню
+        if (this.mobileMenu) {
+            const menuRect = this.mobileMenu.getBoundingClientRect();
+            const menuStyles = window.getComputedStyle(this.mobileMenu);
+
+            console.log('- Мобильное меню:', {
+                width: menuRect.width,
+                height: menuRect.height,
+                display: menuStyles.display,
+                zIndex: menuStyles.zIndex,
+                opacity: menuStyles.opacity,
+                visibility: menuStyles.visibility
+            });
+
+            console.log('- Кнопка и логотип накладываются поверх меню');
+        }
     }
 }
 
@@ -563,7 +591,13 @@ function initHeader() {
 
             // Мобильная диагностика для отладки
             if (window.innerWidth <= 768) {
-                setTimeout(() => headerInstance.diagnoseMobile(), 500);
+                setTimeout(() => {
+                    headerInstance.diagnoseMobile();
+                    // Автоматически исправляем дублирование
+                    window.fixMenuDuplication();
+                    // Тестируем скролл
+                    window.testMenuScroll();
+                }, 500);
             }
 
             return headerInstance;
@@ -610,6 +644,11 @@ if (window.innerWidth <= 768) {
         } else {
             clearInterval(mobileInit);
             console.log('[Header] 📱 Мобильная инициализация успешна');
+            // Проверяем дублирование после успешной инициализации
+            setTimeout(() => {
+                window.fixMenuDuplication();
+                window.testMenuScroll();
+            }, 100);
         }
     }, 300);
 }
@@ -661,6 +700,66 @@ window.updateHeaderBadges = function() {
     }
 };
 
+// Новая функция для быстрого исправления проблем
+window.fixAllMobileIssues = function() {
+    console.log('[Header] 🔧 === ИСПРАВЛЕНИЕ ВСЕХ МОБИЛЬНЫХ ПРОБЛЕМ ===');
+    window.fixMenuDuplication();
+    window.fixMobileCart();
+    window.testMenuScroll();
+    window.debugMobileHeader();
+};
+
+// Функция для тестирования скролла в меню
+window.testMenuScroll = function() {
+    console.log('[Header] 📜 === ТЕСТ СКРОЛЛА В МЕНЮ ===');
+
+    const mobileNav = document.querySelector('.mobile-nav');
+    if (mobileNav) {
+        const navRect = mobileNav.getBoundingClientRect();
+        const navStyles = window.getComputedStyle(mobileNav);
+
+        console.log('- Параметры навигации:', {
+            height: navRect.height,
+            scrollHeight: mobileNav.scrollHeight,
+            clientHeight: mobileNav.clientHeight,
+            overflowY: navStyles.overflowY,
+            maxHeight: navStyles.maxHeight,
+            canScroll: mobileNav.scrollHeight > mobileNav.clientHeight
+        });
+
+        if (mobileNav.scrollHeight > mobileNav.clientHeight) {
+            console.log('✅ Скролл доступен в навигации');
+        } else {
+            console.log('⚠️ Скролл не нужен - контент помещается');
+        }
+    } else {
+        console.log('❌ Навигация не найдена');
+    }
+
+    const mobileActions = document.querySelector('.mobile-actions');
+    if (mobileActions) {
+        const actionsRect = mobileActions.getBoundingClientRect();
+        const actionsStyles = window.getComputedStyle(mobileActions);
+
+        console.log('- Параметры действий:', {
+            height: actionsRect.height,
+            scrollHeight: mobileActions.scrollHeight,
+            clientHeight: mobileActions.clientHeight,
+            overflowY: actionsStyles.overflowY,
+            maxHeight: actionsStyles.maxHeight,
+            canScroll: mobileActions.scrollHeight > mobileActions.clientHeight
+        });
+
+        if (mobileActions.scrollHeight > mobileActions.clientHeight) {
+            console.log('✅ Скролл доступен в действиях');
+        } else {
+            console.log('⚠️ Скролл не нужен в действиях - контент помещается');
+        }
+    } else {
+        console.log('❌ Секция действий не найдена');
+    }
+};
+
 // Мобильная диагностика
 window.debugMobileHeader = function() {
     console.log('[Header] 🔍 === МОБИЛЬНАЯ ДИАГНОСТИКА ===');
@@ -676,6 +775,47 @@ window.debugMobileHeader = function() {
     }
 };
 
+// ФУНКЦИЯ ДЛЯ ИСПРАВЛЕНИЯ ДУБЛИРОВАНИЯ
+window.fixMenuDuplication = function() {
+    console.log('[Header] 🔧 === ИСПРАВЛЕНИЕ ДУБЛИРОВАНИЯ КНОПОК МЕНЮ ===');
+
+    // Проверяем кнопки
+    const allMenuToggles = document.querySelectorAll('.mobile-menu-toggle');
+    console.log('Найдено кнопок меню:', allMenuToggles.length);
+
+    if (allMenuToggles.length > 1) {
+        console.log('Удаляем лишние кнопки...');
+        // Оставляем только первую кнопку, остальные скрываем
+        allMenuToggles.forEach((toggle, index) => {
+            if (index > 0) {
+                toggle.style.display = 'none !important';
+                toggle.style.visibility = 'hidden !important';
+                toggle.style.opacity = '0 !important';
+                console.log(`Скрыта кнопка ${index + 1}`);
+            }
+        });
+        console.log('✅ Кнопки исправлены');
+    } else {
+        console.log('✅ Дублирования кнопок не найдено');
+    }
+
+    // Проверяем полоски
+    const allBurgerLines = document.querySelectorAll('.burger-line');
+    console.log('Найдено полосок бургера:', allBurgerLines.length);
+
+    if (allBurgerLines.length !== 3) {
+        console.warn(`⚠️ НЕПРАВИЛЬНОЕ КОЛИЧЕСТВО ПОЛОСОК! Ожидается 3, найдено ${allBurgerLines.length}`);
+    } else {
+        console.log('✅ Количество полосок правильное');
+
+        // Убеждаемся что все полоски видимы
+        allBurgerLines.forEach((line, index) => {
+            line.style.display = 'block';
+            line.style.opacity = '1';
+            line.style.visibility = 'visible';
+        });
+    }
+};
 // ИСПРАВЛЕНО: Функция исправления мобильной корзины БЕЗ ПРИНУДИТЕЛЬНОЙ СТИЛИЗАЦИИ
 window.fixMobileCart = function() {
     console.log('[Header] 🔧 === ИСПРАВЛЕНИЕ МОБИЛЬНОЙ КОРЗИНЫ ===');
