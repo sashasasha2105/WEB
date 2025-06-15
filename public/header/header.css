@@ -7,60 +7,33 @@
   left: 0;
   right: 0;
   height: 100px;
-  /* ИЗНАЧАЛЬНО ПОЛНОСТЬЮ ПРОЗРАЧНЫЙ */
-  background: transparent;
-  border-bottom: 1px solid transparent;
+  /* Fallback для старых браузеров */
+  background: rgba(255, 255, 255, 0.03);
+  background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%);
+
+  /* Backdrop filter с fallback */
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 1000;
-
-  /* ВАЖНО: TRANSITION ДЛЯ ПЛАВНОСТИ */
-  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-  backdrop-filter 0.4s ease,
-  -webkit-backdrop-filter 0.4s ease !important;
-
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
   animation: headerSlideDown 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .site-header.scrolled {
-  /* СОХРАНЯЕМ ПОЗИЦИОНИРОВАНИЕ */
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  z-index: 1000 !important;
-
   height: 85px;
-  /* НАСТОЯЩИЙ GLASSMORPHISM ЭФФЕКТ */
-  background: rgba(255, 255, 255, 0.1) !important;
-  background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(135, 206, 235, 0.08) 100%) !important;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(135, 206, 235, 0.08) 100%) !important;
+  /* Fallback для старых браузеров */
+  background: rgba(255, 255, 255, 0.12);
+  background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.15) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.15) 100%);
 
-  /* ПРИНУДИТЕЛЬНЫЙ BACKDROP-FILTER */
-  -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
-  backdrop-filter: blur(20px) saturate(150%) !important;
-
-  /* КРАСИВЫЕ ТЕНИ И ГРАНИЦЫ */
-  box-shadow:
-          0 8px 35px rgba(0, 0, 0, 0.1),
-          0 2px 15px rgba(28, 166, 248, 0.08),
-          inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.25) !important;
-
-  /* УБИРАЕМ ЛЮБЫЕ ТРАНСФОРМЫ КОТОРЫЕ МОГУТ ВЛИЯТЬ */
-  transform: none !important;
-  will-change: auto !important;
-}
-
-.site-header.scrolled::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(ellipse at center top, rgba(28, 166, 248, 0.03) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: -1;
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+  border-bottom-color: rgba(255, 255, 255, 0.15);
 }
 
 .header-container {
@@ -668,10 +641,6 @@ html, body {
   min-height: 100vh;
 }
 
-body {
-  padding-top: 80px;
-}
-
 /* === АНИМАЦИИ === */
 @keyframes headerSlideDown {
   from { transform: translateY(-100%); opacity: 0; }
@@ -830,25 +799,26 @@ body {
     visibility: visible;
     opacity: 1;
     z-index: 9998;
-    /* ПРОЗРАЧНЫЙ ИЗНАЧАЛЬНО НА МОБИЛЬНЫХ */
-    background: transparent;
-    border-bottom: 1px solid transparent;
+    /* Упрощенный фон для мобильных */
+    background: rgba(255, 255, 255, 0.03);
+    background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .site-header.scrolled {
     height: 85px;
-    /* GLASSMORPHISM ЭФФЕКТ НА МОБИЛЬНЫХ */
-    background: rgba(255, 255, 255, 0.1);
-    background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(135, 206, 235, 0.08) 100%);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.15) 50%, rgba(135, 206, 235, 0.08) 100%);
-    -webkit-backdrop-filter: blur(20px) saturate(150%);
-    backdrop-filter: blur(20px) saturate(150%);
-    box-shadow:
-            0 6px 25px rgba(0, 0, 0, 0.1),
-            0 2px 10px rgba(28, 166, 248, 0.06),
-            inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.12);
+    background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.15) 100%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.15) 100%);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+    border-bottom-color: rgba(255, 255, 255, 0.15);
   }
 
   .site-header .header-container {
@@ -1143,7 +1113,7 @@ body {
   }
 
   body {
-    padding-top: 65px;
+    padding-top: 95px;
   }
 
   .mobile-menu-backdrop {
@@ -1210,20 +1180,10 @@ body {
   /* === УЛУЧШЕННЫЙ FALLBACK ДЛЯ СТАРЫХ SAFARI === */
   @supports not (-webkit-backdrop-filter: blur(12px)) {
     .site-header {
-      /* ИЗНАЧАЛЬНО ПРОЗРАЧНЫЙ ДАЖЕ ДЛЯ СТАРЫХ БРАУЗЕРОВ */
-      background: transparent;
-    }
-
-    .site-header.scrolled {
-      /* Стеклянный эффект без backdrop-filter для старых браузеров */
-      background: rgba(255, 255, 255, 0.25);
-      background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(135, 206, 235, 0.15) 100%);
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(135, 206, 235, 0.15) 100%);
-      box-shadow:
-              0 8px 35px rgba(0, 0, 0, 0.15),
-              0 2px 15px rgba(28, 166, 248, 0.1),
-              inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      /* Сплошной градиентный фон вместо прозрачного */
+      background: #001a3a;
+      background: -webkit-linear-gradient(135deg, #001a3a 0%, #003875 50%, #1ca6f8 100%);
+      background: linear-gradient(135deg, #001a3a 0%, #003875 50%, #1ca6f8 100%);
     }
 
     .mobile-menu-backdrop {
@@ -1356,7 +1316,7 @@ body {
   }
 
   body {
-    padding-top: 60px;
+    padding-top: 80px;
   }
 }
 
