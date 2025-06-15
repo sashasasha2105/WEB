@@ -176,6 +176,15 @@ class HeaderManager {
             navigator.vibrate(30);
         }
 
+        // АВТОМАТИЧЕСКОЕ ИСПРАВЛЕНИЕ СКРОЛЛА ПРИ ОТКРЫТИИ МЕНЮ
+        if (this.isMenuOpen && window.innerWidth <= 768) {
+            setTimeout(() => {
+                if (typeof window.forceEnableScroll === 'function') {
+                    window.forceEnableScroll();
+                }
+            }, 100);
+        }
+
         console.log(`[Header] 📱 Мобильное меню ${this.isMenuOpen ? 'открыто' : 'закрыто'}`);
     }
 
@@ -565,6 +574,427 @@ class HeaderManager {
     }
 }
 
+// === РАСШИРЕННАЯ ОТЛАДКА МОБИЛЬНОГО МЕНЮ ===
+
+// Функция для диагностики скролла
+window.debugMobileScroll = function() {
+    console.log('[Mobile] 📜 === ДИАГНОСТИКА СКРОЛЛА ===');
+
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const mobileContent = document.querySelector('.mobile-menu-content');
+    const mobileNav = document.querySelector('.mobile-nav');
+    const mobileActions = document.querySelector('.mobile-actions');
+
+    if (!mobileMenu) {
+        console.error('❌ Мобильное меню не найдено');
+        return;
+    }
+
+    // Информация об экране
+    console.log('📱 Экран:', {
+        width: window.innerWidth,
+        height: window.innerHeight,
+        availHeight: window.screen.availHeight,
+        devicePixelRatio: window.devicePixelRatio,
+        orientation: window.orientation || 'unknown'
+    });
+
+    // Информация о viewport
+    console.log('🖼️ Viewport:', {
+        vh: window.innerHeight,
+        dvh: document.documentElement.clientHeight,
+        visualViewport: window.visualViewport ? {
+            height: window.visualViewport.height,
+            width: window.visualViewport.width
+        } : 'не поддерживается'
+    });
+
+    // Диагностика контейнера меню
+    if (mobileContent) {
+        const contentRect = mobileContent.getBoundingClientRect();
+        const contentStyles = window.getComputedStyle(mobileContent);
+
+        console.log('📋 Контейнер меню:', {
+            height: contentRect.height,
+            maxHeight: contentStyles.maxHeight,
+            scrollHeight: mobileContent.scrollHeight,
+            clientHeight: mobileContent.clientHeight,
+            canScroll: mobileContent.scrollHeight > mobileContent.clientHeight
+        });
+    }
+
+    // Диагностика навигации
+    if (mobileNav) {
+        const navRect = mobileNav.getBoundingClientRect();
+        const navStyles = window.getComputedStyle(mobileNav);
+
+        console.log('🧭 Навигация:', {
+            height: navRect.height,
+            scrollHeight: mobileNav.scrollHeight,
+            clientHeight: mobileNav.clientHeight,
+            overflowY: navStyles.overflowY,
+            canScroll: mobileNav.scrollHeight > mobileNav.clientHeight,
+            padding: navStyles.padding
+        });
+
+        // Считаем количество элементов
+        const navLinks = mobileNav.querySelectorAll('.mobile-nav-link');
+        console.log(`📍 Элементов навигации: ${navLinks.length}`);
+
+        if (navLinks.length > 0) {
+            const firstLink = navLinks[0];
+            const lastLink = navLinks[navLinks.length - 1];
+            const linkHeight = firstLink.getBoundingClientRect().height;
+
+            console.log('🔗 Элементы навигации:', {
+                linkHeight: linkHeight,
+                totalLinksHeight: linkHeight * navLinks.length,
+                firstLinkTop: firstLink.getBoundingClientRect().top,
+                lastLinkBottom: lastLink.getBoundingClientRect().bottom,
+                lastLinkVisible: lastLink.getBoundingClientRect().bottom <= navRect.bottom
+            });
+        }
+    }
+
+    // Диагностика секции действий
+    if (mobileActions) {
+        const actionsRect = mobileActions.getBoundingClientRect();
+        const actionsStyles = window.getComputedStyle(mobileActions);
+
+        console.log('⚡ Действия:', {
+            height: actionsRect.height,
+            maxHeight: actionsStyles.maxHeight,
+            scrollHeight: mobileActions.scrollHeight,
+            clientHeight: mobileActions.clientHeight,
+            overflowY: actionsStyles.overflowY,
+            canScroll: mobileActions.scrollHeight > mobileActions.clientHeight
+        });
+
+        const actionBtns = mobileActions.querySelectorAll('.mobile-action-btn');
+        console.log(`🔘 Кнопок действий: ${actionBtns.length}`);
+    }
+
+    // Проверка адресной строки
+    const addressBarHeight = window.outerHeight - window.innerHeight;
+    console.log('🌐 Адресная строка:', {
+        estimated_height: addressBarHeight,
+        outerHeight: window.outerHeight,
+        innerHeight: window.innerHeight,
+        visible: addressBarHeight > 0
+    });
+};
+
+// Функция для автоматического тестирования скролла
+window.testMobileScroll = function() {
+    console.log('[Mobile] 🧪 === ТЕСТ СКРОЛЛА ===');
+
+    const mobileNav = document.querySelector('.mobile-nav');
+    const mobileActions = document.querySelector('.mobile-actions');
+
+    if (mobileNav) {
+        console.log('🧭 Тестируем скролл навигации...');
+
+        // Прокручиваем вниз
+        mobileNav.scrollTop = mobileNav.scrollHeight;
+        console.log(`📜 Прокрутили навигацию вниз: ${mobileNav.scrollTop}px`);
+
+        setTimeout(() => {
+            // Прокручиваем обратно
+            mobileNav.scrollTop = 0;
+            console.log('📜 Вернули навигацию в начало');
+        }, 1000);
+    }
+
+    if (mobileActions) {
+        console.log('⚡ Тестируем скролл действий...');
+
+        setTimeout(() => {
+            mobileActions.scrollTop = mobileActions.scrollHeight;
+            console.log(`📜 Прокрутили действия вниз: ${mobileActions.scrollTop}px`);
+
+            setTimeout(() => {
+                mobileActions.scrollTop = 0;
+                console.log('📜 Вернули действия в начало');
+            }, 1000);
+        }, 500);
+    }
+};
+
+// Функция для добавления тестовых элементов (для проверки скролла)
+window.addTestMenuItems = function() {
+    console.log('[Mobile] ➕ === ДОБАВЛЕНИЕ ТЕСТОВЫХ ЭЛЕМЕНТОВ ===');
+
+    const mobileNav = document.querySelector('.mobile-nav');
+    const mobileActions = document.querySelector('.mobile-actions');
+
+    if (mobileNav) {
+        // Добавляем тестовые ссылки
+        for (let i = 1; i <= 10; i++) {
+            const testLink = document.createElement('a');
+            testLink.href = '#';
+            testLink.className = 'mobile-nav-link';
+            testLink.innerHTML = `
+                <span>Тестовый пункт ${i}</span>
+                <div class="mobile-nav-arrow">→</div>
+            `;
+            mobileNav.appendChild(testLink);
+        }
+        console.log('✅ Добавлено 10 тестовых пунктов навигации');
+    }
+
+    if (mobileActions) {
+        // Добавляем тестовые кнопки
+        for (let i = 1; i <= 5; i++) {
+            const testBtn = document.createElement('a');
+            testBtn.href = '#';
+            testBtn.className = 'mobile-action-btn';
+            testBtn.innerHTML = `
+                <div class="action-icon">🔧</div>
+                <div class="action-content">
+                    <span class="action-title">Тестовая кнопка ${i}</span>
+                    <span class="action-subtitle">Описание кнопки</span>
+                </div>
+            `;
+            mobileActions.appendChild(testBtn);
+        }
+        console.log('✅ Добавлено 5 тестовых кнопок действий');
+    }
+
+    // Проверяем скролл после добавления
+    setTimeout(() => {
+        window.debugMobileScroll();
+        window.testMobileScroll();
+    }, 200);
+};
+
+// Функция для удаления тестовых элементов
+window.removeTestMenuItems = function() {
+    console.log('[Mobile] ➖ === УДАЛЕНИЕ ТЕСТОВЫХ ЭЛЕМЕНТОВ ===');
+
+    // Удаляем тестовые ссылки
+    const testLinks = document.querySelectorAll('.mobile-nav-link');
+    testLinks.forEach((link, index) => {
+        if (link.textContent.includes('Тестовый пункт')) {
+            link.remove();
+        }
+    });
+
+    // Удаляем тестовые кнопки
+    const testBtns = document.querySelectorAll('.mobile-action-btn');
+    testBtns.forEach((btn, index) => {
+        if (btn.textContent.includes('Тестовая кнопка')) {
+            btn.remove();
+        }
+    });
+
+    console.log('✅ Тестовые элементы удалены');
+};
+
+// Функция для полного тестирования мобильного меню
+window.fullMobileTest = function() {
+    console.log('[Mobile] 🎯 === ПОЛНОЕ ТЕСТИРОВАНИЕ МОБИЛЬНОГО МЕНЮ ===');
+
+    // 1. Базовая диагностика
+    window.debugMobileScroll();
+
+    // 2. Открываем меню если закрыто
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const mobileToggle = document.querySelector('.mobile-menu-toggle');
+
+    if (mobileMenu && !mobileMenu.classList.contains('active')) {
+        console.log('📱 Открываем мобильное меню...');
+        if (mobileToggle) {
+            mobileToggle.click();
+        }
+    }
+
+    setTimeout(() => {
+        // 3. Добавляем тестовые элементы
+        window.addTestMenuItems();
+
+        setTimeout(() => {
+            // 4. Тестируем скролл
+            window.testMobileScroll();
+
+            setTimeout(() => {
+                // 5. Убираем тестовые элементы
+                window.removeTestMenuItems();
+                console.log('🎉 Полное тестирование завершено!');
+            }, 4000);
+        }, 1000);
+    }, 500);
+};
+
+// === ПРИНУДИТЕЛЬНОЕ ВКЛЮЧЕНИЕ СКРОЛЛА ===
+
+window.forceEnableScroll = function() {
+    console.log('[Mobile] 🔧 === ПРИНУДИТЕЛЬНОЕ ВКЛЮЧЕНИЕ СКРОЛЛА ===');
+
+    const mobileNav = document.querySelector('.mobile-nav');
+    const mobileActions = document.querySelector('.mobile-actions');
+    const mobileMenuContent = document.querySelector('.mobile-menu-content');
+
+    if (!mobileNav || !mobileActions) {
+        console.error('❌ Мобильные элементы не найдены');
+        return;
+    }
+
+    // === ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ НАВИГАЦИИ ===
+    if (mobileNav) {
+        mobileNav.style.setProperty('overflow-y', 'scroll', 'important');
+        mobileNav.style.setProperty('overflow-x', 'hidden', 'important');
+        mobileNav.style.setProperty('max-height', '400px', 'important');
+        mobileNav.style.setProperty('-webkit-overflow-scrolling', 'touch', 'important');
+        mobileNav.style.setProperty('scrollbar-width', 'thin', 'important');
+        mobileNav.style.setProperty('scrollbar-color', 'rgba(255, 255, 255, 0.6) transparent', 'important');
+
+        // Добавляем класс для CSS
+        mobileNav.classList.add('force-scroll');
+
+        console.log('✅ Навигация: принудительный скролл включен');
+
+        // Проверяем результат
+        const navRect = mobileNav.getBoundingClientRect();
+        const canScroll = mobileNav.scrollHeight > mobileNav.clientHeight;
+        console.log('📊 Навигация после исправления:', {
+            height: navRect.height,
+            scrollHeight: mobileNav.scrollHeight,
+            clientHeight: mobileNav.clientHeight,
+            canScroll: canScroll,
+            overflowY: window.getComputedStyle(mobileNav).overflowY
+        });
+    }
+
+    // === ПРИНУДИТЕЛЬНЫЕ СТИЛИ ДЛЯ ДЕЙСТВИЙ ===
+    if (mobileActions) {
+        mobileActions.style.setProperty('overflow-y', 'auto', 'important');
+        mobileActions.style.setProperty('overflow-x', 'hidden', 'important');
+        mobileActions.style.setProperty('max-height', '180px', 'important');
+        mobileActions.style.setProperty('-webkit-overflow-scrolling', 'touch', 'important');
+        mobileActions.style.setProperty('scrollbar-width', 'thin', 'important');
+        mobileActions.style.setProperty('scrollbar-color', 'rgba(255, 255, 255, 0.5) transparent', 'important');
+
+        // Добавляем класс для CSS
+        mobileActions.classList.add('force-scroll');
+
+        console.log('✅ Действия: принудительный скролл включен');
+
+        // Проверяем результат
+        const actionsRect = mobileActions.getBoundingClientRect();
+        const canScroll = mobileActions.scrollHeight > mobileActions.clientHeight;
+        console.log('📊 Действия после исправления:', {
+            height: actionsRect.height,
+            scrollHeight: mobileActions.scrollHeight,
+            clientHeight: mobileActions.clientHeight,
+            canScroll: canScroll,
+            overflowY: window.getComputedStyle(mobileActions).overflowY
+        });
+    }
+
+    // === ИСПРАВЛЕНИЕ КОНТЕЙНЕРА МЕНЮ ===
+    if (mobileMenuContent) {
+        mobileMenuContent.style.setProperty('height', '100vh', 'important');
+        mobileMenuContent.style.setProperty('height', '100dvh', 'important');
+        mobileMenuContent.style.setProperty('max-height', '100vh', 'important');
+        mobileMenuContent.style.setProperty('display', 'flex', 'important');
+        mobileMenuContent.style.setProperty('flex-direction', 'column', 'important');
+
+        console.log('✅ Контейнер меню: исправлен');
+    }
+
+    // === ТЕСТИРОВАНИЕ СКРОЛЛА ===
+    setTimeout(() => {
+        console.log('🧪 Тестируем скролл после исправления...');
+
+        if (mobileNav) {
+            const oldScrollTop = mobileNav.scrollTop;
+            mobileNav.scrollTop = 50;
+
+            setTimeout(() => {
+                const newScrollTop = mobileNav.scrollTop;
+                if (newScrollTop > oldScrollTop) {
+                    console.log('✅ Скролл навигации РАБОТАЕТ!');
+                } else {
+                    console.log('❌ Скролл навигации НЕ работает');
+                }
+
+                // Возвращаем обратно
+                mobileNav.scrollTop = oldScrollTop;
+            }, 100);
+        }
+
+        if (mobileActions) {
+            const oldScrollTop = mobileActions.scrollTop;
+            mobileActions.scrollTop = 20;
+
+            setTimeout(() => {
+                const newScrollTop = mobileActions.scrollTop;
+                if (newScrollTop > oldScrollTop) {
+                    console.log('✅ Скролл действий РАБОТАЕТ!');
+                } else {
+                    console.log('❌ Скролл действий НЕ работает');
+                }
+
+                // Возвращаем обратно
+                mobileActions.scrollTop = oldScrollTop;
+            }, 200);
+        }
+    }, 300);
+
+    console.log('🎉 Принудительное включение скролла завершено!');
+};
+
+// === БЫСТРОЕ ИСПРАВЛЕНИЕ ===
+window.quickFixScroll = function() {
+    console.log('[Mobile] ⚡ === БЫСТРОЕ ИСПРАВЛЕНИЕ СКРОЛЛА ===');
+
+    // Открываем меню если закрыто
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const mobileToggle = document.querySelector('.mobile-menu-toggle');
+
+    if (mobileMenu && !mobileMenu.classList.contains('active') && mobileToggle) {
+        console.log('📱 Открываем меню...');
+        mobileToggle.click();
+    }
+
+    setTimeout(() => {
+        window.forceEnableScroll();
+        setTimeout(() => {
+            window.testMobileScroll();
+        }, 500);
+    }, 200);
+};
+
+// === АВТОМАТИЧЕСКОЕ ВКЛЮЧЕНИЕ НА МОБИЛЬНЫХ ===
+if (window.innerWidth <= 768) {
+    // Ждем когда меню откроется и применяем исправления
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            const mobileMenu = document.querySelector('.mobile-menu');
+            if (mobileMenu) {
+                // Слушаем открытие меню
+                const observer = new MutationObserver((mutations) => {
+                    mutations.forEach((mutation) => {
+                        if (mutation.target.classList.contains('active')) {
+                            console.log('📱 Мобильное меню открыто - применяем исправления...');
+                            setTimeout(() => {
+                                window.forceEnableScroll();
+                            }, 100);
+                        }
+                    });
+                });
+
+                observer.observe(mobileMenu, {
+                    attributes: true,
+                    attributeFilter: ['class']
+                });
+
+                console.log('👀 Наблюдатель за мобильным меню установлен');
+            }
+        }, 500);
+    });
+}
+
 // === ИНИЦИАЛИЗАЦИЯ ===
 
 let headerInstance = null;
@@ -595,8 +1025,6 @@ function initHeader() {
                     headerInstance.diagnoseMobile();
                     // Автоматически исправляем дублирование
                     window.fixMenuDuplication();
-                    // Тестируем скролл
-                    window.testMenuScroll();
                 }, 500);
             }
 
@@ -647,7 +1075,6 @@ if (window.innerWidth <= 768) {
             // Проверяем дублирование после успешной инициализации
             setTimeout(() => {
                 window.fixMenuDuplication();
-                window.testMenuScroll();
             }, 100);
         }
     }, 300);
@@ -705,74 +1132,8 @@ window.fixAllMobileIssues = function() {
     console.log('[Header] 🔧 === ИСПРАВЛЕНИЕ ВСЕХ МОБИЛЬНЫХ ПРОБЛЕМ ===');
     window.fixMenuDuplication();
     window.fixMobileCart();
-    window.testMenuScroll();
+    window.quickFixScroll();
     window.debugMobileHeader();
-};
-
-// Функция для тестирования скролла в меню
-window.testMenuScroll = function() {
-    console.log('[Header] 📜 === ТЕСТ СКРОЛЛА В МЕНЮ ===');
-
-    const mobileNav = document.querySelector('.mobile-nav');
-    if (mobileNav) {
-        const navRect = mobileNav.getBoundingClientRect();
-        const navStyles = window.getComputedStyle(mobileNav);
-
-        console.log('- Параметры навигации:', {
-            height: navRect.height,
-            scrollHeight: mobileNav.scrollHeight,
-            clientHeight: mobileNav.clientHeight,
-            overflowY: navStyles.overflowY,
-            maxHeight: navStyles.maxHeight,
-            canScroll: mobileNav.scrollHeight > mobileNav.clientHeight
-        });
-
-        if (mobileNav.scrollHeight > mobileNav.clientHeight) {
-            console.log('✅ Скролл доступен в навигации');
-        } else {
-            console.log('⚠️ Скролл не нужен - контент помещается');
-        }
-    } else {
-        console.log('❌ Навигация не найдена');
-    }
-
-    const mobileActions = document.querySelector('.mobile-actions');
-    if (mobileActions) {
-        const actionsRect = mobileActions.getBoundingClientRect();
-        const actionsStyles = window.getComputedStyle(mobileActions);
-
-        console.log('- Параметры действий:', {
-            height: actionsRect.height,
-            scrollHeight: mobileActions.scrollHeight,
-            clientHeight: mobileActions.clientHeight,
-            overflowY: actionsStyles.overflowY,
-            maxHeight: actionsStyles.maxHeight,
-            canScroll: mobileActions.scrollHeight > mobileActions.clientHeight
-        });
-
-        if (mobileActions.scrollHeight > mobileActions.clientHeight) {
-            console.log('✅ Скролл доступен в действиях');
-        } else {
-            console.log('⚠️ Скролл не нужен в действиях - контент помещается');
-        }
-    } else {
-        console.log('❌ Секция действий не найдена');
-    }
-};
-
-// Мобильная диагностика
-window.debugMobileHeader = function() {
-    console.log('[Header] 🔍 === МОБИЛЬНАЯ ДИАГНОСТИКА ===');
-    console.log('Размер экрана:', window.innerWidth + 'x' + window.innerHeight);
-    console.log('User Agent:', navigator.userAgent);
-
-    if (headerInstance && headerInstance.isInitialized) {
-        headerInstance.diagnoseMobile();
-    } else {
-        console.error('[Header] ❌ HeaderInstance не найден или не инициализирован');
-        console.log('Попытка принудительной инициализации...');
-        initHeader();
-    }
 };
 
 // ФУНКЦИЯ ДЛЯ ИСПРАВЛЕНИЯ ДУБЛИРОВАНИЯ
@@ -788,9 +1149,9 @@ window.fixMenuDuplication = function() {
         // Оставляем только первую кнопку, остальные скрываем
         allMenuToggles.forEach((toggle, index) => {
             if (index > 0) {
-                toggle.style.display = 'none !important';
-                toggle.style.visibility = 'hidden !important';
-                toggle.style.opacity = '0 !important';
+                toggle.style.display = 'none';
+                toggle.style.visibility = 'hidden';
+                toggle.style.opacity = '0';
                 console.log(`Скрыта кнопка ${index + 1}`);
             }
         });
@@ -816,11 +1177,11 @@ window.fixMenuDuplication = function() {
         });
     }
 };
-// ИСПРАВЛЕНО: Функция исправления мобильной корзины БЕЗ ПРИНУДИТЕЛЬНОЙ СТИЛИЗАЦИИ
-window.fixMobileCart = function() {
-    console.log('[Header] 🔧 === ИСПРАВЛЕНИЕ МОБИЛЬНОЙ КОРЗИНЫ ===');
 
-    // ТОЛЬКО диагностика, БЕЗ изменения стилей
+// Функция исправления мобильной корзины - ТОЛЬКО диагностика
+window.fixMobileCart = function() {
+    console.log('[Header] 🔧 === ДИАГНОСТИКА МОБИЛЬНОЙ КОРЗИНЫ ===');
+
     const cartActions = document.querySelector('.site-header .header-actions');
     const cartBadge = document.querySelector('.site-header .header-actions .cart-badge');
 
@@ -854,10 +1215,40 @@ window.fixMobileCart = function() {
     }
 };
 
+// Мобильная диагностика
+window.debugMobileHeader = function() {
+    console.log('[Header] 🔍 === МОБИЛЬНАЯ ДИАГНОСТИКА ===');
+    console.log('Размер экрана:', window.innerWidth + 'x' + window.innerHeight);
+    console.log('User Agent:', navigator.userAgent);
+
+    if (headerInstance && headerInstance.isInitialized) {
+        headerInstance.diagnoseMobile();
+    } else {
+        console.error('[Header] ❌ HeaderInstance не найден или не инициализирован');
+        console.log('Попытка принудительной инициализации...');
+        initHeader();
+    }
+};
+
+// Автоматический запуск проверки при загрузке (только на мобильных)
+if (window.innerWidth <= 768) {
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            console.log('[Header] 🚀 Автоматическая диагностика через 3 секунды...');
+            console.log('[Header] 💡 Доступные команды:');
+            console.log('  - fullMobileTest() - полное тестирование');
+            console.log('  - debugMobileScroll() - диагностика скролла');
+            console.log('  - forceEnableScroll() - принудительное включение скролла');
+            console.log('  - quickFixScroll() - быстрое исправление с тестом');
+            console.log('  - fixAllMobileIssues() - исправление всех проблем');
+        }, 1000);
+    });
+}
+
 // === ЭКСПОРТ ===
 
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { HeaderManager, initHeader };
 }
 
-console.log('[Header] 🎉 Скрипт загружен и готов к работе!');
+console.log('[Header] 🎉 Обновленный скрипт с исправлениями скролла загружен и готов к работе!');
