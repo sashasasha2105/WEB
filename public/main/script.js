@@ -246,10 +246,6 @@ function savePremiumCartState() {
     }
   }
 
-    checkManagers();
-  });
-}
-
 // ==== ПРЕМИАЛЬНЫЕ АНИМАЦИИ ====
 class PremiumAnimations {
   static slideUp(elements, delay = 0) {
@@ -321,90 +317,6 @@ function loadPremiumCartState() {
   }
 }
 
-function savePremiumCartState() {
-  try {
-    if (window.CartManager && typeof window.CartManager.addToCart === 'function') {
-      const colorMapping = { 'black': 'Чёрный', 'white': 'Белый' };
-      const cartColor = colorMapping[premiumState.selectedColor] || 'Чёрный';
-      
-      // Вычисляем финальную цену с учетом опций
-      const memoryPrice = premiumState.selectedMemory === '64gb' ? premiumState.memoryPrice : 0;
-      const finalPrice = premiumState.basePrice + memoryPrice;
-      
-      // Формируем описание товара
-      const memoryDesc = premiumState.selectedMemory === '64gb' ? '64 ГБ' : '8 ГБ';
-      const productDescription = `clip & go 1st edition (${cartColor}, ${memoryDesc})`;
-
-      // Добавляем основной товар
-      const productData = {
-        id: `clip-go-${Date.now()}`,
-        name: 'clip & go 1st edition',
-        price: finalPrice,
-        color: cartColor,
-        memory: memoryDesc,
-        description: productDescription,
-        quantity: 1,
-        image: '../assets/images/cam1.jpg'
-      };
-
-      console.log('[PremiumMain] 🛒 Добавляем товар в корзину:', productData);
-      
-      const success = window.CartManager.addToCart(productData);
-
-      if (success) {
-        console.log('[PremiumMain] ✅ Товар успешно добавлен в корзину через CartManager');
-        
-        // Обновляем локальное состояние
-        premiumState.cameraCount++;
-        if (premiumState.selectedMemory === '64gb') {
-          premiumState.memoryCount++;
-        }
-        
-        return true;
-      } else {
-        console.warn('[PremiumMain] ⚠️ CartManager.addToCart вернул false');
-        return false;
-      }
-    } else {
-      console.warn('[PremiumMain] ⚠️ CartManager недоступен, используем fallback');
-      
-      // Fallback на localStorage - более надежная реализация
-      const existingCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
-      
-      const colorMapping = { 'black': 'Чёрный', 'white': 'Белый' };
-      const cartColor = colorMapping[premiumState.selectedColor] || 'Чёрный';
-      const memoryPrice = premiumState.selectedMemory === '64gb' ? premiumState.memoryPrice : 0;
-      const finalPrice = premiumState.basePrice + memoryPrice;
-      const memoryDesc = premiumState.selectedMemory === '64gb' ? '64 ГБ' : '8 ГБ';
-      
-      const newItem = {
-        id: `clip-go-${Date.now()}`,
-        name: 'clip & go 1st edition',
-        price: finalPrice,
-        color: cartColor,
-        memory: memoryDesc,
-        description: `clip & go 1st edition (${cartColor}, ${memoryDesc})`,
-        quantity: 1,
-        image: '../assets/images/cam1.jpg'
-      };
-      
-      existingCart.push(newItem);
-      localStorage.setItem('cartItems', JSON.stringify(existingCart));
-      
-      // Обновляем локальное состояние
-      premiumState.cameraCount++;
-      if (premiumState.selectedMemory === '64gb') {
-        premiumState.memoryCount++;
-      }
-      
-      console.log('[PremiumMain] 💾 Товар добавлен в localStorage fallback');
-      return true;
-    }
-  } catch (error) {
-    console.error('[PremiumMain] ❌ Ошибка добавления товара в корзину:', error);
-    return false;
-  }
-}
 
 // ==== ОБНОВЛЕНИЕ СТАТИСТИКИ ====
 function updatePremiumStats() {
@@ -620,7 +532,7 @@ class PremiumPurchaseSystem {
         // Премиальная анимация
         PremiumAnimations.hapticFeedback(btn);
 
-        savePremiumCartState();
+        updatePremiumPriceDisplay();
         console.log(`[PremiumMain] 🎨 Выбран цвет: ${premiumState.selectedColor}`);
       });
     });
@@ -1108,17 +1020,11 @@ async function initPremiumMainPage() {
       }
     });
 
-    // Контент уже видим, просто делаем плавную анимацию появления
+    // Контент готов и видим
     const mainContent = DOM.mainContent();
     if (mainContent) {
-      // Добавляем небольшую элегантную анимацию появления
-      mainContent.style.opacity = '0';
-      mainContent.style.transform = 'translateY(10px)';
-      
-      setTimeout(() => {
-        mainContent.style.opacity = '1';
-        mainContent.style.transform = 'translateY(0)';
-      }, 100);
+      mainContent.style.opacity = '1';
+      mainContent.style.transform = 'translateY(0)';
     }
 
     // Отмечаем как инициализированную
