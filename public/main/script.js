@@ -1,7 +1,7 @@
-// === MAIN/SCRIPT.JS - ПРЕМИАЛЬНАЯ ЛОГИКА ГЛАВНОЙ СТРАНИЦЫ ===
-// Основано на премиальной дизайн-системе clip & go с glassmorphism
+// === MAIN/SCRIPT.JS - ОПТИМИЗИРОВАННАЯ ПРЕМИАЛЬНАЯ ЛОГИКА ГЛАВНОЙ СТРАНИЦЫ ===
+// Основано на премиальной дизайн-системе clip & go с максимальной производительностью
 
-console.log('[PremiumMain] 🎨 Загрузка премиального интерфейса...');
+console.log('[PremiumMain] 🚀 Загрузка оптимизированного премиального интерфейса...');
 
 // ==== ПРЕМИАЛЬНЫЕ КОНСТАНТЫ ====
 const PREMIUM_CONFIG = {
@@ -30,7 +30,7 @@ let premiumState = {
   // Состояние корзины
   cameraCount: 0,
   memoryCount: 0,
-  wantMemory: false,
+  selectedMemory: '8gb',
   selectedColor: 'black',
 
   // Состояние UI
@@ -42,7 +42,7 @@ let premiumState = {
   pageInitialized: false,
 
   // Цены
-  basePrice: 8900,
+  basePrice: 7490,
   memoryPrice: 500
 };
 
@@ -97,6 +97,154 @@ async function waitForPremiumManagers() {
         setTimeout(checkManagers, 100);
       }
     };
+
+    checkManagers();
+  });
+}
+
+// ==== ОТОБРАЖЕНИЕ ОШИБОК ====
+function showErrorNotification(message) {
+  const notification = document.createElement('div');
+  notification.className = 'premium-notification error-notification';
+  notification.style.cssText = `
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    left: 20px;
+    max-width: 400px;
+    margin: 0 auto;
+    background: rgba(239, 68, 68, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    color: white;
+    font-size: 0.9em;
+    z-index: 100000;
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+    animation: notificationSlideIn 0.4s ease;
+    transform: translateZ(0);
+  `;
+  
+  notification.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span style="font-size: 1.4em;">⚠️</span>
+      <div>
+        <div style="font-weight: 600; margin-bottom: 4px;">Ошибка</div>
+        <div style="font-size: 0.85em; opacity: 0.9;">${message}</div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'notificationSlideOut 0.4s ease';
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 400);
+  }, 4000);
+}
+
+// ==== СОХРАНЕНИЕ СОСТОЯНИЯ КОРЗИНЫ ====
+function savePremiumCartState() {
+  try {
+    const cartColor = premiumState.selectedColor;
+    const memoryCard = premiumState.selectedMemory;
+    const basePrice = premiumState.basePrice;
+    const memoryPrice = memoryCard === '64gb' ? premiumState.memoryPrice : 0;
+    const finalPrice = basePrice + memoryPrice;
+    
+    const cartColorRus = cartColor === 'black' ? 'чёрный' : 'белый';
+    const memoryDesc = memoryCard === '8gb' ? '8 ГБ (встроенная)' : '64 ГБ microSD';
+    const productDescription = `clip & go 1st edition (${cartColorRus}, ${memoryDesc})`;
+    
+    if (window.CartManager && typeof window.CartManager.addToCart === 'function') {
+      // Enhanced CartManager integration with proper data structure
+      const productData = {
+        id: `clip-go-${Date.now()}`,
+        name: 'clip & go 1st edition',
+        price: finalPrice,
+        color: cartColor,
+        colorRus: cartColorRus,
+        memory: memoryCard,
+        memoryDesc: memoryDesc,
+        description: productDescription,
+        quantity: 1,
+        image: '../assets/images/cam1.jpg',
+        category: 'camera',
+        sku: `CLIP-GO-${cartColor.toUpperCase()}-${memoryCard.toUpperCase()}`
+      };
+      
+      console.log('[PremiumMain] 📦 Добавляем товар через CartManager:', productData);
+      const success = window.CartManager.addToCart(productData);
+      
+      if (success) {
+        console.log('[PremiumMain] ✅ Товар успешно добавлен через CartManager');
+        return true;
+      } else {
+        console.warn('[PremiumMain] ⚠️ CartManager вернул false, используем fallback');
+        throw new Error('CartManager failed');
+      }
+    } else {
+      console.log('[PremiumMain] 📦 CartManager недоступен, используем localStorage fallback');
+      throw new Error('CartManager not available');
+    }
+  } catch (error) {
+    console.warn('[PremiumMain] ⚠️ Ошибка с CartManager, используем localStorage fallback:', error);
+    
+    try {
+      // Comprehensive localStorage fallback
+      const cartColor = premiumState.selectedColor;
+      const memoryCard = premiumState.selectedMemory;
+      const basePrice = premiumState.basePrice;
+      const memoryPrice = memoryCard === '64gb' ? premiumState.memoryPrice : 0;
+      const finalPrice = basePrice + memoryPrice;
+      
+      const cartColorRus = cartColor === 'black' ? 'чёрный' : 'белый';
+      const memoryDesc = memoryCard === '8gb' ? '8 ГБ (встроенная)' : '64 ГБ microSD';
+      
+      const existingCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
+      
+      const newItem = {
+        id: `clip-go-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        name: 'clip & go 1st edition',
+        price: finalPrice,
+        color: cartColor,
+        colorRus: cartColorRus,
+        memory: memoryCard,
+        memoryDesc: memoryDesc,
+        description: `clip & go 1st edition (${cartColorRus}, ${memoryDesc})`,
+        quantity: 1,
+        image: '../assets/images/cam1.jpg',
+        addedAt: new Date().toISOString(),
+        category: 'camera',
+        sku: `CLIP-GO-${cartColor.toUpperCase()}-${memoryCard.toUpperCase()}`
+      };
+      
+      existingCart.push(newItem);
+      localStorage.setItem('cartItems', JSON.stringify(existingCart));
+      
+      // Update cart counter if exists
+      const cartCounter = document.querySelector('.cart-counter');
+      if (cartCounter) {
+        cartCounter.textContent = existingCart.length;
+        cartCounter.style.display = existingCart.length > 0 ? 'flex' : 'none';
+      }
+      
+      console.log('[PremiumMain] ✅ Товар успешно добавлен через localStorage fallback');
+      console.log('[PremiumMain] 📦 Текущая корзина:', existingCart);
+      
+      return true;
+    } catch (fallbackError) {
+      console.error('[PremiumMain] ❌ Критическая ошибка добавления товара в корзину:', fallbackError);
+      showErrorNotification('Не удалось добавить товар в корзину. Попробуйте позже.');
+      return false;
+    }
+  }
 
     checkManagers();
   });
@@ -175,30 +323,86 @@ function loadPremiumCartState() {
 
 function savePremiumCartState() {
   try {
-    if (window.CartManager) {
+    if (window.CartManager && typeof window.CartManager.addToCart === 'function') {
       const colorMapping = { 'black': 'Чёрный', 'white': 'Белый' };
       const cartColor = colorMapping[premiumState.selectedColor] || 'Чёрный';
+      
+      // Вычисляем финальную цену с учетом опций
+      const memoryPrice = premiumState.selectedMemory === '64gb' ? premiumState.memoryPrice : 0;
+      const finalPrice = premiumState.basePrice + memoryPrice;
+      
+      // Формируем описание товара
+      const memoryDesc = premiumState.selectedMemory === '64gb' ? '64 ГБ' : '8 ГБ';
+      const productDescription = `clip & go 1st edition (${cartColor}, ${memoryDesc})`;
 
-      const success = window.CartManager.saveCartData(
-          premiumState.cameraCount,
-          premiumState.memoryCount,
-          cartColor
-      );
+      // Добавляем основной товар
+      const productData = {
+        id: `clip-go-${Date.now()}`,
+        name: 'clip & go 1st edition',
+        price: finalPrice,
+        color: cartColor,
+        memory: memoryDesc,
+        description: productDescription,
+        quantity: 1,
+        image: '../assets/images/cam1.jpg'
+      };
+
+      console.log('[PremiumMain] 🛒 Добавляем товар в корзину:', productData);
+      
+      const success = window.CartManager.addToCart(productData);
 
       if (success) {
-        console.log('[PremiumMain] 💾 Состояние сохранено через CartManager');
+        console.log('[PremiumMain] ✅ Товар успешно добавлен в корзину через CartManager');
+        
+        // Обновляем локальное состояние
+        premiumState.cameraCount++;
+        if (premiumState.selectedMemory === '64gb') {
+          premiumState.memoryCount++;
+        }
+        
+        return true;
+      } else {
+        console.warn('[PremiumMain] ⚠️ CartManager.addToCart вернул false');
+        return false;
       }
     } else {
-      // Fallback на localStorage
-      const data = {
-        cameraCount: premiumState.cameraCount,
-        memoryCount: premiumState.memoryCount,
-        cartColor: premiumState.selectedColor === 'black' ? 'Чёрный' : 'Белый'
+      console.warn('[PremiumMain] ⚠️ CartManager недоступен, используем fallback');
+      
+      // Fallback на localStorage - более надежная реализация
+      const existingCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
+      
+      const colorMapping = { 'black': 'Чёрный', 'white': 'Белый' };
+      const cartColor = colorMapping[premiumState.selectedColor] || 'Чёрный';
+      const memoryPrice = premiumState.selectedMemory === '64gb' ? premiumState.memoryPrice : 0;
+      const finalPrice = premiumState.basePrice + memoryPrice;
+      const memoryDesc = premiumState.selectedMemory === '64gb' ? '64 ГБ' : '8 ГБ';
+      
+      const newItem = {
+        id: `clip-go-${Date.now()}`,
+        name: 'clip & go 1st edition',
+        price: finalPrice,
+        color: cartColor,
+        memory: memoryDesc,
+        description: `clip & go 1st edition (${cartColor}, ${memoryDesc})`,
+        quantity: 1,
+        image: '../assets/images/cam1.jpg'
       };
-      localStorage.setItem('cartData', JSON.stringify(data));
+      
+      existingCart.push(newItem);
+      localStorage.setItem('cartItems', JSON.stringify(existingCart));
+      
+      // Обновляем локальное состояние
+      premiumState.cameraCount++;
+      if (premiumState.selectedMemory === '64gb') {
+        premiumState.memoryCount++;
+      }
+      
+      console.log('[PremiumMain] 💾 Товар добавлен в localStorage fallback');
+      return true;
     }
   } catch (error) {
-    console.error('[PremiumMain] ❌ Ошибка сохранения состояния:', error);
+    console.error('[PremiumMain] ❌ Ошибка добавления товара в корзину:', error);
+    return false;
   }
 }
 
@@ -216,20 +420,13 @@ function updatePremiumPriceDisplay() {
   const priceDisplay = DOM.priceDisplay();
   if (!priceDisplay) return;
 
-  const unit = premiumState.basePrice + (premiumState.wantMemory ? premiumState.memoryPrice : 0);
+  const memoryPrice = premiumState.selectedMemory === '64gb' ? premiumState.memoryPrice : 0;
+  const unit = premiumState.basePrice + memoryPrice;
 
-  if (premiumState.cameraCount + premiumState.memoryCount === 0) {
-    priceDisplay.innerHTML = `
-      <div style="color: rgba(255, 255, 255, 0.9); margin-bottom: 8px;">Итоговая цена:</div>
-      <strong>${unit.toLocaleString('ru-RU')} ₽</strong>
-    `;
-  } else {
-    const total = premiumState.cameraCount * premiumState.basePrice + premiumState.memoryCount * premiumState.memoryPrice;
-    priceDisplay.innerHTML = `
-      <div style="color: rgba(255, 255, 255, 0.9); margin-bottom: 8px;">Итоговая цена:</div>
-      <strong>${total.toLocaleString('ru-RU')} ₽</strong>
-    `;
-  }
+  priceDisplay.innerHTML = `
+    <div style="color: rgba(255, 255, 255, 0.9); margin-bottom: 8px;">Итоговая цена:</div>
+    <strong>${unit.toLocaleString('ru-RU')} ₽</strong>
+  `;
 
   // Добавляем блеск к цене
   priceDisplay.style.animation = 'countUp 0.5s ease';
@@ -439,13 +636,13 @@ class PremiumPurchaseSystem {
 
         // Выделяем выбранную кнопку
         btn.classList.add('selected');
-        premiumState.wantMemory = btn.dataset.memory === '8gb';
+        premiumState.selectedMemory = btn.dataset.memory;
 
         // Премиальная анимация
         PremiumAnimations.hapticFeedback(btn);
 
         updatePremiumPriceDisplay();
-        console.log(`[PremiumMain] 💾 Память: ${premiumState.wantMemory ? '8GB' : 'без накопителя'}`);
+        console.log(`[PremiumMain] 💾 Память: ${premiumState.selectedMemory}`);
       });
     });
   }
@@ -463,25 +660,46 @@ class PremiumPurchaseSystem {
   static addToCart() {
     console.log('[PremiumMain] 🛒 Добавление в премиальную корзину...');
 
-    // Обновляем состояние
-    premiumState.cameraCount++;
-    if (premiumState.wantMemory) {
-      premiumState.memoryCount++;
-    }
-    const totalItems = premiumState.cameraCount + premiumState.memoryCount;
-
     // Анимация кнопки
     const addBtn = DOM.addToCartBtn();
     PremiumAnimations.hapticFeedback(addBtn);
 
-    // Обновляем интерфейс
-    updatePremiumPriceDisplay();
-    updatePremiumStats();
-    savePremiumCartState();
+    // Добавляем товар в корзину
+    const addResult = savePremiumCartState();
 
-    // Премиальные уведомления
-    this.showPremiumNotification(totalItems);
-    this.createPremiumFlyingAnimation();
+    if (addResult) {
+      console.log('[PremiumMain] ✅ Товар успешно добавлен в корзину');
+      
+      // Обновляем интерфейс
+      updatePremiumPriceDisplay();
+      updatePremiumStats();
+
+      // Небольшая задержка для обновления CartManager
+      setTimeout(() => {
+        // Получаем актуальное количество товаров
+        let currentCartCount = 1;
+        if (window.CartManager && typeof window.CartManager.getTotalCount === 'function') {
+          currentCartCount = window.CartManager.getTotalCount();
+        } else {
+          // Fallback для localStorage
+          try {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+            currentCartCount = cartItems.length;
+          } catch (e) {
+            currentCartCount = 1;
+          }
+        }
+        
+        // Премиальные уведомления с актуальным количеством
+        this.showPremiumNotification(currentCartCount);
+        this.createPremiumFlyingAnimation();
+      }, 150);
+    } else {
+      console.error('[PremiumMain] ❌ Не удалось добавить товар в корзину');
+      
+      // Показываем ошибку пользователю
+      this.showErrorNotification('Не удалось добавить товар в корзину. Попробуйте снова.');
+    }
 
     // Принудительно обновляем счетчик
     if (window.CartManager && typeof window.CartManager.forceUpdateCounter === 'function') {
@@ -500,33 +718,35 @@ class PremiumPurchaseSystem {
 
     const notification = document.createElement('div');
     notification.className = 'premium-notification';
-    notification.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      color: white;
-      padding: 20px 25px;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      z-index: 9999;
-      font-weight: 600;
-      transform: translateX(100%);
-      transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-      max-width: 350px;
-      font-family: 'Montserrat', sans-serif;
-    `;
+    // Проверяем размер карты памяти для анимации
+    const hasMemoryCard = premiumState.selectedMemory === '64gb';
+    const memoryDesc = hasMemoryCard ? '64 ГБ' : '8 ГБ';
+    const colorName = premiumState.selectedColor === 'black' ? 'Чёрный' : 'Белый';
+    
+    // Получаем актуальное количество товаров в корзине
+    let currentCartCount = totalItems || 1;
+    if (window.CartManager && typeof window.CartManager.getTotalCount === 'function') {
+      currentCartCount = window.CartManager.getTotalCount();
+    } else {
+      // Fallback: пытаемся получить из localStorage
+      try {
+        const cartData = JSON.parse(localStorage.getItem('cartItems') || '[]');
+        currentCartCount = cartData.length || 1;
+      } catch (e) {
+        console.warn('[PremiumMain] Fallback cart count failed:', e);
+        currentCartCount = totalItems || 1;
+      }
+    }
 
     notification.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 15px;">
-        <span style="font-size: 2em;">✨</span>
+      <div class="notification-content" style="display: flex; align-items: center; gap: 15px;">
+        <span class="notification-icon" style="font-size: 2em;">🛒</span>
         <div>
-          <div style="font-weight: 800; margin-bottom: 6px; color: #1ca6f8;">Добавлено в корзину!</div>
-          <div style="font-size: 0.9em; opacity: 0.9;">Товары: ${totalItems} шт.</div>
-          <div style="font-size: 0.85em; opacity: 0.8; margin-top: 4px;">Премиальное качество ✨</div>
+          <div class="notification-title" style="font-weight: 800; margin-bottom: 6px; color: #1ca6f8;">Добавлено в корзину!</div>
+          <div class="notification-text" style="font-size: 0.9em; opacity: 0.9;">clip & go 1st edition</div>
+          <div class="notification-text" style="font-size: 0.85em; opacity: 0.8; margin-top: 2px;">${colorName}, ${memoryDesc}</div>
+          ${hasMemoryCard ? '<div class="notification-text" style="font-size: 0.8em; opacity: 0.7; margin-top: 2px;">+ Карта памяти 64 ГБ</div>' : ''}
+          <div class="notification-text" style="font-size: 0.8em; opacity: 0.7; margin-top: 4px; color: #1ca6f8;">В корзине: ${currentCartCount} ${this.getItemWord(currentCartCount)}</div>
         </div>
       </div>
     `;
@@ -549,21 +769,46 @@ class PremiumPurchaseSystem {
     }, 4000);
   }
 
+  static getItemWord(count) {
+    const cases = [2, 0, 1, 1, 1, 2];
+    const titles = ['товар', 'товара', 'товаров'];
+    return titles[(count % 100 > 4 && count % 100 < 20) ? 2 : cases[Math.min(count % 10, 5)]];
+  }
+
   static createPremiumFlyingAnimation() {
     const activeSlide = document.querySelector('.slider-img.active');
     if (!activeSlide) return;
 
+    const hasMemoryCard = premiumState.selectedMemory === '64gb';
+
+    // Создаем анимацию камеры
+    this.createFlyingItem(activeSlide.src, 'camera');
+
+    // Если выбрана карта памяти 64ГБ, добавляем анимацию карты памяти
+    if (hasMemoryCard) {
+      setTimeout(() => {
+        this.createFlyingItem('../assets/images/memory-card.png', 'memory');
+      }, 300);
+    }
+  }
+
+  static createFlyingItem(imageSrc, type) {
+    const activeSlide = document.querySelector('.slider-img.active');
+    if (!activeSlide) return;
+
     const flyingImg = document.createElement('div');
+    const size = type === 'memory' ? 60 : 100;
+    
     flyingImg.style.cssText = `
       position: fixed;
-      width: 100px;
-      height: 100px;
-      background-image: url(${activeSlide.src});
+      width: ${size}px;
+      height: ${size}px;
+      background-image: url(${imageSrc});
       background-size: cover;
       background-position: center;
       z-index: 10000;
       pointer-events: none;
-      border-radius: 16px;
+      border-radius: ${type === 'memory' ? '8px' : '16px'};
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
       border: 2px solid rgba(255, 255, 255, 0.3);
       backdrop-filter: blur(5px);
@@ -571,8 +816,9 @@ class PremiumPurchaseSystem {
     `;
 
     const rect = activeSlide.getBoundingClientRect();
-    const startX = rect.left + rect.width / 2 - 50;
-    const startY = rect.top + rect.height / 2 - 50;
+    const offsetX = type === 'memory' ? 30 : 0;
+    const startX = rect.left + rect.width / 2 - size/2 + offsetX;
+    const startY = rect.top + rect.height / 2 - size/2;
 
     flyingImg.style.left = `${startX}px`;
     flyingImg.style.top = `${startY}px`;
@@ -584,8 +830,8 @@ class PremiumPurchaseSystem {
 
     if (cartIcon) {
       const cartRect = cartIcon.getBoundingClientRect();
-      const endX = cartRect.left + cartRect.width / 2 - 50;
-      const endY = cartRect.top + cartRect.height / 2 - 50;
+      const endX = cartRect.left + cartRect.width / 2 - size/2;
+      const endY = cartRect.top + cartRect.height / 2 - size/2;
 
       const animation = flyingImg.animate([
         {
@@ -593,19 +839,19 @@ class PremiumPurchaseSystem {
           opacity: 1
         },
         {
-          transform: `translate(${endX - startX}px, ${endY - startY}px) scale(0.3) rotate(360deg)`,
+          transform: `translate(${endX - startX}px, ${endY - startY}px) scale(0.3) rotate(${type === 'memory' ? '180deg' : '360deg'})`,
           opacity: 0
         }
       ], {
-        duration: 1500,
+        duration: type === 'memory' ? 1200 : 1500,
         easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
       });
 
       animation.onfinish = () => {
         flyingImg.remove();
 
-        // Анимация корзины
-        if (cartIcon) {
+        // Анимация корзины только для последнего элемента
+        if (cartIcon && (!hasMemoryCard || type === 'memory')) {
           cartIcon.style.animation = 'cartBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
           setTimeout(() => {
             cartIcon.style.animation = '';
@@ -688,34 +934,16 @@ function setupPremiumManagerEvents() {
 
 function showPremiumOrderNotification(order) {
   const notification = document.createElement('div');
-  notification.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    color: white;
-    padding: 25px 30px;
-    border-radius: 20px;
-    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    z-index: 9999;
-    font-weight: 600;
-    transform: translateX(100%);
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    max-width: 380px;
-    font-family: 'Montserrat', sans-serif;
-  `;
+  notification.className = 'premium-notification order-notification';
 
   notification.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 18px;">
-      <span style="font-size: 2.5em;">🎉</span>
+    <div class="notification-content" style="display: flex; align-items: center; gap: 18px;">
+      <span class="notification-icon" style="font-size: 2.5em;">🎉</span>
       <div>
-        <div style="font-weight: 800; margin-bottom: 8px; color: #10b981; font-size: 1.1em;">Заказ создан!</div>
-        <div style="font-size: 0.95em; opacity: 0.9; margin-bottom: 4px;">№ ${order.id}</div>
-        <div style="font-size: 0.9em; opacity: 0.8;">Сумма: ${order.amount?.toLocaleString('ru-RU')} ₽</div>
-        <div style="font-size: 0.8em; opacity: 0.7; margin-top: 6px;">Премиальное обслуживание ✨</div>
+        <div class="notification-title" style="font-weight: 800; margin-bottom: 8px; color: #10b981; font-size: 1.1em;">Заказ создан!</div>
+        <div class="notification-text" style="font-size: 0.95em; opacity: 0.9; margin-bottom: 4px;">№ ${order.id}</div>
+        <div class="notification-text" style="font-size: 0.9em; opacity: 0.8;">Сумма: ${order.amount?.toLocaleString('ru-RU')} ₽</div>
+        <div class="notification-text" style="font-size: 0.8em; opacity: 0.7; margin-top: 6px;">Премиальное обслуживание ✨</div>
       </div>
     </div>
   `;
@@ -794,16 +1022,57 @@ function addPremiumAnimationStyles() {
   document.head.appendChild(style);
 }
 
+
+// ==== INTERSECTION OBSERVER ДЛЯ ЛЕНИВЫХ АНИМАЦИЙ ====
+class LazyAnimationObserver {
+  constructor() {
+    this.observer = null;
+    this.init();
+  }
+
+  init() {
+    if ('IntersectionObserver' in window) {
+      this.observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              this.observer.unobserve(entry.target);
+            }
+          });
+        },
+        {
+          threshold: 0.1,
+          rootMargin: '50px'
+        }
+      );
+
+      this.observeElements();
+    } else {
+      // Fallback для старых браузеров
+      this.fallbackAnimation();
+    }
+  }
+
+  observeElements() {
+    const elements = document.querySelectorAll('.fade-in-on-scroll');
+    elements.forEach(el => {
+      this.observer.observe(el);
+    });
+  }
+
+  fallbackAnimation() {
+    const elements = document.querySelectorAll('.fade-in-on-scroll');
+    elements.forEach(el => {
+      el.classList.add('visible');
+    });
+  }
+}
+
 // ==== ГЛАВНАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ ====
 async function initPremiumMainPage() {
   try {
-    console.log('[PremiumMain] 🎨 === ИНИЦИАЛИЗАЦИЯ ПРЕМИАЛЬНОГО ИНТЕРФЕЙСА ===');
-
-    // Сначала показываем контент
-    const mainContent = DOM.mainContent();
-    if (mainContent) {
-      mainContent.style.opacity = '1';
-    }
+    console.log('[PremiumMain] 🚀 === ИНИЦИАЛИЗАЦИЯ ОПТИМИЗИРОВАННОГО ПРЕМИАЛЬНОГО ИНТЕРФЕЙСА ===');
 
     // Добавляем премиальные стили анимаций
     addPremiumAnimationStyles();
@@ -813,15 +1082,18 @@ async function initPremiumMainPage() {
     updatePremiumPriceDisplay();
     updatePremiumStats();
 
-    // Инициализация компонентов
+    // Инициализация компонентов в оптимальном порядке
     PremiumTabSystem.init();
     PremiumSlider.init();
     PremiumInfoCards.init();
     PremiumPurchaseSystem.init();
     PremiumCookieBanner.init();
 
+    // Инициализируем Intersection Observer для ленивых анимаций
+    const lazyAnimations = new LazyAnimationObserver();
+
     // Ждем загрузки менеджеров асинхронно
-    waitForPremiumManagers().then(managersLoaded => {
+    const managersPromise = waitForPremiumManagers().then(managersLoaded => {
       if (managersLoaded) {
         console.log('[PremiumMain] ✨ Менеджеры загружены успешно');
         setupPremiumManagerEvents();
@@ -836,10 +1108,26 @@ async function initPremiumMainPage() {
       }
     });
 
+    // Контент уже видим, просто делаем плавную анимацию появления
+    const mainContent = DOM.mainContent();
+    if (mainContent) {
+      // Добавляем небольшую элегантную анимацию появления
+      mainContent.style.opacity = '0';
+      mainContent.style.transform = 'translateY(10px)';
+      
+      setTimeout(() => {
+        mainContent.style.opacity = '1';
+        mainContent.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
     // Отмечаем как инициализированную
     premiumState.pageInitialized = true;
 
-    console.log('[PremiumMain] 🎉 === ПРЕМИАЛЬНЫЙ ИНТЕРФЕЙС ИНИЦИАЛИЗИРОВАН ===');
+    console.log('[PremiumMain] 🎉 === ОПТИМИЗИРОВАННЫЙ ПРЕМИАЛЬНЫЙ ИНТЕРФЕЙС ИНИЦИАЛИЗИРОВАН ===');
+
+    // Ждем завершения загрузки менеджеров
+    await managersPromise;
 
   } catch (error) {
     console.error('[PremiumMain] ❌ Ошибка инициализации:', error);
@@ -872,7 +1160,7 @@ window.debugPremiumMain = function() {
     cameraCount: premiumState.cameraCount,
     memoryCount: premiumState.memoryCount,
     selectedColor: premiumState.selectedColor,
-    wantMemory: premiumState.wantMemory
+    selectedMemory: premiumState.selectedMemory
   });
 
   if (window.CartManager) {
@@ -930,3 +1218,44 @@ if (document.readyState === 'loading') {
 }
 
 console.log('[PremiumMain] 🚀 Премиальный скрипт готов к инициализации!');
+
+// ==== ИНИЦИАЛИЗАЦИЯ HEADER MANAGER ====
+function initHeaderManager() {
+  let attempts = 0;
+  const maxAttempts = 50;
+  
+  const checkHeader = () => {
+    attempts++;
+    
+    if (window.headerManager && window.headerManager.isInitialized) {
+      console.log('[Main] ✅ HeaderManager найден и работает');
+      window.headerManager.forceUpdateBadges();
+      return;
+    }
+    
+    if (window.HeaderManager && !window.headerManager) {
+      console.log('[Main] 🔧 Создаем HeaderManager...');
+      try {
+        window.headerManager = new window.HeaderManager();
+        if (window.headerManager.isInitialized) {
+          console.log('[Main] ✅ HeaderManager создан и инициализирован');
+          window.headerManager.forceUpdateBadges();
+          return;
+        }
+      } catch (error) {
+        console.error('[Main] ❌ Ошибка создания HeaderManager:', error);
+      }
+    }
+    
+    if (attempts < maxAttempts) {
+      setTimeout(checkHeader, 100);
+    } else {
+      console.warn('[Main] ⚠️ HeaderManager не удалось инициализировать');
+    }
+  };
+  
+  checkHeader();
+}
+
+// Запускаем инициализацию HeaderManager
+setTimeout(initHeaderManager, 500);
