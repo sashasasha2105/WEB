@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test clip & go</title>
+</head>
+<body>
+    <h1>Test Page</h1>
+    <p>Проверяем работает ли JavaScript...</p>
+    
+    <script>
+        console.log('Test script loaded!');
+        
+        // Загружаем основной скрипт
+        const script = document.createElement('script');
+        script.src = 'script.js';
+        script.onload = () => {
+            console.log('Main script loaded!');
+        };
+        script.onerror = (error) => {
+            console.error('Error loading main script:', error);
+        };
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>

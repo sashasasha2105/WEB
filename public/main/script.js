@@ -399,6 +399,7 @@ class PremiumTabSystem {
 class PremiumSlider {
   static init() {
     const slides = DOM.slides();
+    console.log('[PremiumMain] 🎞️ Найдено слайдов:', slides.length);
     if (slides.length === 0) return;
 
     this.showSlide(0);
@@ -509,16 +510,21 @@ class PremiumInfoCards {
 // ==== СИСТЕМА ПОКУПОК ====
 class PremiumPurchaseSystem {
   static init() {
-    this.setupColorOptions();
-    this.setupMemoryOptions();
-    this.setupAddToCartButton();
-
-    updatePremiumPriceDisplay();
-    console.log('[PremiumMain] 🛒 Премиальная система покупок инициализирована');
+    console.log('[PremiumMain] 🛒 Инициализация системы покупок...');
+    try {
+      this.setupColorOptions();
+      this.setupMemoryOptions();
+      this.setupAddToCartButton();
+      updatePremiumPriceDisplay();
+      console.log('[PremiumMain] ✅ Премиальная система покупок инициализирована');
+    } catch (error) {
+      console.error('[PremiumMain] ❌ Ошибка инициализации системы покупок:', error);
+    }
   }
 
   static setupColorOptions() {
     const colorOptions = DOM.colorOptions();
+    console.log('[PremiumMain] 🎨 Найдено цветовых кнопок:', colorOptions.length);
 
     colorOptions.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -540,6 +546,7 @@ class PremiumPurchaseSystem {
 
   static setupMemoryOptions() {
     const memoryOptions = DOM.memoryOptions();
+    console.log('[PremiumMain] 💾 Найдено кнопок памяти:', memoryOptions.length);
 
     memoryOptions.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -561,6 +568,7 @@ class PremiumPurchaseSystem {
 
   static setupAddToCartButton() {
     const addBtn = DOM.addToCartBtn();
+    console.log('[PremiumMain] 🛒 Кнопка добавления в корзину найдена:', !!addBtn);
     if (!addBtn) return;
 
     addBtn.addEventListener('click', (e) => {
@@ -986,6 +994,19 @@ async function initPremiumMainPage() {
   try {
     console.log('[PremiumMain] 🚀 === ИНИЦИАЛИЗАЦИЯ ОПТИМИЗИРОВАННОГО ПРЕМИАЛЬНОГО ИНТЕРФЕЙСА ===');
 
+    // Проверяем что все основные элементы есть в DOM
+    const mainContent = document.getElementById('mainContent');
+    const colorBtns = document.querySelectorAll('.color-option-btn');
+    const memoryBtns = document.querySelectorAll('.memory-option-btn');
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    
+    console.log('[PremiumMain] 🔍 DOM check:', {
+      mainContent: !!mainContent,
+      colorBtns: colorBtns.length,
+      memoryBtns: memoryBtns.length,
+      addToCartBtn: !!addToCartBtn
+    });
+
     // Добавляем премиальные стили анимаций
     addPremiumAnimationStyles();
 
@@ -995,6 +1016,7 @@ async function initPremiumMainPage() {
     updatePremiumStats();
 
     // Инициализация компонентов в оптимальном порядке
+    console.log('[PremiumMain] 🔧 Инициализируем компоненты...');
     PremiumTabSystem.init();
     PremiumSlider.init();
     PremiumInfoCards.init();
@@ -1117,9 +1139,12 @@ window.resetPremiumCart = function() {
 };
 
 // ==== ЗАПУСК ПРЕМИАЛЬНОЙ ИНИЦИАЛИЗАЦИИ ====
+console.log('[PremiumMain] 📄 Document state:', document.readyState);
 if (document.readyState === 'loading') {
+  console.log('[PremiumMain] ⏳ Waiting for DOMContentLoaded...');
   document.addEventListener('DOMContentLoaded', initPremiumMainPage);
 } else {
+  console.log('[PremiumMain] ✅ DOM ready, starting initialization...');
   initPremiumMainPage();
 }
 
