@@ -162,32 +162,31 @@ function savePremiumCartState() {
     const memoryDesc = memoryCard === '8gb' ? '8 ГБ (встроенная)' : '64 ГБ microSD';
     const productDescription = `clip & go 1st edition (${cartColorRus}, ${memoryDesc})`;
     
-    if (window.CartManager && typeof window.CartManager.addToCart === 'function') {
-      // Enhanced CartManager integration with proper data structure
-      const productData = {
-        id: `clip-go-${Date.now()}`,
-        name: 'clip & go 1st edition',
-        price: finalPrice,
-        color: cartColor,
-        colorRus: cartColorRus,
-        memory: memoryCard,
-        memoryDesc: memoryDesc,
-        description: productDescription,
-        quantity: 1,
-        image: '../assets/images/cam1.jpg',
-        category: 'camera',
-        sku: `CLIP-GO-${cartColor.toUpperCase()}-${memoryCard.toUpperCase()}`
-      };
+    if (window.CartManager && typeof window.CartManager.addItem === 'function') {
+      // Используем правильный метод CartManager
+      console.log('[PremiumMain] 📦 Добавляем товар через CartManager.addItem');
       
-      console.log('[PremiumMain] 📦 Добавляем товар через CartManager:', productData);
-      const success = window.CartManager.addToCart(productData);
+      // Добавляем камеру
+      const cameraSuccess = window.CartManager.addItem('camera', 1);
       
-      if (success) {
+      // Добавляем карту памяти если выбрана 64ГБ
+      let memorySuccess = true;
+      if (memoryCard === '64gb') {
+        memorySuccess = window.CartManager.addItem('memory', 1);
+      }
+      
+      // Устанавливаем цвет
+      if (window.CartManager.setColor) {
+        window.CartManager.setColor(cartColorRus);
+      }
+      
+      if (cameraSuccess && memorySuccess) {
         console.log('[PremiumMain] ✅ Товар успешно добавлен через CartManager');
+        console.log('[PremiumMain] 📦 Добавлено: камера =', cameraSuccess, ', память =', memoryCard === '64gb' ? memorySuccess : 'не нужна');
         return true;
       } else {
-        console.warn('[PremiumMain] ⚠️ CartManager вернул false, используем fallback');
-        throw new Error('CartManager failed');
+        console.warn('[PremiumMain] ⚠️ CartManager.addItem вернул false, используем fallback');
+        throw new Error('CartManager.addItem failed');
       }
     } else {
       console.log('[PremiumMain] 📦 CartManager недоступен, используем localStorage fallback');
@@ -197,46 +196,46 @@ function savePremiumCartState() {
     console.warn('[PremiumMain] ⚠️ Ошибка с CartManager, используем localStorage fallback:', error);
     
     try {
-      // Comprehensive localStorage fallback
+      // localStorage fallback используя формат CartManager
       const cartColor = premiumState.selectedColor;
       const memoryCard = premiumState.selectedMemory;
-      const basePrice = premiumState.basePrice;
-      const memoryPrice = memoryCard === '64gb' ? premiumState.memoryPrice : 0;
-      const finalPrice = basePrice + memoryPrice;
-      
       const cartColorRus = cartColor === 'black' ? 'чёрный' : 'белый';
-      const memoryDesc = memoryCard === '8gb' ? '8 ГБ (встроенная)' : '64 ГБ microSD';
       
-      const existingCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
+      // Получаем текущие данные корзины
+      const currentData = JSON.parse(localStorage.getItem('cartData') || '{}');
+      const currentCameraCount = currentData.cameraCount || 0;
+      const currentMemoryCount = currentData.memoryCount || 0;
       
-      const newItem = {
-        id: `clip-go-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        name: 'clip & go 1st edition',
-        price: finalPrice,
-        color: cartColor,
-        colorRus: cartColorRus,
-        memory: memoryCard,
-        memoryDesc: memoryDesc,
-        description: `clip & go 1st edition (${cartColorRus}, ${memoryDesc})`,
-        quantity: 1,
-        image: '../assets/images/cam1.jpg',
-        addedAt: new Date().toISOString(),
-        category: 'camera',
-        sku: `CLIP-GO-${cartColor.toUpperCase()}-${memoryCard.toUpperCase()}`
+      // Добавляем 1 камеру
+      const newCameraCount = currentCameraCount + 1;
+      
+      // Добавляем карту памяти если выбрана 64ГБ
+      const newMemoryCount = memoryCard === '64gb' ? currentMemoryCount + 1 : currentMemoryCount;
+      
+      // Сохраняем в формате CartManager
+      const newCartData = {
+        cameraCount: newCameraCount,
+        memoryCount: newMemoryCount,
+        cartColor: cartColorRus
       };
       
-      existingCart.push(newItem);
-      localStorage.setItem('cartItems', JSON.stringify(existingCart));
+      localStorage.setItem('cartData', JSON.stringify(newCartData));
       
-      // Update cart counter if exists
-      const cartCounter = document.querySelector('.cart-counter');
-      if (cartCounter) {
-        cartCounter.textContent = existingCart.length;
-        cartCounter.style.display = existingCart.length > 0 ? 'flex' : 'none';
-      }
+      // Обновляем счетчик в интерфейсе
+      const totalItems = newCameraCount + newMemoryCount;
+      const cartCounters = document.querySelectorAll('.cart-counter, .cart-badge');
+      cartCounters.forEach(counter => {
+        if (counter) {
+          counter.textContent = totalItems;
+          counter.style.display = totalItems > 0 ? 'flex' : 'none';
+        }
+      });
       
       console.log('[PremiumMain] ✅ Товар успешно добавлен через localStorage fallback');
-      console.log('[PremiumMain] 📦 Текущая корзина:', existingCart);
+      console.log('[PremiumMain] 📦 Новые данные корзины:', newCartData);
+      
+      // Отправляем событие обновления корзины
+      window.dispatchEvent(new CustomEvent('cartUpdated', { detail: newCartData }));
       
       return true;
     } catch (fallbackError) {
@@ -298,15 +297,21 @@ function loadPremiumCartState() {
       const data = window.CartManager.getCartData();
       premiumState.cameraCount = data.cameraCount || 0;
       premiumState.memoryCount = data.memoryCount || 0;
-      console.log('[PremiumMain] 🛒 Состояние корзины загружено:', {
+      console.log('[PremiumMain] 🛒 Состояние корзины загружено через CartManager:', {
         cameraCount: premiumState.cameraCount,
-        memoryCount: premiumState.memoryCount
+        memoryCount: premiumState.memoryCount,
+        cartColor: data.cartColor
       });
     } else {
-      // Fallback на localStorage
+      // Fallback на localStorage в формате CartManager
       const data = JSON.parse(localStorage.getItem('cartData') || '{}');
       premiumState.cameraCount = data.cameraCount || 0;
       premiumState.memoryCount = data.memoryCount || 0;
+      console.log('[PremiumMain] 🛒 Состояние корзины загружено через localStorage:', {
+        cameraCount: premiumState.cameraCount,
+        memoryCount: premiumState.memoryCount,
+        cartColor: data.cartColor
+      });
     }
 
     updatePremiumStats();
@@ -314,7 +319,6 @@ function loadPremiumCartState() {
     console.error('[PremiumMain] ❌ Ошибка загрузки состояния корзины:', error);
     premiumState.cameraCount = 0;
     premiumState.memoryCount = 0;
-    premiumState.cartItems = 0;
   }
 }
 
