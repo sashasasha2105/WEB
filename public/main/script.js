@@ -1043,7 +1043,6 @@ async function initPremiumMainPage() {
     });
 
     // Контент готов и видим
-    const mainContent = DOM.mainContent();
     if (mainContent) {
       mainContent.style.opacity = '1';
       mainContent.style.transform = 'translateY(0)';

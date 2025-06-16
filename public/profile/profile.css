@@ -52,6 +52,26 @@ body::before {
     50% { transform: translateY(-20px) scale(1.05); }
 }
 
+/* === ОТСТУП ДЛЯ МОБИЛЬНОГО ХЕДЕРА === */
+.mobile-header-spacer {
+    display: none; /* Скрыт на десктопе */
+}
+
+@media (max-width: 768px) {
+    .mobile-header-spacer {
+        display: block;
+        height: calc(70px + 20px + env(safe-area-inset-top, 15px));
+        width: 100%;
+        background: transparent;
+    }
+}
+
+@media (max-width: 480px) {
+    .mobile-header-spacer {
+        height: calc(65px + 15px + env(safe-area-inset-top, 10px));
+    }
+}
+
 /* === ОСНОВНОЙ КОНТЕЙНЕР === */
 .profile-container {
     position: relative;
@@ -59,9 +79,9 @@ body::before {
     min-height: 100vh;
     min-height: -webkit-fill-available;
     padding: 0 20px;
-    padding-top: calc(85px + 20px); /* Отступ под хедер + отступ контента */
+    padding-top: calc(100px + 10px); /* Место под хедер + меньший отступ */
     padding-bottom: 20px;
-    z-index: 1;
+    z-index: 0;
     box-sizing: border-box;
 }
 
@@ -1003,7 +1023,7 @@ body::before {
 @media (max-width: 768px) {
     .profile-container {
         padding: 0 15px;
-        padding-top: calc(70px + 15px); /* Хедер на мобильных меньше */
+        padding-top: 15px; /* Обычный отступ, блок-спейсер создает место для хедера */
         padding-bottom: 15px;
     }
 
@@ -1056,7 +1076,7 @@ body::before {
 @media (max-width: 480px) {
     .profile-container {
         padding: 0 12px;
-        padding-top: calc(70px + 12px);
+        padding-top: 12px; /* Обычный отступ, блок-спейсер создает место для хедера */
         padding-bottom: 12px;
     }
 

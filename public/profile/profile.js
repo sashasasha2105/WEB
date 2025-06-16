@@ -198,24 +198,50 @@ async function cacheDOMElements() {
 // Загрузка хедера из header/header.html
 async function loadHeader() {
     return new Promise((resolve) => {
-        fetch('/header/header.html')
+        fetch('../header/header.html')
             .then(response => response.text())
             .then(html => {
                 const headerContainer = document.getElementById('header-container');
                 if (headerContainer) {
-                    headerContainer.innerHTML = html;
+                    // Извлекаем только содержимое <header> тега
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const headerElement = doc.querySelector('header');
+                    
+                    if (headerElement) {
+                        headerContainer.innerHTML = headerElement.outerHTML;
+                        console.log('Header HTML успешно вставлен');
+                    } else {
+                        console.error('Header тег не найден в header.html');
+                        headerContainer.innerHTML = html; // fallback
+                    }
 
-                    setTimeout(() => {
-                        if (window.CartManager) {
-                            window.CartManager.updateCartCounter();
-                        }
-                        updateOrdersBadge();
+                    // Загружаем и выполняем header.js после вставки HTML
+                    const script = document.createElement('script');
+                    script.src = '../header/header.js';
+                    script.onload = () => {
+                        console.log('Header.js загружен после HTML');
+                        
+                        // Дополнительная задержка для DOM
+                        setTimeout(() => {
+                            console.log('Попытка инициализации хедера...');
+                            
+                            if (window.CartManager) {
+                                window.CartManager.updateCartCounter();
+                            }
+                            updateOrdersBadge();
 
-                        // Ждем инициализации header.js и обновляем бейджи
-                        if (window.headerManager) {
-                            window.headerManager.forceUpdateBadges();
-                        }
-                    }, 100);
+                            // Ждем инициализации header.js и обновляем бейджи
+                            if (window.headerManager) {
+                                console.log('HeaderManager найден, обновляем бейджи');
+                                window.headerManager.forceUpdateBadges();
+                                
+                            } else {
+                                console.log('HeaderManager не найден');
+                            }
+                        }, 300);
+                    };
+                    document.head.appendChild(script);
                 }
                 resolve();
             })

@@ -1,39 +1,34 @@
-/* === ИСПРАВЛЕННЫЙ HEADER CSS С УЛУЧШЕННОЙ СОВМЕСТИМОСТЬЮ === */
+/* === ОПТИМИЗИРОВАННЫЙ HEADER CSS === */
 
-/* === ОСНОВНЫЕ СТИЛИ === */
 .site-header {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 100px;
-  /* Fallback для старых браузеров */
-  background: rgba(255, 255, 255, 0.03);
-  background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%);
-
-  /* Backdrop filter с fallback */
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  z-index: 1000;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
+  --scroll-opacity: 0;
+  background: transparent;
+  backdrop-filter: none;
+  border-bottom: 1px solid transparent;
+  z-index: 10000;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: none;
   animation: headerSlideDown 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transform: translateZ(0);
+  will-change: background, backdrop-filter, box-shadow, border-bottom;
 }
 
 .site-header.scrolled {
   height: 85px;
-  /* Fallback для старых браузеров */
-  background: rgba(255, 255, 255, 0.12);
-  background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.15) 100%);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.15) 100%);
-
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
-  border-bottom-color: rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, calc(0.08 * var(--scroll-opacity))) 0%, 
+    rgba(255, 255, 255, calc(0.10 * var(--scroll-opacity))) 100%);
+  backdrop-filter: blur(calc(8px * var(--scroll-opacity)));
+  -webkit-backdrop-filter: blur(calc(8px * var(--scroll-opacity)));
+  box-shadow: 0 4px 20px rgba(0, 0, 0, calc(0.08 * var(--scroll-opacity))), 
+              0 0 0 1px rgba(255, 255, 255, calc(0.05 * var(--scroll-opacity)));
+  border-bottom: 1px solid rgba(255, 255, 255, calc(0.15 * var(--scroll-opacity)));
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .header-container {
@@ -45,6 +40,7 @@
   align-items: center;
   justify-content: space-between;
   position: relative;
+  transition: padding 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* === ЛОГОТИП === */
@@ -56,7 +52,7 @@
 .logo-link {
   display: block;
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .logo-link:hover {
@@ -70,7 +66,14 @@
   object-fit: contain;
   animation: logoFloat 10s ease-in-out infinite;
   filter: drop-shadow(0 2px 8px rgba(28, 166, 248, 0.25));
-  transition: all 0.3s ease;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateZ(0);
+  will-change: height, filter;
+}
+
+.site-header.scrolled .logo-image {
+  height: 175px;
+  filter: drop-shadow(0 3px 12px rgba(28, 166, 248, 0.35));
 }
 
 .logo-link:hover .logo-image {
@@ -85,7 +88,7 @@
   gap: 20px;
   flex: 1;
   margin: 0 40px;
-  z-index: 1000;
+  z-index: 10000;
   isolation: isolate;
 }
 
@@ -145,22 +148,15 @@
 .nav-link.profile-nav {
   position: relative;
   padding: 12px 16px;
-  isolation: isolate;
 }
 
 .profile-icon {
   font-size: 1.8rem;
-  /* Fallback для старых браузеров */
-  color: #1ca6f8;
-  background: -webkit-linear-gradient(135deg, #87CEEB 0%, #1ca6f8 50%, #001a3a 100%);
   background: linear-gradient(135deg, #87CEEB 0%, #1ca6f8 50%, #001a3a 100%);
-  -webkit-background-clip: text;
   background-clip: text;
-  -webkit-text-fill-color: rgba(255, 255, 255, 0);
-  text-fill-color: rgba(255, 255, 255, 0);
+  -webkit-text-fill-color: transparent;
   transition: all 0.3s ease;
   filter: drop-shadow(0 0 2px rgba(28, 166, 248, 0.3));
-  isolation: isolate;
 }
 
 .nav-link.profile-nav:hover .profile-icon {
@@ -172,25 +168,19 @@
   position: absolute;
   top: -6px;
   right: -6px;
-  /* Совместимый градиент */
-  background: #10b981;
-  background: -webkit-linear-gradient(135deg, #10b981 0%, #059669 100%);
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
   font-size: 0.65rem;
   font-weight: 800;
   width: 20px;
   height: 20px;
-  min-width: 20px;
   border-radius: 50%;
-  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 3px 10px rgba(16, 185, 129, 0.4);
-  animation: badgeEntry 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  animation: badgeEntry 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   border: 1px solid rgba(255, 255, 255, 0.3);
-  line-height: 1;
 }
 
 /* === КОРЗИНА === */
@@ -267,7 +257,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
-  animation: badgeEntry 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  animation: badgeEntry 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   border: 1px solid rgba(255, 255, 255, 0.3);
   line-height: 1;
 }
@@ -297,21 +287,39 @@
   width: 24px;
   height: 3px;
   background: rgba(255, 255, 255, 0.9);
-  border-radius: 1px;
+  border-radius: 2px;
   margin: 0;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   left: 0;
-  transform: none;
-  box-shadow: none;
+  transform-origin: center;
 }
 
-.burger-line-1,
-.burger-line-2,
-.burger-line-3 {
-  display: block;
+.burger-line-1 {
+  transform: translateY(0);
+}
+
+.burger-line-2 {
   opacity: 1;
-  visibility: visible;
+  transform: scaleX(1);
+}
+
+.burger-line-3 {
+  transform: translateY(0);
+}
+
+/* Анимация при активном состоянии */
+.mobile-menu-toggle.active .burger-line-1 {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.mobile-menu-toggle.active .burger-line-2 {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.mobile-menu-toggle.active .burger-line-3 {
+  transform: translateY(-6px) rotate(-45deg);
 }
 
 /* === МОБИЛЬНОЕ МЕНЮ === */
@@ -322,10 +330,10 @@
   left: 0;
   width: 100%;
   height: 100vh;
-  z-index: 99999;
+  z-index: 1000;
   opacity: 0;
   visibility: hidden;
-  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .mobile-menu.active {
@@ -355,16 +363,13 @@
   width: 320px;
   max-width: 85vw;
   height: 100%;
-  /* Fallback для старых браузеров */
-  background: rgba(255, 255, 255, 0.9);
   background: rgba(255, 255, 255, 0.15);
-  -webkit-backdrop-filter: blur(25px);
   backdrop-filter: blur(25px);
   border-left: 1px solid rgba(255, 255, 255, 0.3);
   display: flex;
   flex-direction: column;
   transform: translateX(100%);
-  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   box-shadow: -15px 0 60px rgba(0, 0, 0, 0.15);
 }
 
@@ -430,7 +435,7 @@
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
-  animation: premiumSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  animation: premiumSlideIn 0.3s ease-out;
   animation-fill-mode: both;
   margin-bottom: 12px;
 }
@@ -513,10 +518,10 @@
 .mobile-action-btn {
   display: flex;
   align-items: center;
-  gap: 20px;
-  padding: 20px 24px;
+  gap: 25px;
+  padding: 25px 30px;
   text-decoration: none;
-  border-radius: 18px;
+  border-radius: 20px;
   font-weight: 600;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
@@ -553,8 +558,8 @@
 }
 
 .mobile-action-btn .cart-icon {
-  width: 24px;
-  height: 24px;
+  width: 36px;
+  height: 36px;
   filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(181deg) brightness(100%) contrast(100%);
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
@@ -572,14 +577,14 @@
 }
 
 .action-title {
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: 700;
   color: white;
   letter-spacing: -0.02em;
 }
 
 .action-subtitle {
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.7);
 }
@@ -603,7 +608,7 @@
   box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  animation: premiumBadgeEntry 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  animation: premiumBadgeEntry 0.3s ease-out;
 }
 
 .orders-badge.mobile {
@@ -671,7 +676,7 @@ html, body {
 
 @keyframes premiumSlideIn {
   from {
-    transform: translateX(50px);
+    transform: translateX(10px);
     opacity: 0;
   }
   to {
@@ -682,14 +687,11 @@ html, body {
 
 @keyframes premiumBadgeEntry {
   0% {
-    transform: scale(0) rotate(180deg);
+    transform: scale(0);
     opacity: 0;
   }
-  60% {
-    transform: scale(1.2) rotate(-10deg);
-  }
   100% {
-    transform: scale(1) rotate(0deg);
+    transform: scale(1);
     opacity: 1;
   }
 }
@@ -702,11 +704,11 @@ html, body {
 .nav-link:nth-child(5) { animation-delay: 0.25s; }
 .nav-link:nth-child(6) { animation-delay: 0.3s; }
 
-.mobile-nav-link:nth-child(1) { animation-delay: 0.1s; }
-.mobile-nav-link:nth-child(2) { animation-delay: 0.2s; }
-.mobile-nav-link:nth-child(3) { animation-delay: 0.3s; }
-.mobile-nav-link:nth-child(4) { animation-delay: 0.4s; }
-.mobile-nav-link:nth-child(5) { animation-delay: 0.5s; }
+.mobile-nav-link:nth-child(1) { animation-delay: 0.02s; }
+.mobile-nav-link:nth-child(2) { animation-delay: 0.04s; }
+.mobile-nav-link:nth-child(3) { animation-delay: 0.06s; }
+.mobile-nav-link:nth-child(4) { animation-delay: 0.08s; }
+.mobile-nav-link:nth-child(5) { animation-delay: 0.1s; }
 
 /* === МЕДИА ЗАПРОСЫ === */
 @media (max-width: 1200px) {
@@ -794,31 +796,32 @@ html, body {
     left: 0;
     right: 0;
     width: 100%;
-    height: 90px;
+    height: 70px;
+    --scroll-opacity: 0;
     display: flex;
     visibility: visible;
     opacity: 1;
-    z-index: 9998;
-    /* Упрощенный фон для мобильных */
-    background: rgba(255, 255, 255, 0.03);
-    background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.05) 100%);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.03);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 9999;
+    background: transparent;
+    backdrop-filter: none;
+    box-shadow: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: translateZ(0);
+    will-change: background, backdrop-filter, box-shadow, border-bottom, height;
   }
 
   .site-header.scrolled {
-    height: 85px;
-    background: rgba(255, 255, 255, 0.12);
-    background: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.15) 100%);
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.15) 100%);
-    -webkit-backdrop-filter: blur(20px);
-    backdrop-filter: blur(20px);
-    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
-    border-bottom-color: rgba(255, 255, 255, 0.15);
+    height: 65px;
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, calc(0.08 * var(--scroll-opacity))) 0%, 
+      rgba(255, 255, 255, calc(0.10 * var(--scroll-opacity))) 100%);
+    backdrop-filter: blur(calc(8px * var(--scroll-opacity)));
+    -webkit-backdrop-filter: blur(calc(8px * var(--scroll-opacity)));
+    box-shadow: 0 4px 20px rgba(0, 0, 0, calc(0.08 * var(--scroll-opacity))), 
+                0 0 0 1px rgba(255, 255, 255, calc(0.05 * var(--scroll-opacity)));
+    border-bottom: 1px solid rgba(255, 255, 255, calc(0.15 * var(--scroll-opacity)));
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .site-header .header-container {
@@ -844,11 +847,16 @@ html, body {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    z-index: 10000;
+    z-index: 1001;
     width: auto;
     height: auto;
     margin: 0;
     padding: 0;
+  }
+
+  /* Логотип поверх меню только когда меню открыто */
+  body.mobile-menu-open .site-header .header-logo {
+    z-index: 1001;
   }
 
   .site-header .header-logo .logo-link {
@@ -858,11 +866,19 @@ html, body {
   }
 
   .site-header .header-logo .logo-image {
-    height: 160px;
-    max-width: 400px;
+    height: 280px;
+    max-width: 600px;
     width: auto;
     filter: drop-shadow(0 2px 8px rgba(28, 166, 248, 0.25));
     display: block;
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: translateZ(0);
+    will-change: height, filter;
+  }
+
+  .site-header.scrolled .header-logo .logo-image {
+    height: 240px;
+    filter: drop-shadow(0 3px 12px rgba(28, 166, 248, 0.35));
   }
 
   /* === ИСПРАВЛЕННЫЕ СТИЛИ КНОПКИ МЕНЮ === */
@@ -906,35 +922,26 @@ html, body {
     border-radius: 2px;
     margin: 0;
     position: relative;
-    left: 0;
-    transform: none;
-    transition: all 0.3s ease;
-    box-shadow: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-origin: center;
     display: block;
     opacity: 1;
     visibility: visible;
   }
 
-  .site-header .mobile-menu-toggle.active {
-    transform: translateY(-50%) rotate(90deg);
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-
-  .site-header .mobile-menu-toggle {
-    transform: translateY(-50%) rotate(0deg);
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-
-  .site-header .mobile-menu-toggle.active .burger-line {
+  .site-header .mobile-menu-toggle.active .burger-line-1 {
+    transform: translateY(8px) rotate(45deg);
     background: #1ca6f8;
-    opacity: 1;
-    transform: none;
   }
 
-  .site-header .mobile-menu-toggle .burger-line {
-    display: block;
-    opacity: 1;
-    visibility: visible;
+  .site-header .mobile-menu-toggle.active .burger-line-2 {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  .site-header .mobile-menu-toggle.active .burger-line-3 {
+    transform: translateY(-8px) rotate(-45deg);
+    background: #1ca6f8;
   }
 
   /* === ИСПРАВЛЕННЫЕ СТИЛИ КОРЗИНЫ === */
@@ -943,7 +950,7 @@ html, body {
     right: 8px;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 10001;
+    z-index: 1001;
     gap: 0;
     display: block;
     flex-shrink: 0;
@@ -971,6 +978,13 @@ html, body {
     position: relative;
     transition: all 0.3s ease;
     margin: 0;
+  }
+
+  /* Скрываем корзину из хедера когда открыто мобильное меню */
+  body.mobile-menu-open .site-header .header-actions {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .site-header .header-actions .cart-btn:active {
@@ -1014,26 +1028,41 @@ html, body {
 
   .mobile-menu {
     display: block;
-    z-index: 10000;
+    z-index: 999;
     height: 100vh;
+    height: 100dvh;
     max-height: 100vh;
+    max-height: 100dvh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
   }
 
   .mobile-menu-content {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: min(320px, 85vw);
     height: 100vh;
+    height: 100dvh;
     max-height: 100vh;
+    max-height: 100dvh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
 
   .mobile-nav {
     flex: 1 1 auto;
     min-height: 0;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    padding: 120px 25px 20px 25px;
+    padding: 120px 20px 20px 20px;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.6) rgba(255, 255, 255, 0);
   }
@@ -1067,14 +1096,17 @@ html, body {
   .mobile-actions {
     flex: 0 0 auto;
     min-height: auto;
-    max-height: 250px;
+    max-height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    padding: 20px 25px 30px 25px;
+    padding: 20px 20px calc(40px + env(safe-area-inset-bottom)) 20px;
     scrollbar-width: thin;
     scrollbar-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
   }
 
   .mobile-actions::-webkit-scrollbar {
@@ -1113,7 +1145,7 @@ html, body {
   }
 
   body {
-    padding-top: 95px;
+    padding-top: 0;
   }
 
   .mobile-menu-backdrop {
@@ -1249,6 +1281,12 @@ html, body {
   .site-header .header-logo .logo-image {
     height: 120px;
     max-width: 300px;
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .site-header.scrolled .header-logo .logo-image {
+    height: 110px;
+    filter: drop-shadow(0 3px 12px rgba(28, 166, 248, 0.35));
   }
 
   /* === ЕДИНООБРАЗНЫЕ СТИЛИ КНОПКИ МЕНЮ === */
@@ -1316,7 +1354,7 @@ html, body {
   }
 
   body {
-    padding-top: 80px;
+    padding-top: 0;
   }
 }
 
@@ -1377,5 +1415,11 @@ html, body {
   .site-header .header-logo .logo-image {
     height: 100px;
     max-width: 250px;
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .site-header.scrolled .header-logo .logo-image {
+    height: 90px;
+    filter: drop-shadow(0 3px 12px rgba(28, 166, 248, 0.35));
   }
 }

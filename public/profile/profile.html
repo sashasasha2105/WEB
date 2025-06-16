@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>clip & go • Профиль</title>
 
     <!-- Fonts -->
@@ -11,21 +11,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Styles -->
-    <link rel="stylesheet" href="/header/header.css">
-    <link rel="stylesheet" href="/profile/profile.css">
-    <link rel="stylesheet" href="/profile/mobile-animations.css" media="(max-width:768px)">
+    <link rel="stylesheet" href="../header/header.css">
+    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="mobile-animations.css" media="(max-width:768px)">
 
     <!-- Meta -->
-    <meta name="theme-color" content="#1ca6f8">
+    <meta name="theme-color" content="#001a3a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="clip & go">
     <meta name="description" content="Личный кабинет clip & go - управляйте заказами и настройками">
+
 </head>
 
 <body>
 <!-- Header -->
 <div id="header-container"></div>
+
+<!-- Mobile Header Spacer -->
+<div class="mobile-header-spacer"></div>
 
 <!-- Main Content -->
 <main class="profile-container">
@@ -103,7 +107,7 @@
                 <div class="empty-icon">📦</div>
                 <h3>Пока заказов нет</h3>
                 <p>Но это легко исправить! Выберите что-то интересное</p>
-                <a href="/main/index.html" class="cta-btn">
+                <a href="../main/index.html" class="cta-btn">
                     <span>🛒</span>
                     <span>Начать покупки</span>
                 </a>
@@ -271,7 +275,7 @@
             <strong>clip & go</strong>
         </div>
         <div class="footer-links">
-            <a href="/Policy/privacy-cookie-policy.html">Политика конфиденциальности</a>
+            <a href="../Policy/privacy-cookie-policy.html">Политика конфиденциальности</a>
         </div>
         <div class="footer-year">
             © 2025 • Личный кабинет
@@ -279,10 +283,12 @@
     </div>
 </footer>
 
+
 <!-- Scripts -->
-<script src="/js/cart-manager.js" defer></script>
-<script src="/js/order-manager.js" defer></script>
-<script src="/header/header.js" defer></script>
-<script src="/profile/profile.js" defer></script>
+<script src="../js/cart-manager.js" defer></script>
+<script src="../js/order-manager.js" defer></script>
+<script src="profile.js" defer></script>
+
+
 </body>
 </html>
