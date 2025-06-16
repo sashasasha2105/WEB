@@ -245,6 +245,7 @@ function savePremiumCartState() {
       return false;
     }
   }
+}
 
 // ==== ПРЕМИАЛЬНЫЕ АНИМАЦИИ ====
 class PremiumAnimations {
@@ -1189,3 +1190,4 @@ function initHeaderManager() {
 
 // Запускаем инициализацию HeaderManager
 setTimeout(initHeaderManager, 500);
+
