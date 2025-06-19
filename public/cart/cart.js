@@ -1,7 +1,7 @@
 /* === PREMIUM CART.JS - ОБНОВЛЕННАЯ ВЕРСИЯ С ЗАКАЗАМИ === */
 
 /* === Цены и параметры === */
-const prices = { camera: 8900, memory: 500 };
+const prices = { camera: 7490, memory8gb: 0, memory64gb: 500 };
 const CAMERA_WEIGHT_KG = 0.327;
 const MEMORY_WEIGHT_KG = 0.008;
 const CAMERA_DIMENSIONS = { length: 20, width: 12, height: 6 };
@@ -9,7 +9,7 @@ const MEMORY_DIMENSIONS = { length: 13, width: 8, height: 1 };
 const FROM_LOCATION = 44; // код Москвы в CDEK
 
 /* === Состояние === */
-let counts = { camera: 0, memory: 0 };
+let counts = { camera: 0, memory8gb: 0, memory64gb: 0 };
 let discount = 0;
 let shipping = 0;
 
@@ -24,14 +24,23 @@ const totalEl = () => document.getElementById('cartTotalValue');
 const shipEl = () => document.getElementById('shippingCostValue');
 const deliveryInfoEl = () => document.getElementById('deliveryInfo');
 const cityIn = () => document.getElementById('addressInput');
-const citySug = () => document.getElementById('citySuggestions');
+const citySug = () => {
+  let portal = document.getElementById('citySuggestions');
+  if (!portal) {
+    portal = document.createElement('ul');
+    portal.id = 'citySuggestions';
+    portal.className = 'suggestions-portal';
+    document.body.appendChild(portal);
+  }
+  return portal;
+};
 const deliverySection = () => document.getElementById('deliveryMethodSection');
 const streetWrapper = () => document.getElementById('streetWrapper');
 const streetIn = () => document.getElementById('streetInput');
 const mapContainer = () => document.getElementById('map');
 const infoPanel = () => document.getElementById('pvz-info-panel');
 const mapWrapper = () => document.querySelector('.map-wrapper');
-const tariffContainer = document.getElementById('tariffOptions');
+const tariffContainer = () => document.getElementById('tariffOptions');
 const recNameIn = () => document.getElementById('recipientName');
 const recPhoneIn = () => document.getElementById('recipientPhone');
 const recEmailIn = () => document.getElementById('recipientEmail');
@@ -39,13 +48,57 @@ const cartItemsCount = () => document.getElementById('cartItemsCount');
 
 /* === Переменные карты === */
 let mapInstance = null, cityClusterer = null, postamatClusterer = null, streetMarker = null;
-let yandexMapsLoaded = false;
+
+/* === Безопасная функция для установки центра карты === */
+
+/* === Утилиты для производительности === */
+function throttle(func, limit) {
+  let inThrottle;
+  return function() {
+    const args = arguments;
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  }
+}
+
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+/* === Обработка ошибок карты === */
+function handleMapError(error, context = 'general') {
+  console.error(`[Maps:${context}] Ошибка:`, error);
+  
+  const errorMessages = {
+    'api': 'Ошибка загрузки API Яндекс.Карт',
+    'geocoding': 'Ошибка поиска адреса',
+    'pvz': 'Ошибка загрузки пунктов выдачи',
+    'general': 'Ошибка работы с картой'
+  };
+  
+  const message = errorMessages[context] || errorMessages.general;
+  showNotification(`❌ ${message}`, 'error');
+}
+
+
+
 
 /* === Инициализация === */
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('🚀 Премиальная корзина загружается...');
+  console.log('🚀 Премиальная корзина загружается со стандартным поведением карты...');
 
-  addTouchableClasses();
   loadCart();
   updateUI();
   initCartControls();
@@ -56,128 +109,78 @@ document.addEventListener('DOMContentLoaded', () => {
   cachedPreviews = {};
 
   checkYandexMapsStatus();
-
-  setTimeout(() => {
-    initPremiumAnimations();
-  }, 500);
+  
+  // Принудительно скрываем карту при загрузке
+  const mapWrapper = document.querySelector('.map-wrapper');
+  if (mapWrapper) {
+    mapWrapper.style.display = 'none';
+  }
+  
+  // Скрываем автоподсказки при изменении размера окна и скролле
+  window.addEventListener('resize', () => {
+    const portal = document.getElementById('citySuggestions');
+    if (portal) portal.classList.remove('visible');
+  });
+  
+  window.addEventListener('scroll', () => {
+    const portal = document.getElementById('citySuggestions');
+    if (portal) portal.classList.remove('visible');
+  });
+  
+  // Скрываем автоподсказки при клике вне input поля
+  document.addEventListener('click', (e) => {
+    const portal = document.getElementById('citySuggestions');
+    const input = cityIn();
+    if (portal && input && !input.contains(e.target) && !portal.contains(e.target)) {
+      portal.classList.remove('visible');
+    }
+  });
 
   console.log('✅ Премиальная корзина инициализирована');
 });
 
-/* === Добавление touchable классов === */
-function addTouchableClasses() {
-  const touchableElements = [
-    '.cart-hero',
-    '.cart-item',
-    '.promo-card',
-    '.delivery-card',
-    '.recipient-card',
-    '.summary-card',
-    '.delivery-option',
-    '.premium-btn',
-    '.quantity-control',
-    '.tariff-btn'
-  ];
 
-  touchableElements.forEach(selector => {
-    const elements = document.querySelectorAll(selector);
-    elements.forEach(el => {
-      if (!el.classList.contains('touchable')) {
-        el.classList.add('touchable');
-      }
-    });
-  });
-}
-
-/* === Премиальные анимации === */
-function initPremiumAnimations() {
-  const animatedElements = [
-    { selector: '.cart-hero', delay: 0 },
-    { selector: '.cart-item', delay: 100 },
-    { selector: '.promo-card', delay: 200 },
-    { selector: '.delivery-card', delay: 300 },
-    { selector: '.recipient-card', delay: 400 },
-    { selector: '.summary-card', delay: 500 }
-  ];
-
-  animatedElements.forEach(({ selector, delay }) => {
-    const elements = document.querySelectorAll(selector);
-    elements.forEach((el, index) => {
-      setTimeout(() => {
-        el.style.animation = 'premiumSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both';
-      }, delay + (index * 50));
-    });
-  });
-
-  setTimeout(() => {
-    animateCartItemsCounter();
-  }, 1000);
-}
-
-function animateCartItemsCounter() {
-  const counter = cartItemsCount();
-  if (!counter) return;
-
-  const targetCount = counts.camera + counts.memory;
-  animateCounterPremium(counter, targetCount);
-}
-
-function animateCounterPremium(element, target) {
-  if (!element) return;
-
-  const start = parseInt(element.textContent) || 0;
-  const duration = 1000;
-  const startTime = performance.now();
-
-  function update(currentTime) {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-
-    const current = Math.floor(start + (target - start) * easeOutCubic(progress));
-    element.textContent = current;
-
-    if (progress < 1) {
-      const scale = 1 + Math.sin(progress * Math.PI) * 0.1;
-      element.style.transform = `scale(${scale})`;
-      element.style.filter = `brightness(${1 + Math.sin(progress * Math.PI) * 0.2})`;
-      requestAnimationFrame(update);
-    } else {
-      element.style.transform = '';
-      element.style.filter = '';
-    }
-  }
-
-  requestAnimationFrame(update);
-}
-
-function easeOutCubic(t) {
-  return 1 - Math.pow(1 - t, 3);
-}
 
 /* === Проверка статуса Яндекс.Карт === */
 function checkYandexMapsStatus() {
   if (typeof ymaps !== 'undefined') {
     console.log('[Maps] Яндекс.Карты уже загружены');
-    yandexMapsLoaded = true;
     return;
   }
 
+  // Слушаем события загрузки
+  window.addEventListener('yandexMapsLoaded', () => {
+    console.log('[Maps] Получено событие загрузки Яндекс.Карт');
+    
+    const wrapper = mapWrapper();
+    if (wrapper && wrapper.style.display === 'grid') {
+      console.log('[Maps] Инициализируем карту после загрузки API');
+      initializeMapForCurrentCity();
+    }
+  });
+  
+  window.addEventListener('yandexMapsError', () => {
+    console.error('[Maps] Ошибка загрузки Яндекс.Карт');
+    showMapError('Не удалось загрузить Карты');
+  });
+
+  // Fallback на случай если события не сработают
   let attempts = 0;
   const checkInterval = setInterval(() => {
     attempts++;
     if (typeof ymaps !== 'undefined') {
-      console.log('[Maps] Яндекс.Карты загружены после', attempts, 'попыток');
-      yandexMapsLoaded = true;
-      clearInterval(checkInterval);
+      console.log('[Maps] Яндекс.Карты загружены после', attempts, 'попыток (fallback)');
+        clearInterval(checkInterval);
 
-      if (mapWrapper().style.display === 'flex') {
-        console.log('[Maps] Инициализируем карту после загрузки API');
+      const wrapper = mapWrapper();
+      if (wrapper && wrapper.style.display === 'grid') {
+        console.log('[Maps] Инициализируем карту после загрузки API (fallback)');
         initializeMapForCurrentCity();
       }
-    } else if (attempts > 50) {
-      console.error('[Maps] Яндекс.Карты не загрузились за 10 секунд');
+    } else if (attempts > 75) { // Увеличили время ожидания
+      console.error('[Maps] Тайм-аут загрузки Яндекс.Карт (15 секунд)');
       clearInterval(checkInterval);
-      showMapError();
+      showMapError('Тайм-аут загрузки карты');
     }
   }, 200);
 }
@@ -187,7 +190,20 @@ function loadCart() {
   if (window.CartManager) {
     const data = window.CartManager.getCartData();
     counts.camera = data.cameraCount || 0;
-    counts.memory = data.memoryCount || 0;
+    
+    // Миграция старых данных: если есть старая память, переносим в 64GB
+    if (data.memoryCount) {
+      counts.memory64gb = data.memoryCount || 0;
+      counts.memory8gb = 0; // 8GB всегда в комплекте с камерой
+    } else {
+      counts.memory8gb = 0;
+      counts.memory64gb = 0;
+    }
+
+    // 8GB карта автоматически добавляется с камерой
+    if (counts.camera > 0) {
+      counts.memory8gb = counts.camera;
+    }
 
     const cameraColor = data.cartColor || 'Чёрный';
     const colorEl = document.getElementById('cameraColor');
@@ -198,7 +214,9 @@ function loadCart() {
 function saveCart() {
   if (window.CartManager) {
     const currentData = window.CartManager.getCartData();
-    window.CartManager.saveCartData(counts.camera, counts.memory, currentData.cartColor);
+    // Сохраняем только 64GB память для совместимости со старой системой
+    window.CartManager.saveCartData(counts.camera, counts.memory64gb, currentData.cartColor);
+    window.CartManager.updateCartCounter();
   }
 }
 
@@ -223,38 +241,41 @@ function updateDeliveryTip(deliveryType) {
   }
 
   tipElement.textContent = tipText;
-  tipElement.style.animation = 'premiumSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  // Убрана анимация для оптимизации
 }
 
 /* === Обновление UI === */
 function updateUI() {
   shipEl().textContent = shipping.toLocaleString('ru-RU');
 
+  // Обновляем цены товаров
+  const cameraUnitPrice = document.getElementById('cameraUnitPrice');
+  const memory64gbUnitPrice = document.getElementById('memory64gbUnitPrice');
+  if (cameraUnitPrice) cameraUnitPrice.textContent = prices.camera.toLocaleString('ru-RU');
+  if (memory64gbUnitPrice) memory64gbUnitPrice.textContent = prices.memory64gb.toLocaleString('ru-RU');
+
   document.querySelectorAll('.quantity-value').forEach(el => {
     const id = el.dataset.id;
     if (id && counts[id] !== undefined) {
       el.textContent = counts[id];
 
-      el.style.animation = 'premiumPopIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-      setTimeout(() => {
-        el.style.animation = '';
-      }, 400);
+      // Простое обновление без анимации
     }
   });
 
-  document.querySelectorAll('.cart-item').forEach(item => {
+  document.querySelectorAll('.premium-cart-item').forEach(item => {
     const id = item.dataset.id;
     if (id && counts[id] !== undefined) {
       if (counts[id] > 0) {
         item.style.display = 'grid';
-        item.style.animation = 'premiumSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        // Убрана анимация для оптимизации
       } else {
         item.style.display = 'none';
       }
     }
   });
 
-  let sum = counts.camera * prices.camera + counts.memory * prices.memory;
+  let sum = counts.camera * prices.camera + counts.memory64gb * prices.memory64gb;
 
   document.getElementById('itemsSubtotal').textContent = sum.toLocaleString('ru-RU');
 
@@ -270,7 +291,7 @@ function updateUI() {
   if (promoContainer) promoContainer.style.display = hasItems ? 'block' : 'none';
 
   if (cartItemsCount()) {
-    cartItemsCount().textContent = counts.camera + counts.memory;
+    cartItemsCount().textContent = counts.camera + counts.memory64gb;
   }
 
   if (!hasItems) {
@@ -285,7 +306,7 @@ function updateUI() {
     const discountAmount = Math.round(sum * discount / 100);
     document.getElementById('discountAmount').textContent = discountAmount.toLocaleString('ru-RU');
     discountRow.style.display = 'flex';
-    discountRow.style.animation = 'premiumSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    // Убрана анимация для оптимизации
   } else {
     discountRow.style.display = 'none';
   }
@@ -295,11 +316,14 @@ function updateUI() {
 
   const totalElement = totalEl();
   if (totalElement) {
-    totalElement.style.animation = 'premiumPopIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-    setTimeout(() => {
-      totalElement.style.animation = '';
-    }, 400);
+    // Убрана анимация для оптимизации
     totalElement.textContent = sum.toLocaleString('ru-RU');
+  }
+
+  // Обновляем сумму в hero секции
+  const cartTotalShort = document.getElementById('cartTotalShort');
+  if (cartTotalShort) {
+    cartTotalShort.textContent = sum.toLocaleString('ru-RU');
   }
 }
 
@@ -329,6 +353,12 @@ function initCartControls() {
     btn.addEventListener('click', () => {
       addPremiumButtonAnimation(btn);
       counts[btn.dataset.id]++;
+      
+      // Если добавляем камеру, автоматически добавляем 8GB карту
+      if (btn.dataset.id === 'camera') {
+        counts.memory8gb = counts.camera;
+      }
+      
       saveCart();
       updateUI();
       showNotification('Товар добавлен!', 'success');
@@ -340,6 +370,19 @@ function initCartControls() {
       addPremiumButtonAnimation(btn);
       if (counts[btn.dataset.id] > 0) {
         counts[btn.dataset.id]--;
+        
+        // Если убираем камеру, автоматически убираем 8GB карту
+        if (btn.dataset.id === 'camera') {
+          counts.memory8gb = counts.camera;
+        }
+        
+        // Нельзя убрать 8GB карту отдельно
+        if (btn.dataset.id === 'memory8gb') {
+          counts.memory8gb = counts.camera; // Восстанавливаем количество
+          showNotification('8ГБ карта входит в комплект камеры', 'info');
+          return;
+        }
+        
         saveCart();
         updateUI();
         showNotification('Количество уменьшено', 'info');
@@ -347,15 +390,28 @@ function initCartControls() {
     });
   });
 
-  document.querySelectorAll('.remove-btn').forEach(btn => {
+  document.querySelectorAll('.remove-item-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       addPremiumButtonAnimation(btn);
-      const itemName = btn.dataset.id === 'camera' ? 'камера' : 'карта памяти';
+      
+      // Нельзя удалить 8GB карту отдельно
+      if (btn.dataset.id === 'memory8gb') {
+        showNotification('8ГБ карта входит в комплект камеры', 'info');
+        return;
+      }
+      
+      const itemName = btn.dataset.id === 'camera' ? 'камера' : 'карта памяти 64ГБ';
       showConfirm(
           'Удалить товар?',
           `Вы действительно хотите удалить ${itemName} из корзины?`,
           () => {
             counts[btn.dataset.id] = 0;
+            
+            // Если удаляем камеру, также удаляем 8GB карту
+            if (btn.dataset.id === 'camera') {
+              counts.memory8gb = 0;
+            }
+            
             saveCart();
             updateUI();
             showNotification('Товар удален из корзины', 'info');
@@ -383,7 +439,7 @@ function initCartControls() {
 
     const removeBtn = document.getElementById('removePromoBtn');
     removeBtn.style.display = 'inline-flex';
-    removeBtn.style.animation = 'premiumSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    // Убрана анимация для оптимизации
     updateUI();
   });
 
@@ -404,7 +460,7 @@ function initCartControls() {
     addPremiumButtonAnimation(btn);
 
     // Проверяем наличие товаров
-    const itemsSum = counts.camera * prices.camera + counts.memory * prices.memory;
+    const itemsSum = counts.camera * prices.camera + counts.memory64gb * prices.memory64gb;
     if (itemsSum <= 0) {
       showNotification('Добавьте товары в корзину', 'error');
       return;
@@ -460,11 +516,18 @@ function initCartControls() {
         quantity: counts.camera
       });
     }
-    if (counts.memory > 0) {
+    if (counts.memory8gb > 0) {
       items.push({
-        name: `Карта памяти 8 ГБ (${counts.memory} шт.)`,
-        cost: counts.memory * prices.memory,
-        quantity: counts.memory
+        name: `Карта памяти 8 ГБ (${counts.memory8gb} шт.) - В комплекте`,
+        cost: 0, // Бесплатно, включено в стоимость камеры
+        quantity: counts.memory8gb
+      });
+    }
+    if (counts.memory64gb > 0) {
+      items.push({
+        name: `Карта памяти 64 ГБ (${counts.memory64gb} шт.)`,
+        cost: counts.memory64gb * prices.memory64gb,
+        quantity: counts.memory64gb
       });
     }
 
@@ -565,6 +628,49 @@ function addPremiumButtonAnimation(button) {
   }, 150);
 }
 
+/* === Управление отображением элементов === */
+function showDeliveryOptions() {
+  const deliveryCard = document.querySelector('.premium-delivery-card');
+  if (deliveryCard) {
+    deliveryCard.classList.add('city-selected');
+    console.log('[UI] Показаны опции доставки');
+  }
+}
+
+function hideDeliveryOptions() {
+  const deliveryCard = document.querySelector('.premium-delivery-card');
+  if (deliveryCard) {
+    deliveryCard.classList.remove('city-selected', 'pvz-selected', 'courier-selected');
+    console.log('[UI] Скрыты опции доставки');
+  }
+}
+
+function showPvzElements() {
+  const deliveryCard = document.querySelector('.premium-delivery-card');
+  if (deliveryCard) {
+    deliveryCard.classList.remove('courier-selected');
+    deliveryCard.classList.add('pvz-selected');
+    console.log('[UI] Показаны элементы ПВЗ');
+  }
+}
+
+function showCourierElements() {
+  const deliveryCard = document.querySelector('.premium-delivery-card');
+  if (deliveryCard) {
+    deliveryCard.classList.remove('pvz-selected');
+    deliveryCard.classList.add('courier-selected');
+    console.log('[UI] Показаны элементы курьерской доставки');
+  }
+}
+
+function hidePvzElements() {
+  const deliveryCard = document.querySelector('.premium-delivery-card');
+  if (deliveryCard) {
+    deliveryCard.classList.remove('pvz-selected');
+    console.log('[UI] Скрыты элементы ПВЗ');
+  }
+}
+
 /* === Вспомогательные функции === */
 function isValidPhone(phone) {
   const phoneRegex = /^(\+7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/;
@@ -605,16 +711,17 @@ function scrollToElement(element) {
 
 /* === Сбор тела запроса для CDEK === */
 function buildCdekOrderRequest(amount) {
-  const totalWeight = counts.camera * CAMERA_WEIGHT_KG + counts.memory * MEMORY_WEIGHT_KG;
+  const totalWeight = counts.camera * CAMERA_WEIGHT_KG + counts.memory8gb * MEMORY_WEIGHT_KG + counts.memory64gb * MEMORY_WEIGHT_KG;
 
   let packageDimensions;
-  if (counts.camera > 0 && counts.memory > 0) {
+  if (counts.camera > 0) {
+    // Камера - основной габарит
     packageDimensions = CAMERA_DIMENSIONS;
-  } else if (counts.camera > 0) {
-    packageDimensions = CAMERA_DIMENSIONS;
-  } else if (counts.memory > 0) {
+  } else if (counts.memory64gb > 0 || counts.memory8gb > 0) {
+    // Только карты памяти
     packageDimensions = MEMORY_DIMENSIONS;
   } else {
+    // По умолчанию
     packageDimensions = { length: 10, width: 10, height: 10 };
   }
 
@@ -629,14 +736,24 @@ function buildCdekOrderRequest(amount) {
       amount: counts.camera
     });
   }
-  if (counts.memory > 0) {
+  if (counts.memory8gb > 0) {
     items.push({
-      name: `Карта памяти 8GB (${counts.memory} шт.)`,
+      name: `Карта памяти 8GB (${counts.memory8gb} шт.) - В комплекте`,
       ware_key: 'CLIPGO-MEM8',
-      payment: { value: counts.memory * prices.memory },
-      cost: counts.memory * prices.memory,
-      weight: counts.memory * MEMORY_WEIGHT_KG * 1000,
-      amount: counts.memory
+      payment: { value: 0 }, // Включено в стоимость камеры
+      cost: 0,
+      weight: counts.memory8gb * MEMORY_WEIGHT_KG * 1000,
+      amount: counts.memory8gb
+    });
+  }
+  if (counts.memory64gb > 0) {
+    items.push({
+      name: `Карта памяти 64GB (${counts.memory64gb} шт.)`,
+      ware_key: 'CLIPGO-MEM64',
+      payment: { value: counts.memory64gb * prices.memory64gb },
+      cost: counts.memory64gb * prices.memory64gb,
+      weight: counts.memory64gb * MEMORY_WEIGHT_KG * 1000,
+      amount: counts.memory64gb
     });
   }
 
@@ -693,67 +810,284 @@ function buildCdekOrderRequest(amount) {
   return orderData;
 }
 
+/* === Утилиты для портала автоподсказок === */
+let globalAnimationFrame = null;
+
+function updatePortalPosition(portal, input) {
+  if (!portal || !input) return;
+  
+  const rect = input.getBoundingClientRect();
+  
+  // Проверяем, что элемент видим на экране
+  if (rect.width === 0 || rect.height === 0) return;
+  
+  // Рассчитываем позицию относительно viewport (для position: fixed)
+  let left = rect.left;
+  let top = rect.bottom + 2;
+  let width = rect.width;
+  
+  // Проверяем границы экрана
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  
+  // Корректируем горизонтальную позицию
+  if (left + width > viewportWidth - 20) {
+    left = viewportWidth - width - 20;
+  }
+  if (left < 10) {
+    left = 10;
+    width = Math.min(width, viewportWidth - 20);
+  }
+  
+  // Корректируем вертикальную позицию (если не помещается снизу)
+  const maxHeight = 200; // max-height из CSS
+  if (top + maxHeight > viewportHeight - 20) {
+    // Показываем сверху от input
+    top = rect.top - maxHeight - 2;
+    if (top < 10) {
+      // Если и сверху не помещается, показываем сбоку
+      top = rect.top;
+    }
+  }
+  
+  portal.style.setProperty('left', left + 'px', 'important');
+  portal.style.setProperty('top', Math.max(10, top) + 'px', 'important');
+  portal.style.setProperty('width', width + 'px', 'important');
+}
+
+function startTracking(portal, input) {
+  if (globalAnimationFrame) {
+    cancelAnimationFrame(globalAnimationFrame);
+    globalAnimationFrame = null;
+  }
+  
+  // РАДИКАЛЬНО ПЕРЕЗАПИСЫВАЕМ ВСЕ СТИЛИ
+  portal.removeAttribute('class');
+  portal.removeAttribute('style');
+  
+  // Устанавливаем каждый стиль отдельно для максимальной силы
+  portal.style.setProperty('position', 'fixed', 'important');
+  portal.style.setProperty('background', 'white', 'important');
+  portal.style.setProperty('border', '1px solid rgba(0, 0, 0, 0.15)', 'important');
+  portal.style.setProperty('border-radius', '12px', 'important');
+  portal.style.setProperty('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.2)', 'important');
+  portal.style.setProperty('z-index', '99999999', 'important');
+  portal.style.setProperty('display', 'block', 'important');
+  portal.style.setProperty('opacity', '1', 'important');
+  portal.style.setProperty('visibility', 'visible', 'important');
+  portal.style.setProperty('pointer-events', 'auto', 'important');
+  portal.style.setProperty('list-style', 'none', 'important');
+  portal.style.setProperty('margin', '0', 'important');
+  portal.style.setProperty('padding', '0', 'important');
+  portal.style.setProperty('max-height', '200px', 'important');
+  portal.style.setProperty('overflow-y', 'auto', 'important');
+  portal.style.setProperty('overflow-x', 'hidden', 'important');
+  
+  function trackPosition() {
+    if (portal && 
+        document.body.contains(portal) &&
+        document.body.contains(input)) {
+      
+      // Обновляем позицию при каждом кадре
+      updatePortalPosition(portal, input);
+      globalAnimationFrame = requestAnimationFrame(trackPosition);
+    } else {
+      // Отладка - почему прекратилось отслеживание
+      console.log('[DEBUG] Tracking stopped:', {
+        portalExists: !!portal,
+        portalInBody: portal ? document.body.contains(portal) : false,
+        inputInBody: document.body.contains(input),
+        hasVisibleClass: portal ? portal.classList.contains('visible') : false
+      });
+      globalAnimationFrame = null;
+    }
+  }
+  
+  // Восстанавливаем правильное позиционирование
+  updatePortalPosition(portal, input);
+  
+  
+  // Оставляем портал пустым - контент добавится в renderCitySuggestions
+  
+  // Запускаем отслеживание
+  globalAnimationFrame = requestAnimationFrame(trackPosition);
+}
+
+function stopTracking() {
+  if (globalAnimationFrame) {
+    cancelAnimationFrame(globalAnimationFrame);
+    globalAnimationFrame = null;
+  }
+}
+
+
 /* === Яндекс-подсказки городов === */
 function initCitySuggest() {
-  cityIn().addEventListener('input', debounce(async e => {
+  console.log('[CitySuggest] Инициализация автоподсказок...');
+  const cityInput = cityIn();
+  
+  if (!cityInput) {
+    console.error('[CitySuggest] Элементы не найдены:', { cityInput });
+    return;
+  }
+  
+  console.log('[CitySuggest] Элементы найдены, добавляем обработчики');
+  
+  // Скрытие подсказок при клике вне
+  document.addEventListener('click', (e) => {
+    const portal = document.getElementById('citySuggestions');
+    if (portal && !cityInput.contains(e.target) && !portal.contains(e.target)) {
+      portal.style.display = 'none';
+      portal.classList.remove('visible');
+      stopTracking();
+    }
+  });
+  
+  cityInput.addEventListener('input', debounce(async e => {
     if (justSelectedCity) {
       justSelectedCity = false;
       return;
     }
 
     const q = e.target.value.trim();
+    console.log('[CitySuggest] Ввод:', q);
+    
     currentCity = '';
     cityCode = null;
     resetDeliveryFlow();
 
-    const ul = citySug();
-    ul.innerHTML = '';
-    ul.classList.remove('visible');
-    if (q.length < 2) return;
+    const portal = citySug();
+    portal.innerHTML = '';
+    portal.classList.remove('visible');
+    stopTracking();
+    if (q.length < 2) {
+      console.log('[CitySuggest] Запрос слишком короткий');
+      return;
+    }
+    
+    console.log('[CitySuggest] Запрос подсказок для:', q);
 
     try {
       const resp = await fetch(`/api/yandex/suggest?text=${encodeURIComponent(q)}`);
+      if (!resp.ok) {
+        throw new Error('API недоступен');
+      }
       const j = await resp.json();
       renderCitySuggestions(j.results || []);
     } catch (e) {
       console.error('Ошибка получения подсказок городов:', e);
-      showNotification('Ошибка поиска городов', 'error');
+      // Показываем популярные города как fallback
+      const mockCities = getMockCities(q);
+      if (mockCities.length > 0) {
+        renderCitySuggestions(mockCities);
+      } else {
+        showNotification('Введите название города', 'info');
+      }
     }
   }, 300));
 }
 
+function getMockCities(query) {
+  const cities = [
+    { title: { text: 'Москва' }, subtitle: { text: 'Московская область' } },
+    { title: { text: 'Санкт-Петербург' }, subtitle: { text: 'Ленинградская область' } },
+    { title: { text: 'Новосибирск' }, subtitle: { text: 'Новосибирская область' } },
+    { title: { text: 'Екатеринбург' }, subtitle: { text: 'Свердловская область' } },
+    { title: { text: 'Казань' }, subtitle: { text: 'Татарстан' } },
+    { title: { text: 'Нижний Новгород' }, subtitle: { text: 'Нижегородская область' } },
+    { title: { text: 'Челябинск' }, subtitle: { text: 'Челябинская область' } },
+    { title: { text: 'Самара' }, subtitle: { text: 'Самарская область' } },
+    { title: { text: 'Омск' }, subtitle: { text: 'Омская область' } },
+    { title: { text: 'Ростов-на-Дону' }, subtitle: { text: 'Ростовская область' } },
+    { title: { text: 'Уфа' }, subtitle: { text: 'Башкортостан' } },
+    { title: { text: 'Красноярск' }, subtitle: { text: 'Красноярский край' } },
+    { title: { text: 'Воронеж' }, subtitle: { text: 'Воронежская область' } },
+    { title: { text: 'Пермь' }, subtitle: { text: 'Пермский край' } },
+    { title: { text: 'Волгоград' }, subtitle: { text: 'Волгоградская область' } }
+  ];
+  
+  const lowerQuery = query.toLowerCase();
+  return cities.filter(city => 
+    city.title.text.toLowerCase().includes(lowerQuery)
+  ).slice(0, 8);
+}
+
 function renderCitySuggestions(items) {
-  const ul = citySug();
-  ul.innerHTML = '';
+  // Получаем портал через унифицированную функцию
+  const portal = citySug();
+  
+
+  portal.innerHTML = '';
   if (!items.length) {
-    ul.classList.remove('visible');
+    portal.classList.remove('visible');
+    stopTracking();
     return;
   }
 
+  // Позиционируем портал относительно input поля
+  const input = cityIn();
+
+
+  portal.innerHTML = '';
+  
   items.forEach(it => {
     const txt = it.title.text + (it.subtitle ? ', ' + it.subtitle.text : '');
     const li = document.createElement('li');
     li.textContent = txt;
+    li.style.cssText = 'padding: 12px 20px; color: #1f2937; cursor: pointer; border-bottom: 1px solid #f3f4f6; transition: background-color 0.2s ease; word-wrap: break-word; line-height: 1.4;';
+    
+    // Добавляем hover эффект
+    li.addEventListener('mouseenter', () => {
+      li.style.backgroundColor = '#f3f4f6';
+    });
+    li.addEventListener('mouseleave', () => {
+      li.style.backgroundColor = 'transparent';
+    });
+    
     li.addEventListener('click', async () => {
       justSelectedCity = true;
       cityIn().value = txt;
       currentCity = txt;
-      ul.innerHTML = '';
-      ul.classList.remove('visible');
+      portal.innerHTML = '';
+      portal.style.display = 'none';
 
       showNotification('🔍 Поиск кода города...', 'info');
       await fetchCdekCityCode(txt);
 
       if (cityCode) {
-        showElement(deliverySection());
+        showDeliveryOptions();
         showNotification('✅ Город найден! Выберите способ доставки', 'success');
       } else {
+        hideDeliveryOptions();
         showNotification('❌ Город не найден в системе СДЭК', 'error');
       }
     });
-    ul.append(li);
+    
+    portal.append(li);
   });
-  ul.classList.add('visible');
+  
+  // Показываем портал и запускаем отслеживание
+  portal.classList.add('visible');
+  
+  // Применяем такие же радикальные стили как в startTracking
+  portal.style.setProperty('position', 'fixed', 'important');
+  portal.style.setProperty('background', 'white', 'important');
+  portal.style.setProperty('border', '1px solid rgba(0, 0, 0, 0.15)', 'important');
+  portal.style.setProperty('border-radius', '12px', 'important');
+  portal.style.setProperty('box-shadow', '0 8px 32px rgba(0, 0, 0, 0.2)', 'important');
+  portal.style.setProperty('z-index', '99999999', 'important');
+  portal.style.setProperty('display', 'block', 'important');
+  portal.style.setProperty('opacity', '1', 'important');
+  portal.style.setProperty('visibility', 'visible', 'important');
+  portal.style.setProperty('pointer-events', 'auto', 'important');
+  portal.style.setProperty('list-style', 'none', 'important');
+  portal.style.setProperty('margin', '0', 'important');
+  portal.style.setProperty('padding', '0', 'important');
+  portal.style.setProperty('max-height', '200px', 'important');
+  portal.style.setProperty('overflow-y', 'auto', 'important');
+  portal.style.setProperty('overflow-x', 'hidden', 'important');
+  
+  startTracking(portal, input);
 }
 
 async function fetchCdekCityCode(cityName) {
@@ -772,33 +1106,69 @@ async function fetchCdekCityCode(cityName) {
 
 /* === Ввод улицы и карта === */
 function initStreetInput() {
-  streetIn().addEventListener('change', async () => {
-    const addr = streetIn().value.trim();
-    if (!addr || !yandexMapsLoaded || !mapInstance) return;
+  const debouncedGeocoding = debounce(async (addr) => {
+    if (!addr || !mapInstance) return;
 
     try {
       const full = `${currentCity}, ${addr}`;
-      const res = await ymaps.geocode(full);
-      const firstResult = res.geoObjects.get(0);
-
-      if (firstResult) {
+      showNotification('🔍 Поиск адреса...', 'info');
+      
+      const res = await ymaps.geocode(full, { results: 5 });
+      const geoObjects = res.geoObjects;
+      
+      if (geoObjects.getLength() > 0) {
+        const firstResult = geoObjects.get(0);
         const coords = firstResult.geometry.getCoordinates();
-        mapInstance.setCenter(coords, 14, { duration: 500 });
+        const precision = firstResult.properties.get('metaDataProperty.GeocoderMetaData.precision');
+        
+        console.log('[Geocoding] Найден адрес:', {
+          address: firstResult.getAddressLine(),
+          precision: precision,
+          coords: coords
+        });
+        
+        // Плавно перемещаемся к найденному адресу
+        mapInstance.panTo(coords, {
+          flying: true,
+          speed: 200,
+          duration: 800
+        }).then(() => {
+          mapInstance.setZoom(15, {
+            smooth: true,
+            duration: 500
+          });
+        });
 
-        if (streetMarker) mapInstance.geoObjects.remove(streetMarker);
-        streetMarker = new ymaps.Placemark(coords,
-            { balloonContent: `${full}` },
-            { preset: 'islands#circleIcon', iconColor: '#FF5733' }
-        );
+        // Удаляем старую метку и создаем новую
+        if (streetMarker) {
+          mapInstance.geoObjects.remove(streetMarker);
+        }
+        
+        streetMarker = new ymaps.Placemark(coords, {
+          balloonContent: `<div style="padding: 10px;"><strong>🏠 Адрес доставки</strong><br/>${firstResult.getAddressLine()}</div>`,
+          hintContent: addr
+        }, {
+          preset: 'islands#redCircleIcon',
+          iconColor: '#FF5733',
+          iconCaptionMaxWidth: '200'
+        });
+        
         mapInstance.geoObjects.add(streetMarker);
-        showNotification('📍 Адрес найден на карте', 'success');
+        
+        const precisionText = precision === 'exact' ? 'точно' : 'приблизительно';
+        showNotification(`📍 Адрес найден ${precisionText}`, 'success');
       } else {
-        showNotification('❌ Адрес не найден', 'warning');
+        showNotification('❌ Адрес не найден, попробуйте уточнить', 'warning');
       }
     } catch (e) {
       console.error('Ошибка геокодирования:', e);
-      showNotification('Ошибка поиска адреса', 'error');
+      handleMapError(e, 'geocoding');
     }
+  }, 500); // Debounce 500ms
+  
+  streetIn().addEventListener('input', (e) => {
+    const addr = e.target.value.trim();
+    debouncedGeocoding(addr);
   });
 }
 
@@ -806,8 +1176,11 @@ function initStreetInput() {
 function initDeliveryToggle() {
   document.getElementById('deliveryCourier').addEventListener('change', () => {
     if (!cityCode) return;
-    showElement(streetWrapper());
-    hideMapWrapper();
+    
+    // Показываем элементы для курьерской доставки
+    showCourierElements();
+    
+    // Очищаем предыдущие данные
     hideTariffs();
     selectedTariff = null;
     shipping = 0;
@@ -819,8 +1192,22 @@ function initDeliveryToggle() {
   });
 
   document.getElementById('deliveryPvz').addEventListener('change', () => {
-    if (!cityCode) return;
-    showElement(streetWrapper());
+    console.log('[UI] 📮 Выбрана доставка ПВЗ:', { 
+      cityCode, 
+      currentCity, 
+      hasCityCode: !!cityCode,
+      hasCurrentCity: !!currentCity 
+    });
+    
+    if (!cityCode) {
+      console.warn('[UI] ❌ Нет cityCode для загрузки ПВЗ');
+      return;
+    }
+    
+    // Показываем элементы для ПВЗ (карта, адрес)
+    showPvzElements();
+    
+    // Очищаем предыдущие данные
     hideTariffs();
     selectedTariff = null;
     shipping = 0;
@@ -828,7 +1215,20 @@ function initDeliveryToggle() {
     updateUI();
 
     showNotification('📮 Загружаем пункты выдачи...', 'info');
-    showMapWrapper(currentCity, fetchAndPlotPvz);
+    console.log('[UI] 🗺️ Вызываем showMapWrapper для ПВЗ...', {
+      currentCity: currentCity,
+      cityCode: cityCode,
+      callbackName: 'fetchAndPlotPvz'
+    });
+    showMapWrapper(currentCity, () => {
+      console.log('[Maps] 🎯 Callback анонимной функции вызван!');
+      console.log('[Maps] 🔍 Состояние перед вызовом fetchAndPlotPvz:', {
+        cityCode: cityCode,
+        currentCity: currentCity,
+        mapInstance: !!mapInstance
+      });
+      fetchAndPlotPvz();
+    });
   });
 }
 
@@ -839,74 +1239,70 @@ async function showCourierTariffs() {
   renderTariffButtons('COURIER', 'Курьерская доставка', null);
 }
 
+/* === REFACTORED SHOWMAPWRAPPER FUNCTION === */
+// ЗАМЕНА ДЛЯ функции showMapWrapper
 function showMapWrapper(city, cb) {
-  if (!yandexMapsLoaded) {
-    console.log('[Maps] Яндекс.Карты еще не загружены, ждем...');
-    showNotification('🗺️ Загружаем карту...', 'info');
+  console.log('[Maps] 🗺️ showMapWrapper вызван (НОВАЯ ВЕРСИЯ):', { city, hasCallback: !!cb });
+  
+  const wrapper = mapWrapper();
+  wrapper.style.display = 'flex';
+  wrapper.classList.add('with-panel');
+  mapContainer().style.display = 'block';
 
-    mapWrapper().style.display = 'grid';
-    mapWrapper().classList.add('with-panel');
-    mapContainer().innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; flex-direction: column; background: rgba(255,255,255,0.9); border-radius: 20px;">
-                <div style="font-size: 3em; margin-bottom: 20px; animation: premiumFloat 3s ease-in-out infinite;">🗺️</div>
-                <div style="font-size: 1.2em; font-weight: 600;">Загрузка карты...</div>
-                <div style="font-size: 0.9em; color: #999; margin-top: 8px;">Подождите немного</div>
-            </div>
-        `;
-
-    const waitForMaps = () => {
-      if (yandexMapsLoaded) {
-        initializeMapForCity(city, cb);
-      } else {
-        setTimeout(waitForMaps, 500);
-      }
-    };
-    waitForMaps();
+  // Если карта уже есть, просто центрируем и выполняем колбэк
+  if (mapInstance) {
+    ymaps.ready(() => {
+        mapInstance.panTo([55.75, 37.62], 10, { flying: false }).then(() => {
+            ymaps.geocode(city).then(res => {
+                if (res.geoObjects.getLength() > 0) {
+                    const coords = res.geoObjects.get(0).geometry.getCoordinates();
+                    mapInstance.panTo(coords, 10, { flying: true, duration: 800 });
+                }
+                cb && cb();
+            });
+        });
+    });
     return;
   }
 
-  mapWrapper().style.display = 'grid';
-  mapWrapper().classList.add('with-panel');
-  initializeMapForCity(city, cb);
-}
-
-function initializeMapForCity(city, callback) {
-  if (!yandexMapsLoaded) {
-    console.error('[Maps] Попытка инициализации карты без загруженного API');
-    return;
-  }
-
+  // Если карты нет, создаем ее
   ymaps.ready(() => {
-    ymaps.geocode(city).then(r => {
-      const firstResult = r.geoObjects.get(0);
-      if (!firstResult) {
-        showMapError('Город не найден на карте');
-        return;
+    ymaps.geocode(city, { results: 1 }).then(res => {
+      if (res.geoObjects.getLength() === 0) {
+          console.error('[Maps] ❌ Не удалось найти координаты для города:', city);
+          showMapError('Не удалось найти город на карте');
+          return;
       }
-
-      const coords = firstResult.geometry.getCoordinates();
-
-      if (mapInstance) {
-        mapInstance.setCenter(coords, 10, { duration: 500 });
-      } else {
-        mapInstance = new ymaps.Map('map', {
+      
+      const coords = res.geoObjects.get(0).geometry.getCoordinates();
+      
+      mapInstance = new ymaps.Map('map', {
           center: coords,
           zoom: 10,
-          controls: ['zoomControl', 'fullscreenControl']
-        });
-      }
+          controls: ['zoomControl', 'geolocationControl', 'fullscreenControl'],
+          behaviors: ['default', 'scrollZoom'] // Стандартное поведение
+      }, {
+          minZoom: 5,
+          maxZoom: 18,
+          suppressMapOpenBlock: true
+      });
 
-      if (callback) callback();
+      console.log('[Maps] ✅ Карта создана со стандартным поведением.');
+
+      // Выполняем колбэк, если он есть
+      cb && cb();
+
     }).catch(err => {
-      console.error('[Maps] Ошибка геокодирования:', err);
-      showMapError('Ошибка загрузки карты');
+        console.error('[Maps] ❌ Ошибка геокодирования при создании карты:', err);
+        showMapError('Ошибка поиска города');
     });
   });
 }
 
+
 function initializeMapForCurrentCity() {
-  if (currentCity && yandexMapsLoaded) {
-    initializeMapForCity(currentCity, () => {
+  if (currentCity) {
+    showMapWrapper(currentCity, () => {
       const pvzRadio = document.getElementById('deliveryPvz');
       if (pvzRadio && pvzRadio.checked) {
         fetchAndPlotPvz();
@@ -929,145 +1325,254 @@ function showMapError(message = 'Ошибка загрузки карты') {
 }
 
 function retryMapLoad() {
-  checkYandexMapsStatus();
+  console.log('[Maps] Повторная попытка загрузки карты');
+  
+  // Clear mapInstance and reset map state
+  mapInstance = null;
+  cityClusterer = null;
+  postamatClusterer = null;
+  streetMarker = null;
+  
   if (currentCity) {
     showMapWrapper(currentCity, fetchAndPlotPvz);
   }
 }
 
 function hideMapWrapper() {
-  mapWrapper().style.display = 'none';
-  mapWrapper().classList.remove('with-panel');
+  const wrapper = mapWrapper();
+  wrapper.style.display = 'none';
+  wrapper.classList.remove('with-panel');
+  mapContainer().style.display = 'none';
 }
 
 /* === Fetch & plot PVZ + кэш тарифов === */
+// ЗАМЕНА ДЛЯ функции fetchAndPlotPvz
 async function fetchAndPlotPvz() {
-  if (!cityCode || !mapInstance || !yandexMapsLoaded) {
-    console.log('[PVZ] Не все условия выполнены для загрузки ПВЗ:', { cityCode, mapInstance: !!mapInstance, yandexMapsLoaded });
-    return;
-  }
+    console.log('[PVZ] 🏗️ Загрузка ПВЗ (НОВАЯ ВЕРСИЯ)...');
 
-  if (!cityClusterer) {
+    if (!cityCode || !mapInstance) {
+        console.warn('[PVZ] ❌ Недостаточно данных для загрузки ПВЗ:', { cityCode, mapInstance: !!mapInstance });
+        return;
+    }
+
+    // Очищаем старые метки и кластеры
+    clearClusters();
+    
+    // Создаем кластеризаторы заново
     cityClusterer = new ymaps.Clusterer({
-      preset: 'islands#invertedDarkBlueClusterIcons',
-      groupByCoordinates: false,
-      clusterDisableClickZoom: false,
-      clusterOpenBalloonOnClick: false
+        preset: 'islands#invertedDarkBlueClusterIcons',
+        gridSize: 80,
     });
     postamatClusterer = new ymaps.Clusterer({
-      preset: 'islands#invertedLightBlueClusterIcons',
-      groupByCoordinates: false,
-      clusterDisableClickZoom: false,
-      clusterOpenBalloonOnClick: false
+        preset: 'islands#invertedLightBlueClusterIcons',
+        gridSize: 80,
     });
-  }
-  clearClusters();
-
-  try {
-    showNotification('📮 Загружаем пункты выдачи...', 'info');
-
-    let page = 0, totalPages = 1, all = [];
-    while (page < totalPages) {
-      const url = `/api/cdek/pvz?cityId=${encodeURIComponent(cityCode)}&type=ALL&size=1000&page=${page}`;
-      const resp = await fetch(url);
-
-      if (!resp.ok) {
-        throw new Error(`HTTP ${resp.status}`);
-      }
-
-      const arr = await resp.json();
-      all.push(...arr);
-      totalPages = parseInt(resp.headers.get('x-total-pages') || '1', 10);
-      page++;
-    }
-
-    if (all.length === 0) {
-      showNotification('❌ Пункты выдачи не найдены в этом городе', 'warning');
-      return;
-    }
-
-    let addedCount = 0;
-    all.forEach(pt => {
-      const loc = pt.location || {};
-      if (!loc.latitude || !loc.longitude) return;
-
-      const coords = [parseFloat(loc.latitude), parseFloat(loc.longitude)];
-      const type = (pt.type || '').toUpperCase();
-      const icon = type === 'PVZ' ? '/assets/icons/pvz.png' : '/assets/icons/postamat.png';
-
-      const pm = new ymaps.Placemark(coords, {
-        // Убираем balloonContent для чистоты карты
-      }, {
-        iconLayout: 'default#image',
-        iconImageHref: icon,
-        iconImageSize: [32, 32],
-        iconImageOffset: [-16, -32]
-      });
-
-      pm.events.add('click', () => {
-        mapInstance.setCenter(coords, 14, { duration: 500 });
-        renderPvzInfoPanel(pt, type, loc);
-      });
-
-      (type === 'PVZ' ? cityClusterer : postamatClusterer).add(pm);
-      addedCount++;
-    });
-
-    [cityClusterer, postamatClusterer].forEach(cl => cl.events.add('click', e => {
-      const clus = e.get('target');
-      mapInstance.setCenter(clus.geometry.getCoordinates(), mapInstance.getZoom() + 1, { duration: 500 });
-    }));
 
     mapInstance.geoObjects.add(cityClusterer).add(postamatClusterer);
+    console.log('[PVZ] ✅ Кластеризаторы созданы и добавлены на карту.');
 
-    showNotification(`✅ Загружено ${addedCount} пунктов выдачи`, 'success');
+    // --- НАЧАЛО: ЕДИНЫЙ ОБРАБОТЧИК КЛИКОВ (ДЕЛЕГИРОВАНИЕ) ---
+    [cityClusterer, postamatClusterer].forEach(clusterer => {
+        clusterer.events.add('click', (e) => {
+            const target = e.get('target');
+            // Проверяем, что клик был по метке, а не по иконке кластера
+            if (target && target.options.get('preset')) {
+                const placemark = target;
+                const coords = placemark.geometry.getCoordinates();
+                const data = placemark.properties.get('cdekData'); // <-- Получаем наши данные
+                const type = (data.type || '').toUpperCase();
+                
+                console.log('[Maps] 🎯 Клик по метке:', data);
 
-  } catch (error) {
-    console.error('[PVZ] Ошибка загрузки ПВЗ:', error);
-    showNotification('Ошибка загрузки пунктов выдачи', 'error');
-  }
+                mapInstance.panTo(coords, { flying: true, duration: 800 }).then(() => {
+                    const currentZoom = mapInstance.getZoom();
+                    if (currentZoom < 14) mapInstance.setZoom(14, { duration: 300 });
+                });
+
+                renderPvzInfoPanel(data, type, data.location);
+                showNotification(`Выбран ${type === 'PVZ' ? 'пункт выдачи' : 'постамат'}`, 'success');
+            }
+        });
+    });
+    // --- КОНЕЦ: ЕДИНЫЙ ОБРАБОТЧИК КЛИКОВ ---
+
+    try {
+        showNotification('📮 Загружаем пункты выдачи...', 'info');
+        const url = `/api/cdek/pvz?cityId=${encodeURIComponent(cityCode)}&type=ALL&size=1000`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        
+        const all = await resp.json();
+        if (all.length === 0) {
+            showNotification('❌ Пункты выдачи не найдены', 'warning');
+            return;
+        }
+
+        const placemarks = [];
+        all.forEach(pt => {
+            if (!pt.location?.latitude || !pt.location?.longitude) return;
+
+            const type = (pt.type || '').toUpperCase();
+            const coords = [parseFloat(pt.location.latitude), parseFloat(pt.location.longitude)];
+            
+            const pm = new ymaps.Placemark(coords, {
+                // Сохраняем все данные о точке в свойствах метки
+                cdekData: pt, 
+                hintContent: `${type}: ${pt.location.address_full}`,
+            }, {
+                // Используем стандартные иконки, они надежнее
+                preset: type === 'PVZ' ? 'islands#blueDotIconWithCaption' : 'islands#greenDotIconWithCaption'
+            });
+            placemarks.push(pm);
+        });
+
+        // Добавляем все метки в кластеры ОДНИМ действием для лучшей производительности
+        const pvzPlacemarks = placemarks.filter(pm => pm.properties.get('cdekData').type === 'PVZ');
+        const postamatPlacemarks = placemarks.filter(pm => pm.properties.get('cdekData').type !== 'PVZ');
+
+        cityClusterer.add(pvzPlacemarks);
+        postamatClusterer.add(postamatPlacemarks);
+        
+        console.log(`[PVZ] ✅ Загружено и добавлено ${placemarks.length} меток.`);
+        showNotification(`✅ Загружено ${placemarks.length} пунктов выдачи`, 'success');
+
+    } catch (error) {
+        console.error('[PVZ] ❌ Ошибка загрузки ПВЗ:', error);
+        handleMapError(error, 'pvz');
+    }
 }
 
 function clearClusters() {
-  if (cityClusterer) cityClusterer.removeAll();
-  if (postamatClusterer) postamatClusterer.removeAll();
+  if (cityClusterer) {
+    mapInstance.geoObjects.remove(cityClusterer);
+    cityClusterer.removeAll();
+  }
+  if (postamatClusterer) {
+    mapInstance.geoObjects.remove(postamatClusterer);
+    postamatClusterer.removeAll();
+  }
+  if (streetMarker) {
+    mapInstance.geoObjects.remove(streetMarker);
+    streetMarker = null;
+  }
 }
 
 /* === Инфо-панель PVZ/Postamat === */
 function renderPvzInfoPanel(pt, type, loc) {
-  let html = '';
-  const imgs = (pt.office_image_list || []).slice(0, 3);
-  if (imgs.length) {
-    html += '<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;">';
-    imgs.forEach(i => html += `<img src="${i.url}" style="width:80px;height:80px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.1);" onerror="this.style.display='none'">`);
-    html += '</div>';
+  console.log('[PVZ] Отображение информации:', { type, address: loc.address_full, pt });
+  
+  // Попробуем несколько способов найти панель
+  let panel = infoPanel();
+  
+  if (!panel) {
+    panel = document.getElementById('pvz-info-panel');
+  }
+  
+  if (!panel) {
+    panel = document.querySelector('.premium-pvz-panel');
+  }
+  
+  if (!panel) {
+    console.error('[PVZ] Не удалось найти панель информации ПВЗ');
+    showNotification('Ошибка: панель информации не найдена', 'error');
+    return;
   }
 
-  html += `<h3>${type === 'PVZ' ? '📮 Пункт выдачи' : '📦 Постамат'}</h3>`;
-  html += `<p><strong>📍 Адрес:</strong> ${loc.address_full || '—'}</p>`;
-  html += `<p><strong>🕒 Время работы:</strong> ${pt.work_time || '—'}</p>`;
+  renderPvzInfoToElement(panel, pt, type, loc);
+}
+
+function renderPvzInfoToElement(panel, pt, type, loc) {
+  console.log('[PVZ] Рендеринг в элемент:', { panel, type, address: loc.address_full });
+
+  let html = `
+    <div class="pvz-info-content">
+      <div class="pvz-header">
+        <h3 style="color: var(--premium-text-primary); margin: 0 0 15px 0; font-size: 1.2em;">
+          <span style="margin-right: 8px;">${type === 'PVZ' ? '📮' : '📦'}</span>
+          ${type === 'PVZ' ? 'Пункт выдачи' : 'Постамат'}
+        </h3>
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; align-items: flex-start; gap: 8px;">
+          <span style="font-size: 1.1em; flex-shrink: 0;">📍</span>
+          <div>
+            <div style="font-weight: 600; color: var(--premium-text-primary); margin-bottom: 2px;">Адрес:</div>
+            <div style="color: var(--premium-text-light); line-height: 1.4;">${loc.address_full || '—'}</div>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: flex-start; gap: 8px;">
+          <span style="font-size: 1.1em; flex-shrink: 0;">🕒</span>
+          <div>
+            <div style="font-weight: 600; color: var(--premium-text-primary); margin-bottom: 2px;">Время работы:</div>
+            <div style="color: var(--premium-text-light);">${pt.work_time || 'Не указано'}</div>
+          </div>
+        </div>`;
 
   if (pt.note) {
-    html += `<p><strong>📝 Примечание:</strong> ${pt.note}</p>`;
+    html += `
+        <div style="display: flex; align-items: flex-start; gap: 8px;">
+          <span style="font-size: 1.1em; flex-shrink: 0;">📝</span>
+          <div>
+            <div style="font-weight: 600; color: var(--premium-text-primary); margin-bottom: 2px;">Примечание:</div>
+            <div style="color: var(--premium-text-light); line-height: 1.4;">${pt.note}</div>
+          </div>
+        </div>`;
   }
 
-  html += `<button id="selectPvzBtn" class="premium-btn primary" style="width:100%;margin-top:16px;">
-        <span>✅</span>
-        <span>Выбрать пункт</span>
-    </button>`;
+  // Добавляем фотографии если есть
+  const imgs = (pt.office_image_list || []).slice(0, 3);
+  if (imgs.length) {
+    html += `
+        <div style="margin-top: 15px;">
+          <div style="font-weight: 600; color: var(--premium-text-primary); margin-bottom: 8px;">Фотографии:</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px;">`;
+    imgs.forEach(i => {
+      html += `<img src="${i.url}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" onerror="this.style.display='none'">`;
+    });
+    html += `
+          </div>
+        </div>`;
+  }
 
-  infoPanel().innerHTML = html;
-  infoPanel().style.animation = 'premiumPanelSlide 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  html += `
+      </div>
+      
+      <button id="selectPvzBtn" class="premium-cta-button" style="width:100%; margin-top:20px;">
+        <span class="btn-icon">✅</span>
+        <span class="btn-text">Выбрать ${type === 'PVZ' ? 'пункт выдачи' : 'постамат'}</span>
+      </button>
+    </div>`;
+
+  panel.innerHTML = html;
+  panel.style.display = 'block';
 
   // Предзагружаем тарифы для выбранного типа ПВЗ
   preloadTariffPreviews(type === 'PVZ' ? [136, 483] : [368, 486]);
 
   const selectBtn = document.getElementById('selectPvzBtn');
-  selectBtn.addEventListener('click', () => {
-    addPremiumButtonAnimation(selectBtn);
-    renderTariffButtons(type, loc.address_full || '—', pt.code);
-    showNotification(`✅ ${type === 'PVZ' ? 'Пункт выдачи' : 'Постамат'} выбран`, 'success');
-  });
+  if (selectBtn) {
+    // Удаляем старые обработчики чтобы избежать дублирования
+    const newBtn = selectBtn.cloneNode(true);
+    selectBtn.parentNode.replaceChild(newBtn, selectBtn);
+    
+    newBtn.addEventListener('click', () => {
+      addPremiumButtonAnimation(newBtn);
+      
+      // Показываем тарифы с задержкой для лучшего UX
+      setTimeout(() => {
+        renderTariffButtons(type, loc.address_full || '—', pt.code);
+        showNotification(`✅ ${type === 'PVZ' ? 'Пункт выдачи' : 'Постамат'} выбран`, 'success');
+        
+        // Плавно прокручиваем к тарифам
+        const tariffContainer = document.getElementById('tariffOptions');
+        if (tariffContainer) {
+          tariffContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }, 200);
+    });
+  }
 }
 
 /* === Кэш тарифов === */
@@ -1082,8 +1587,8 @@ async function preloadTariffPreviews(codes) {
       return;
     }
 
-    const totalWeight = counts.camera * CAMERA_WEIGHT_KG + counts.memory * MEMORY_WEIGHT_KG;
-    const dims = counts.camera > 0 ? CAMERA_DIMENSIONS : counts.memory > 0 ? MEMORY_DIMENSIONS : { length: 10, width: 10, height: 10 };
+    const totalWeight = counts.camera * CAMERA_WEIGHT_KG + counts.memory8gb * MEMORY_WEIGHT_KG + counts.memory64gb * MEMORY_WEIGHT_KG;
+    const dims = counts.camera > 0 ? CAMERA_DIMENSIONS : (counts.memory64gb > 0 || counts.memory8gb > 0) ? MEMORY_DIMENSIONS : { length: 10, width: 10, height: 10 };
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -1195,11 +1700,11 @@ function renderTariffButtons(markerType, address, pvzCode) {
         `;
   });
 
-  tariffContainer.innerHTML = html;
+  tariffContainer().innerHTML = html;
   showTariffs();
 
   // Анимация появления тарифов
-  tariffContainer.style.animation = 'premiumSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  // Убрана анимация для оптимизации
 
   // Обработчики кликов с премиальными анимациями
   document.querySelectorAll('.tariff-btn').forEach((btn, index) => {
@@ -1267,7 +1772,7 @@ function renderTariffButtons(markerType, address, pvzCode) {
                         Стоимость: <strong>${shipping.toLocaleString('ru-RU')} ₽</strong>
                     </div>
                 `;
-        deliveryInfoEl().style.animation = 'premiumSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        // Убрана анимация для оптимизации
 
         // Обновляем подсказку в зависимости от типа доставки
         updateDeliveryTip(markerType);
@@ -1334,7 +1839,7 @@ function updateLoaderText(text) {
   const loaderText = document.getElementById('loaderText');
   if (loaderText) {
     loaderText.innerHTML = text;
-    loaderText.style.animation = 'premiumSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    // Убрана анимация для оптимизации
   }
 }
 
@@ -1353,8 +1858,12 @@ function hidePremiumPaymentLoader() {
 
 /* === Премиальная система уведомлений === */
 function showNotification(message, type = 'info', duration = 4000) {
-  const container = getNotificationContainer();
+  // Удаляем предыдущее уведомление
+  const existing = document.querySelector('.premium-notification');
+  if (existing) existing.remove();
+
   const notification = document.createElement('div');
+  notification.className = 'premium-notification';
 
   const icons = {
     success: '✅',
@@ -1370,76 +1879,31 @@ function showNotification(message, type = 'info', duration = 4000) {
     error: '#ef4444'
   };
 
-  notification.style.cssText = `
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-left: 4px solid ${colors[type] || colors.info};
-        border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        margin-bottom: 12px;
-        padding: 16px 20px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        opacity: 0;
-        transform: translateX(100%);
-        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        max-width: 380px;
-        word-wrap: break-word;
-        animation: premiumNotificationSlide 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    `;
-
   notification.innerHTML = `
-        <span style="font-size: 1.2em; flex-shrink: 0;">${icons[type] || icons.info}</span>
-        <span style="flex: 1; color: #1e2832; font-size: 0.95em; font-weight: 500; line-height: 1.4;">${message}</span>
-        <button onclick="this.parentElement.remove()" style="background: none; border: none; font-size: 1.3em; color: #9fb3c8; cursor: pointer; padding: 0; width: 24px; height: 24px; border-radius: 50%; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center;" onmouseenter="this.style.background='rgba(159, 179, 200, 0.1)'" onmouseleave="this.style.background='none'">&times;</button>
-    `;
+    <div class="notification-content" style="display: flex; align-items: center; gap: 15px;">
+      <span class="notification-icon" style="font-size: 1.5em;">${icons[type] || icons.info}</span>
+      <div>
+        <div class="notification-title" style="font-weight: 800; margin-bottom: 4px; color: ${colors[type] || colors.info};">${message}</div>
+      </div>
+    </div>
+  `;
 
-  container.appendChild(notification);
+  document.body.appendChild(notification);
 
   // Анимация появления
   setTimeout(() => {
-    notification.style.opacity = '1';
     notification.style.transform = 'translateX(0)';
   }, 100);
 
-  // Автоматическое удаление
+  // Автоматическое скрытие
   setTimeout(() => {
-    if (notification.parentNode) {
-      notification.style.opacity = '0';
-      notification.style.transform = 'translateX(100%)';
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
-        }
-      }, 400);
-    }
+    notification.style.transform = 'translateX(100%)';
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.parentNode.removeChild(notification);
+      }
+    }, 600);
   }, duration);
-}
-
-function getNotificationContainer() {
-  let container = document.getElementById('notificationContainer');
-  if (!container) {
-    container = document.createElement('div');
-    container.id = 'notificationContainer';
-    container.style.cssText = `
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            z-index: 9999;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        `;
-    container.addEventListener('click', (e) => {
-      e.target.style.pointerEvents = 'auto';
-    });
-    document.body.appendChild(container);
-  }
-  return container;
 }
 
 /* === Премиальный диалог подтверждения === */
@@ -1636,15 +2100,22 @@ function hideElement(el) {
 }
 
 function showTariffs() {
-  tariffContainer.classList.add('visible');
+  tariffContainer().classList.add('visible');
 }
 
 function hideTariffs() {
-  tariffContainer.classList.remove('visible');
-  tariffContainer.innerHTML = '';
+  tariffContainer().classList.remove('visible');
+  tariffContainer().innerHTML = '';
 }
 
 function resetDeliveryFlow() {
+  // Убираем все классы показа блоков доставки
+  const deliveryContainer = document.querySelector('.premium-delivery-card');
+  if (deliveryContainer) {
+    deliveryContainer.classList.remove('city-selected');
+    deliveryContainer.classList.remove('pvz-selected');
+  }
+  
   hideElement(deliverySection());
   hideElement(streetWrapper());
   hideElement(infoPanel());
@@ -1674,5 +2145,66 @@ function escapeHtml(text) {
 window.retryMapLoad = retryMapLoad;
 window.updateUI = updateUI;
 window.showNotification = showNotification;
+// Экспортируем функции для отладки
+window.fetchAndPlotPvz = fetchAndPlotPvz;
+window.testPvzLoad = function() {
+  console.log('[DEBUG] 🧪 Ручное тестирование загрузки ПВЗ');
+  console.log('[DEBUG] Текущее состояние:', {
+    cityCode: cityCode,
+    currentCity: currentCity,
+    mapInstance: !!mapInstance,
+    clusterers: {
+      cityClusterer: !!cityClusterer,
+      postamatClusterer: !!postamatClusterer
+    }
+  });
+  fetchAndPlotPvz();
+};
+window.debugMapState = function() {
+  console.log('[DEBUG] 🗺️ Состояние карты:', {
+    mapInstance: !!mapInstance,
+    mapZoom: mapInstance ? mapInstance.getZoom() : 'N/A',
+    mapCenter: mapInstance ? mapInstance.getCenter() : 'N/A',
+    cityCode: cityCode,
+    currentCity: currentCity,
+    ymapsReady: typeof ymaps !== 'undefined'
+  });
+};
+
+/* === Мониторинг состояния карты === */
+function initMapStateMonitoring() {
+  // Мониторим состояние карты каждые 5 секунд
+  setInterval(() => {
+    if (mapInstance) {
+      const currentZoom = mapInstance.getZoom();
+      const currentCenter = mapInstance.getCenter();
+      
+      console.log('[Maps] Статус карты:', {
+        zoom: currentZoom,
+        center: currentCenter,
+        clustersLoaded: !!(cityClusterer && postamatClusterer)
+      });
+    }
+  }, 5000);
+}
+
+/* === Улучшенная система ошибок === */
+function handleMapError(error, context = '') {
+  console.error(`[Maps] Ошибка ${context}:`, error);
+  
+  const errorMessages = {
+    'network': 'Проблемы с сетью. Проверьте интернет-соединение',
+    'api': 'Ошибка API карт. Попробуйте перезагрузить страницу',
+    'init': 'Ошибка инициализации карты',
+    'geocoding': 'Ошибка поиска адреса',
+    'pvz': 'Ошибка загрузки пунктов выдачи'
+  };
+  
+  const message = errorMessages[context] || 'Неожиданная ошибка карты';
+  showNotification(`❌ ${message}`, 'error');
+}
+
+// Запускаем мониторинг после инициализации
+setTimeout(initMapStateMonitoring, 3000);
 
 console.log('🎉 Премиальная корзина готова к использованию!');

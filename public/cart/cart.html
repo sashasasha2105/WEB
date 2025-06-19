@@ -2,24 +2,27 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover" />
   <title>clip & go • Корзина</title>
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Styles -->
-  <link rel="stylesheet" href="/main/style.css" />
-  <link rel="stylesheet" href="/header/header.css" />
-  <link rel="stylesheet" href="/cart/cart.css" />
-  <link rel="stylesheet" href="/cart/cart-animations.css" media="(max-width:768px)" />
-
-  <!-- Meta -->
-  <meta name="theme-color" content="#1ca6f8">
+  <!-- Mobile App Meta -->
+  <meta name="theme-color" content="#001a3a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="clip & go">
+
+  <!-- Google Fonts Montserrat с дополнительными весами -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!-- Стили -->
+  <link rel="stylesheet" href="../header/header.css" />
+  <link rel="stylesheet" href="cart.css" />
+  
+  <!-- Мобильные стили ПОСЛЕДНИМИ для максимального приоритета -->
+  <link rel="stylesheet" href="cart-responsive.css" />
+
   <meta name="description" content="Оформление заказа clip & go - безопасная оплата и быстрая доставка">
 
   <!-- Maps Config -->
@@ -28,12 +31,21 @@
     (function () {
       if (window.__ENV && window.__ENV.YANDEX_JSAPI_KEY) {
         const s = document.createElement('script');
-        s.src = `https://api-maps.yandex.ru/2.1/?apikey=${window.__ENV.YANDEX_JSAPI_KEY}&lang=ru_RU`;
-        s.onload = () => console.log('[Maps] Яндекс.Карты загружены');
-        s.onerror = () => console.error('[Maps] Ошибка загрузки Яндекс.Карт');
+        s.src = `https://api-maps.yandex.ru/2.1/?apikey=${window.__ENV.YANDEX_JSAPI_KEY}&lang=ru_RU&load=package.full`;
+        s.async = true;
+        s.defer = true;
+        s.onload = () => {
+          console.log('[Maps] Яндекс.Карты успешно загружены');
+          window.dispatchEvent(new Event('yandexMapsLoaded'));
+        };
+        s.onerror = (e) => {
+          console.error('[Maps] Критическая ошибка загрузки Яндекс.Карт:', e);
+          window.dispatchEvent(new Event('yandexMapsError'));
+        };
         document.head.appendChild(s);
       } else {
-        console.warn('[Maps] Ключ API Яндекс.Карт не найден');
+        console.warn('[Maps] Ключ API Яндекс.Карт не найден в конфигурации');
+        window.dispatchEvent(new Event('yandexMapsError'));
       }
     })();
   </script>
@@ -41,369 +53,466 @@
 
 <body>
 <!-- Header -->
-<div id="header-container"></div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    fetch('/header.html')
-            .then(r => r.text())
-            .then(html => {
-              document.getElementById('header-container').innerHTML = html;
+<div id="header-placeholder"></div>
 
-              const hdr = document.getElementById('site-header');
-              if (hdr) {
-                hdr.classList.remove('scrolled');
-                const TH = 50;
-                const onScroll = () =>
-                        window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
-                onScroll();
-                window.addEventListener('scroll', onScroll);
-              }
+<!-- Основной контент корзины -->
+<main class="main-content" id="cartMainContent">
 
-              // Обновляем счетчик корзины
-              const waitForCartManager = () => {
-                if (window.CartManager) {
-                  console.log('[Header] CartManager найден, обновляем счетчик корзины');
-                  window.CartManager.updateCartCounter();
-                } else {
-                  console.log('[Header] Ожидание CartManager...');
-                  setTimeout(waitForCartManager, 50);
-                }
-              };
-              setTimeout(waitForCartManager, 100);
-            })
-            .catch(console.error);
-  });
-</script>
 
-<!-- Main Content -->
-<main class="cart-container">
-  <!-- Hero Section -->
-  <div class="cart-hero glass touchable">
-    <div class="hero-content">
-      <div class="hero-icon">🛒</div>
-      <div class="hero-info">
-        <h1>Ваша корзина</h1>
-        <p>Проверьте товары и оформите заказ</p>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <div class="stat-number" id="cartItemsCount">0</div>
-          <div class="stat-label">товаров</div>
+  <!-- Hero Card для корзины -->
+  <section class="cart-hero-section">
+    <div class="premium-container">
+      <div class="cart-hero-card">
+        <div class="hero-avatar">
+          <div class="avatar-container">
+            <div class="cart-avatar">🛒</div>
+          </div>
+        </div>
+        <div class="hero-info">
+          <h1 class="hero-title">Ваша корзина</h1>
+          <p class="hero-subtitle">Проверьте товары и оформите заказ безопасно</p>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="stat-number" id="cartItemsCount">0</div>
+            <div class="stat-label">товаров</div>
+            <div class="stat-animation"></div>
+          </div>
+          <div class="hero-stat">
+            <div class="stat-number" id="cartTotalShort">0</div>
+            <div class="stat-label">₽</div>
+            <div class="stat-animation"></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Cart Items -->
-  <div class="cart-section">
-    <div class="section-header">
-      <h2>
-        <span class="section-icon">📦</span>
-        <span>Товары в корзине</span>
-      </h2>
-    </div>
-
-    <div id="cartItemsContainer" class="cart-items-grid">
-      <!-- Camera Item -->
-      <div class="cart-item glass touchable" data-id="camera">
-        <div class="item-image">
-          <img src="/assets/images/cam3.jpg" alt="clip & go" />
-        </div>
-        <div class="item-info">
-          <h3>clip & go</h3>
-          <div class="item-details">
-            <div class="item-detail">
-              <span class="detail-icon">🎨</span>
-              <span>Цвет: <span id="cameraColor">—</span></span>
-            </div>
-            <div class="item-detail">
-              <span class="detail-icon">💰</span>
-              <span>Цена: <span id="cameraUnitPrice">8 900</span> ₽</span>
-            </div>
-          </div>
-        </div>
-        <div class="item-controls">
-          <div class="quantity-control glass">
-            <button class="quantity-btn minus-btn" data-id="camera">−</button>
-            <span class="quantity-value" data-id="camera">0</span>
-            <button class="quantity-btn plus-btn" data-id="camera">+</button>
-          </div>
-          <button class="remove-btn" data-id="camera">
-            <span>🗑️</span>
-            <span>Удалить</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Memory Item -->
-      <div class="cart-item glass touchable" data-id="memory">
-        <div class="item-image">
-          <img src="/assets/images/CardPhoto.png" alt="Карта памяти 8 ГБ" />
-        </div>
-        <div class="item-info">
-          <h3>Карта памяти 8 ГБ</h3>
-          <div class="item-details">
-            <div class="item-detail">
-              <span class="detail-icon">💰</span>
-              <span>Цена: <span id="memoryUnitPrice">500</span> ₽</span>
-            </div>
-            <div class="item-detail">
-              <span class="detail-icon">⚡</span>
-              <span>Высокая скорость</span>
-            </div>
-          </div>
-        </div>
-        <div class="item-controls">
-          <div class="quantity-control glass">
-            <button class="quantity-btn minus-btn" data-id="memory">−</button>
-            <span class="quantity-value" data-id="memory">0</span>
-            <button class="quantity-btn plus-btn" data-id="memory">+</button>
-          </div>
-          <button class="remove-btn" data-id="memory">
-            <span>🗑️</span>
-            <span>Удалить</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Empty Cart Message -->
-    <div id="emptyCartMessage" class="empty-state" style="display: none;">
-      <div class="empty-icon">🛒</div>
-      <h3>Ваша корзина пуста</h3>
-      <p>Добавьте товары, чтобы оформить заказ</p>
-      <a href="/main/index.html" class="premium-btn primary">
-        <span>🏪</span>
-        <span>Перейти к покупкам</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- Delivery Section -->
-  <div class="cart-section" id="deliverySectionContainer">
-    <div class="delivery-card glass">
-      <div class="section-header">
-        <h2>
-          <span class="section-icon">🚚</span>
-          <span>Доставка</span>
+  <!-- Секция товаров в корзине -->
+  <section class="cart-items-section">
+    <div class="premium-container">
+      <div class="section-title">
+        <h2 class="section-heading">
+          <span class="section-icon">📦</span>
+          <span>Товары в корзине</span>
         </h2>
       </div>
 
-      <!-- City Selection -->
-      <div class="form-group">
-        <label for="addressInput">
-          <span class="label-icon">🏙️</span>
-          <span>Город доставки</span>
-        </label>
-        <div class="input-wrapper">
-          <input type="text" id="addressInput" placeholder="Начните вводить город..." autocomplete="off" />
-          <ul id="citySuggestions" class="suggestions"></ul>
-        </div>
-      </div>
-
-      <!-- Delivery Method Selection -->
-      <div id="deliveryMethodSection" class="section-block">
-        <label class="form-label">
-          <span class="label-icon">📋</span>
-          <span>Способ доставки</span>
-        </label>
-        <div class="delivery-options">
-          <div class="delivery-option glass touchable">
-            <input type="radio" id="deliveryCourier" name="deliveryMethod" value="courier" />
-            <label for="deliveryCourier">
-              <img src="/assets/icons/cdek-truck.png" class="delivery-icon" alt="Курьер СДЭК" />
-              <div class="option-info">
-                <div class="option-title">Курьер СДЭК</div>
-                <div class="option-desc">Доставка до двери</div>
+      <div id="cartItemsContainer" class="premium-cart-items">
+        <!-- Camera Item -->
+        <div class="premium-cart-item" data-id="camera">
+          <div class="cart-item-image">
+            <img src="../assets/images/cam3.jpg" alt="clip & go камера" class="item-img" />
+          </div>
+          <div class="cart-item-content">
+            <div class="item-title-section">
+              <h3 class="item-title">clip & go 1st edition</h3>
+              <div class="item-badge">
+                <span class="badge-icon">📸</span>
+                <span class="badge-text">Камера</span>
               </div>
-            </label>
-          </div>
-          <div class="delivery-option glass touchable">
-            <input type="radio" id="deliveryPvz" name="deliveryMethod" value="pvz" />
-            <label for="deliveryPvz">
-              <img src="/assets/icons/cdek-pvz.png" class="delivery-icon" alt="ПВЗ СДЭК" />
-              <div class="option-info">
-                <div class="option-title">ПВЗ СДЭК</div>
-                <div class="option-desc">Самовывоз из пункта</div>
+            </div>
+            <div class="item-header">
+              <div class="item-price">
+                <span class="price-amount" id="cameraUnitPrice">7 490</span>
+                <span class="price-currency">₽</span>
               </div>
-            </label>
+            </div>
+            <div class="item-specs">
+              <div class="spec-item">
+                <span class="spec-icon">🎨</span>
+                <span class="spec-label">Цвет:</span>
+                <span class="spec-value" id="cameraColor">—</span>
+              </div>
+            </div>
+            <div class="item-controls">
+              <div class="quantity-selector">
+                <button class="quantity-btn minus-btn" data-id="camera" aria-label="Уменьшить количество">
+                  <span>−</span>
+                </button>
+                <div class="quantity-display">
+                  <span class="quantity-value" data-id="camera">0</span>
+                  <span class="quantity-label">шт.</span>
+                </div>
+                <button class="quantity-btn plus-btn" data-id="camera" aria-label="Увеличить количество">
+                  <span>+</span>
+                </button>
+              </div>
+              <button class="remove-item-btn" data-id="camera" aria-label="Удалить товар">
+                <span class="remove-icon">🗑️</span>
+                <span class="remove-text">Удалить</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Memory 8GB Item (В комплекте) -->
+        <div class="premium-cart-item" data-id="memory8gb">
+          <div class="cart-item-image">
+            <img src="../assets/images/8gb.png" alt="Карта памяти 8 ГБ" class="item-img" />
+          </div>
+          <div class="cart-item-content">
+            <div class="item-title-section">
+              <h3 class="item-title">Карта памяти 8 ГБ</h3>
+              <div class="item-badge included">
+                <span class="badge-icon">🎁</span>
+                <span class="badge-text">В комплекте</span>
+              </div>
+            </div>
+            <div class="item-header">
+              <div class="item-price included-price">
+                <span class="price-text">В комплекте</span>
+              </div>
+            </div>
+            <div class="item-specs">
+              <div class="spec-item">
+                <span class="spec-icon">⚡</span>
+                <span class="spec-label">Скорость:</span>
+                <span class="spec-value">Стандартная</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-icon">📏</span>
+                <span class="spec-label">Формат:</span>
+                <span class="spec-value">microSD</span>
+              </div>
+            </div>
+            <div class="item-controls">
+              <div class="included-notice">
+                <span class="included-icon">✓</span>
+                <span class="included-text">Включено в комплект камеры</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Memory 64GB Item (Дополнительная) -->
+        <div class="premium-cart-item" data-id="memory64gb">
+          <div class="cart-item-image">
+            <img src="../assets/images/64gb.png" alt="Карта памяти 64 ГБ" class="item-img" />
+          </div>
+          <div class="cart-item-content">
+            <div class="item-title-section">
+              <h3 class="item-title">Карта памяти 64 ГБ</h3>
+              <div class="item-badge">
+                <span class="badge-icon">💾</span>
+                <span class="badge-text">Дополнительно</span>
+              </div>
+            </div>
+            <div class="item-header">
+              <div class="item-price">
+                <span class="price-amount" id="memory64gbUnitPrice">500</span>
+                <span class="price-currency">₽</span>
+              </div>
+            </div>
+            <div class="item-specs">
+              <div class="spec-item">
+                <span class="spec-icon">⚡</span>
+                <span class="spec-label">Скорость:</span>
+                <span class="spec-value">Высокая</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-icon">📏</span>
+                <span class="spec-label">Формат:</span>
+                <span class="spec-value">microSD</span>
+              </div>
+            </div>
+            <div class="item-controls">
+              <div class="quantity-selector">
+                <button class="quantity-btn minus-btn" data-id="memory64gb" aria-label="Уменьшить количество">
+                  <span>−</span>
+                </button>
+                <div class="quantity-display">
+                  <span class="quantity-value" data-id="memory64gb">0</span>
+                  <span class="quantity-label">шт.</span>
+                </div>
+                <button class="quantity-btn plus-btn" data-id="memory64gb" aria-label="Увеличить количество">
+                  <span>+</span>
+                </button>
+              </div>
+              <button class="remove-item-btn" data-id="memory64gb" aria-label="Удалить товар">
+                <span class="remove-icon">🗑️</span>
+                <span class="remove-text">Удалить</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Street Address -->
-      <div id="streetWrapper" class="section-block">
-        <div class="form-group">
-          <label for="streetInput">
-            <span class="label-icon">🏠</span>
-            <span>Адрес доставки</span>
-          </label>
-          <input type="text" id="streetInput" placeholder="Улица, дом, квартира..." />
+      <!-- Пустая корзина -->
+      <div id="emptyCartMessage" class="premium-empty-state" style="display: none;">
+        <div class="empty-animation">
+          <div class="empty-icon">🛒</div>
+        </div>
+        <div class="empty-content">
+          <h3 class="empty-title">Ваша корзина пуста</h3>
+          <p class="empty-description">Добавьте товары для оформления заказа</p>
+          <a href="../main/index.html" class="premium-cta-button">
+            <span class="btn-icon">🏪</span>
+            <span class="btn-text">Перейти к покупкам</span>
+          </a>
         </div>
       </div>
-
-      <!-- Map Container -->
-      <div class="map-wrapper">
-        <div id="map" class="map-container"></div>
-        <div id="pvz-info-panel" class="pvz-panel glass">
-          <div class="pvz-placeholder">
-            <div class="placeholder-icon">📍</div>
-            <h3>Выберите пункт</h3>
-            <p>Кликните на любой пункт выдачи на карте, чтобы увидеть подробную информацию</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tariff Options -->
-      <div id="tariffOptions" class="tariff-container"></div>
     </div>
-  </div>
+  </section>
+
+  <!-- Секция доставки -->
+  <section class="delivery-section" id="deliverySectionContainer">
+    <div class="premium-container">
+      <div class="premium-delivery-card">
+        <div class="section-title">
+          <h2 class="section-heading">
+            <span class="section-icon">🚚</span>
+            <span>Доставка</span>
+          </h2>
+        </div>
+
+        <!-- City Selection -->
+        <div class="premium-form-group">
+          <label for="addressInput" class="premium-label">
+            <span class="label-icon">🏙️</span>
+            <span>Город доставки</span>
+          </label>
+          <div class="premium-input-wrapper">
+            <input type="text" id="addressInput" class="premium-input" placeholder="Начните вводить город..." autocomplete="off" />
+          </div>
+        </div>
+
+        <!-- Delivery Method Selection -->
+        <div id="deliveryMethodSection" class="premium-section-block">
+          <label class="premium-label">
+            <span class="label-icon">📋</span>
+            <span>Способ доставки</span>
+          </label>
+          <div class="premium-delivery-options">
+            <div class="premium-delivery-option shimmer-on-hover">
+              <input type="radio" id="deliveryCourier" name="deliveryMethod" value="courier" />
+              <label for="deliveryCourier" class="delivery-option-label">
+                <img src="../assets/icons/cdek-truck.png" class="delivery-icon" alt="Курьер СДЭК" />
+                <div class="delivery-option-info">
+                  <div class="option-title">Курьер СДЭК</div>
+                  <div class="option-desc">Доставка до двери</div>
+                  <div class="option-price">от 350 ₽</div>
+                </div>
+                <div class="option-check">
+                  <div class="check-circle"></div>
+                </div>
+              </label>
+            </div>
+            <div class="premium-delivery-option shimmer-on-hover">
+              <input type="radio" id="deliveryPvz" name="deliveryMethod" value="pvz" />
+              <label for="deliveryPvz" class="delivery-option-label">
+                <img src="../assets/icons/cdek-pvz.png" class="delivery-icon" alt="ПВЗ СДЭК" />
+                <div class="delivery-option-info">
+                  <div class="option-title">ПВЗ СДЭК</div>
+                  <div class="option-desc">Самовывоз из пункта</div>
+                  <div class="option-price">от 250 ₽</div>
+                </div>
+                <div class="option-check">
+                  <div class="check-circle"></div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Street Address -->
+        <div id="streetWrapper" class="premium-section-block">
+          <div class="premium-form-group">
+            <label for="streetInput" class="premium-label">
+              <span class="label-icon">🏠</span>
+              <span>Адрес доставки</span>
+            </label>
+            <input type="text" id="streetInput" class="premium-input" placeholder="Улица, дом, квартира..." />
+          </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-wrapper">
+          <div id="map"></div>
+          <div id="pvz-info-panel">
+            <div class="pvz-placeholder">
+              <div class="placeholder-animation">
+                <div class="placeholder-icon">📍</div>
+              </div>
+              <div class="placeholder-content">
+                <h3 class="placeholder-title">Выберите пункт выдачи</h3>
+                <p class="placeholder-desc">Кликните на любой пункт выдачи на карте для просмотра информации</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tariff Options -->
+        <div id="tariffOptions" class="premium-tariff-container"></div>
+      </div>
+    </div>
+  </section>
 
   <!-- Recipient Section -->
-  <div class="cart-section" id="recipientSectionContainer">
-    <div class="recipient-card glass">
-      <div class="section-header">
-        <h2>
-          <span class="section-icon">👤</span>
-          <span>Данные получателя</span>
-        </h2>
-      </div>
-
-      <div class="recipient-form">
-        <div class="form-group full-width">
-          <label for="recipientName">
-            <span class="label-icon">🏷️</span>
-            <span>ФИО получателя *</span>
-          </label>
-          <input type="text" id="recipientName" placeholder="Иванов Иван Иванович" required />
+  <section class="recipient-section" id="recipientSectionContainer">
+    <div class="premium-container">
+      <div class="premium-recipient-card">
+        <div class="section-title">
+          <h2 class="section-heading">
+            <span class="section-icon">👤</span>
+            <span>Данные получателя</span>
+          </h2>
         </div>
 
-        <div class="form-group">
-          <label for="recipientPhone">
-            <span class="label-icon">📱</span>
-            <span>Телефон *</span>
-          </label>
-          <input type="tel" id="recipientPhone" placeholder="+7 999 000 11 22" required />
+        <div class="premium-recipient-form">
+          <div class="premium-form-group full-width">
+            <label for="recipientName" class="premium-label">
+              <span class="label-icon">🏷️</span>
+              <span>ФИО получателя *</span>
+            </label>
+            <input type="text" id="recipientName" class="premium-input" placeholder="Иванов Иван Иванович" required />
+          </div>
+
+          <div class="premium-form-row">
+            <div class="premium-form-group">
+              <label for="recipientPhone" class="premium-label">
+                <span class="label-icon">📱</span>
+                <span>Телефон *</span>
+              </label>
+              <input type="tel" id="recipientPhone" class="premium-input" placeholder="+7 999 000 11 22" required />
+            </div>
+
+            <div class="premium-form-group">
+              <label for="recipientEmail" class="premium-label">
+                <span class="label-icon">📧</span>
+                <span>Email (необязательно)</span>
+              </label>
+              <input type="email" id="recipientEmail" class="premium-input" placeholder="user@example.com" />
+            </div>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="recipientEmail">
-            <span class="label-icon">📧</span>
-            <span>Email (необязательно)</span>
-          </label>
-          <input type="email" id="recipientEmail" placeholder="user@example.com" />
-        </div>
-      </div>
-
-      <div class="info-tip">
-        <span class="tip-icon">💡</span>
-        <div class="tip-content">
-          <strong>Важно:</strong> Укажите корректные данные для связи. <span id="delivery-tip-text">Курьер свяжется с получателем перед доставкой.</span>
+        <div class="premium-info-tip">
+          <div class="tip-icon-wrapper">
+            <span class="tip-icon">💡</span>
+          </div>
+          <div class="tip-content">
+            <div class="tip-title">Важно знать</div>
+            <div class="tip-text">Укажите корректные данные для связи. <span id="delivery-tip-text">Курьер свяжется с получателем перед доставкой.</span></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- Promo Section -->
-  <div class="cart-section" id="promoSectionContainer">
-    <div class="promo-card glass touchable">
-      <div class="promo-header">
-        <span class="promo-icon">🎟️</span>
-        <h3>Промокод</h3>
-      </div>
-      <div class="promo-content">
-        <div class="promo-form">
-          <div class="promo-input-group">
-            <input type="text" id="promoInput" placeholder="Введите промокод..." />
-            <button id="applyPromoBtn" class="premium-btn primary">
-              <span>✨</span>
-              <span>Применить</span>
+  <section class="promo-section" id="promoSectionContainer">
+    <div class="premium-container">
+      <div class="premium-promo-card">
+        <div class="promo-header">
+          <div class="promo-icon-wrapper">
+            <span class="promo-icon">🎟️</span>
+          </div>
+          <div class="promo-title">
+            <h3 class="promo-heading">Промокод</h3>
+            <p class="promo-subtitle">Введите код для получения скидки</p>
+          </div>
+        </div>
+        <div class="promo-content">
+          <div class="premium-promo-form">
+            <div class="promo-input-group">
+              <input type="text" id="promoInput" class="premium-input promo-input" placeholder="Введите промокод..." />
+              <button id="applyPromoBtn" class="premium-cta-button">
+                <span class="btn-icon">✨</span>
+                <span class="btn-text">Применить</span>
+              </button>
+            </div>
+            <button id="removePromoBtn" class="premium-btn secondary" style="display:none;">
+              <span class="btn-icon">❌</span>
+              <span class="btn-text">Убрать промокод</span>
             </button>
           </div>
-          <button id="removePromoBtn" class="premium-btn secondary" style="display:none;">
-            <span>❌</span>
-            <span>Убрать промокод</span>
-          </button>
-        </div>
-        <div class="promo-hints">
-          <div class="promo-hint">💡 Попробуйте: <code>clipgo25</code> или <code>clipgo222</code></div>
+          <div class="promo-hints">
+            <div class="promo-hint">
+              <span class="hint-icon">💡</span>
+              <span class="hint-text">Попробуйте: <code class="promo-code">clipgo25</code> или <code class="promo-code">clipgo222</code></span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- Order Summary -->
-  <div class="cart-section" id="orderSummaryContainer">
-    <div class="summary-card glass">
-      <div class="section-header">
-        <h2>
-          <span class="section-icon">📊</span>
-          <span>Итого к оплате</span>
-        </h2>
-      </div>
-
-      <div class="summary-details">
-        <div class="summary-row">
-                        <span class="summary-label">
-                            <span class="summary-icon">📦</span>
-                            <span>Товары</span>
-                        </span>
-          <span class="summary-value">
-                            <span id="itemsSubtotal">0</span> ₽
-                        </span>
+  <section class="order-summary-section" id="orderSummaryContainer">
+    <div class="premium-container">
+      <div class="premium-summary-card">
+        <div class="section-title">
+          <h2 class="section-heading">
+            <span class="section-icon">📊</span>
+            <span>Итого к оплате</span>
+          </h2>
         </div>
-        <div class="summary-row">
-                        <span class="summary-label">
-                            <span class="summary-icon">🚚</span>
-                            <span>Доставка</span>
-                        </span>
-          <span class="summary-value">
-                            <span id="shippingCostValue">0</span> ₽
-                        </span>
+
+        <div class="premium-summary-details">
+          <div class="summary-row">
+            <span class="summary-label">
+              <span class="summary-icon">📦</span>
+              <span>Товары</span>
+            </span>
+            <span class="summary-value">
+              <span id="itemsSubtotal">0</span> ₽
+            </span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">
+              <span class="summary-icon">🚚</span>
+              <span>Доставка</span>
+            </span>
+            <span class="summary-value">
+              <span id="shippingCostValue">0</span> ₽
+            </span>
+          </div>
+          <div id="discountRow" class="summary-row discount-row" style="display: none;">
+            <span class="summary-label">
+              <span class="summary-icon">🎟️</span>
+              <span>Скидка</span>
+            </span>
+            <span class="summary-value discount-value">
+              -<span id="discountAmount">0</span> ₽
+            </span>
+          </div>
         </div>
-        <div id="discountRow" class="summary-row discount-row" style="display: none;">
-                        <span class="summary-label">
-                            <span class="summary-icon">🎟️</span>
-                            <span>Скидка</span>
-                        </span>
-          <span class="summary-value discount-value">
-                            -<span id="discountAmount">0</span> ₽
-                        </span>
+
+        <div class="premium-summary-total">
+          <div class="total-row">
+            <span class="total-label">Итого:</span>
+            <span class="total-value"><span id="cartTotalValue">0</span> ₽</span>
+          </div>
         </div>
-      </div>
 
-      <div class="summary-total">
-        <div class="total-amount">
-          <span class="total-label">Итого:</span>
-          <span class="total-value"><span id="cartTotalValue">0</span> ₽</span>
+        <div id="deliveryInfo" class="premium-delivery-info"></div>
+
+        <!-- Payment Methods -->
+        <div class="premium-payment-methods">
+          <div class="payment-label">Принимаем к оплате:</div>
+          <div class="payment-icons">
+            <img src="../assets/icons/payments/visa.png" alt="Visa" class="payment-icon" />
+            <img src="../assets/icons/payments/mastercard.png" alt="Mastercard" class="payment-icon" />
+            <img src="../assets/icons/payments/mir.png" alt="МИР" class="payment-icon" />
+            <img src="../assets/icons/payments/sbp.png" alt="СБП" class="payment-icon" />
+          </div>
         </div>
-      </div>
 
-      <div id="deliveryInfo" class="delivery-info"></div>
+        <button id="checkoutBtn" class="premium-checkout-button">
+          <span class="btn-icon">🔒</span>
+          <span class="btn-text">Оформить заказ и оплатить</span>
+          <div class="btn-shine"></div>
+        </button>
 
-      <!-- Payment Methods -->
-      <div class="payment-methods">
-        <div class="payment-label">Принимаем к оплате:</div>
-        <div class="payment-icons">
-          <img src="/assets/icons/payments/visa.png" alt="Visa" />
-          <img src="/assets/icons/payments/mastercard.png" alt="Mastercard" />
-          <img src="/assets/icons/payments/mir.png" alt="МИР" />
-          <img src="/assets/icons/payments/sbp.png" alt="СБП" />
+        <div class="premium-legal-notice">
+          Нажимая кнопку, вы соглашаетесь с
+          <a href="/Policy/privacy-cookie-policy.html" class="legal-link">политикой конфиденциальности</a>
+          и условиями обработки персональных данных
         </div>
-      </div>
-
-      <button id="checkoutBtn" class="checkout-btn premium-btn primary">
-        <span class="btn-icon">🔒</span>
-        <span>Оформить заказ и оплатить</span>
-      </button>
-
-      <div class="legal-notice">
-        Нажимая кнопку, вы соглашаетесь с
-        <a href="/Policy/privacy-cookie-policy.html">политикой конфиденциальности</a>
-        и условиями обработки персональных данных
       </div>
     </div>
-  </div>
+  </section>
 </main>
 
 <!-- Footer -->
@@ -421,10 +530,25 @@
   </div>
 </footer>
 
+<!-- Автоподсказки (портал в корне body) -->
+<ul id="citySuggestions" class="suggestions-portal"></ul>
+
 <!-- Scripts -->
-<script src="/js/cart-manager.js"></script>
-<script src="/main/script.js"></script>
-<script src="/js/mobile-header.js"></script>
-<script src="/cart/cart.js"></script>
+<script src="../js/cart-manager.js"></script>
+<script src="../header/header.js"></script>
+<script src="cart.js"></script>
+<script>
+// Загрузка хедера
+fetch('../header/header.html')
+  .then(response => response.text())
+  .then(html => {
+    document.getElementById('header-placeholder').innerHTML = html;
+    // Инициализация хедера после загрузки
+    if (typeof initHeader === 'function') {
+      initHeader();
+    }
+  })
+  .catch(error => console.error('Ошибка загрузки хедера:', error));
+</script>
 </body>
 </html>

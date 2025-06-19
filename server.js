@@ -26,6 +26,18 @@ console.log('- Yandex Suggest Key:', Y_SUG_KEY ? 'установлен' : 'НЕ 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 
+// CORS middleware для работы с API
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
 // Временное хранилище заказов
 const pendingOrders = new Map();
 const completedOrders = new Map();
@@ -192,8 +204,13 @@ app.get('/api/cdek/cities', async (req, res) => {
             const errorText = await r.text();
             console.error('[API /api/cdek/cities] Ошибка CDEK API:', r.status, errorText);
 
+            // Логируем ошибки 400 вместо их маскировки
+            if (r.status === 400) {
+                console.error('[API /api/cdek/cities] Ошибка 400 - неверные параметры запроса:', errorText);
+            }
+            
             // Возвращаем пустой массив для некритичных ошибок
-            if (r.status === 404 || r.status === 400 || r.status === 422) {
+            if (r.status === 404 || r.status === 422) {
                 console.log('[API /api/cdek/cities] Возвращаем пустой результат для ошибки', r.status);
                 return res.status(200).json([]);
             }
