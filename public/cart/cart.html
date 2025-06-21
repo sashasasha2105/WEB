@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>clip & go • Корзина</title>
 
-  <!-- Fonts - Montserrat как в main -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/css/header.css" />
+  <link rel="stylesheet" href="/main/style.css" />
+  <link rel="stylesheet" href="/header/header.css" />
   <link rel="stylesheet" href="/cart/cart.css" />
   <link rel="stylesheet" href="/cart/cart-animations.css" media="(max-width:768px)" />
 
@@ -44,20 +44,49 @@
 <div id="header-container"></div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    fetch('/header.html')
+    fetch('/header-fragment.html')
             .then(r => r.text())
             .then(html => {
               document.getElementById('header-container').innerHTML = html;
 
-              const hdr = document.getElementById('site-header');
-              if (hdr) {
-                hdr.classList.remove('scrolled');
-                const TH = 50;
-                const onScroll = () =>
-                        window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
-                onScroll();
-                window.addEventListener('scroll', onScroll);
-              }
+              // Инициализируем HeaderManager с небольшой задержкой для загрузки скриптов
+              setTimeout(() => {
+                if (window.HeaderManager) {
+                  console.log('[Header] Инициализируем HeaderManager...');
+                  new window.HeaderManager();
+                } else {
+                  console.log('[Header] HeaderManager не найден, используем базовую функциональность');
+                  // Базовая функциональность скролла
+                  const hdr = document.getElementById('siteHeader');
+                  if (hdr) {
+                    hdr.classList.remove('scrolled');
+                    const TH = 50;
+                    const onScroll = () =>
+                            window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
+                    onScroll();
+                    window.addEventListener('scroll', onScroll);
+                  }
+
+                  // Базовая инициализация мобильного меню
+                  const mobileToggle = document.querySelector('.mobile-menu-toggle');
+                  const mobileMenu = document.getElementById('mobileMenu');
+                  if (mobileToggle && mobileMenu) {
+                    mobileToggle.addEventListener('click', () => {
+                      mobileMenu.classList.toggle('active');
+                      document.body.classList.toggle('mobile-menu-open');
+                    });
+
+                    // Закрытие по клику на backdrop
+                    const backdrop = document.querySelector('.mobile-menu-backdrop');
+                    if (backdrop) {
+                      backdrop.addEventListener('click', () => {
+                        mobileMenu.classList.remove('active');
+                        document.body.classList.remove('mobile-menu-open');
+                      });
+                    }
+                  }
+                }
+              }, 100);
 
               // Обновляем счетчик корзины
               const waitForCartManager = () => {
@@ -123,7 +152,7 @@
           </div>
         </div>
         <div class="item-controls">
-          <div class="quantity-control">
+          <div class="quantity-control glass">
             <button class="quantity-btn minus-btn" data-id="camera">−</button>
             <span class="quantity-value" data-id="camera">0</span>
             <button class="quantity-btn plus-btn" data-id="camera">+</button>
@@ -154,7 +183,7 @@
           </div>
         </div>
         <div class="item-controls">
-          <div class="quantity-control">
+          <div class="quantity-control glass">
             <button class="quantity-btn minus-btn" data-id="memory">−</button>
             <span class="quantity-value" data-id="memory">0</span>
             <button class="quantity-btn plus-btn" data-id="memory">+</button>
@@ -208,7 +237,7 @@
           <span>Способ доставки</span>
         </label>
         <div class="delivery-options">
-          <div class="delivery-option touchable">
+          <div class="delivery-option glass touchable">
             <input type="radio" id="deliveryCourier" name="deliveryMethod" value="courier" />
             <label for="deliveryCourier">
               <img src="/assets/icons/cdek-truck.png" class="delivery-icon" alt="Курьер СДЭК" />
@@ -218,7 +247,7 @@
               </div>
             </label>
           </div>
-          <div class="delivery-option touchable">
+          <div class="delivery-option glass touchable">
             <input type="radio" id="deliveryPvz" name="deliveryMethod" value="pvz" />
             <label for="deliveryPvz">
               <img src="/assets/icons/cdek-pvz.png" class="delivery-icon" alt="ПВЗ СДЭК" />
@@ -245,7 +274,7 @@
       <!-- Map Container -->
       <div class="map-wrapper">
         <div id="map" class="map-container"></div>
-        <div id="pvz-info-panel" class="pvz-panel">
+        <div id="pvz-info-panel" class="pvz-panel glass">
           <div class="pvz-placeholder">
             <div class="placeholder-icon">📍</div>
             <h3>Выберите пункт</h3>
@@ -423,8 +452,8 @@
 
 <!-- Scripts -->
 <script src="/js/cart-manager.js"></script>
-<script src="/js/script.js"></script>
-<script src="/js/mobile-header.js"></script>
+<script src="/main/script.js"></script>
+<script src="/header/header.js"></script>
 <script src="/cart/cart.js"></script>
 </body>
 </html>

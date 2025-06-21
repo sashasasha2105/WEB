@@ -1,11 +1,10 @@
-/* === CART-ANIMATIONS.CSS - АДАПТАЦИЯ ПОД НОВЫЙ ДИЗАЙН === */
-/* Мобильные анимации для корзины в стиле главной и профиля */
+/* === ОПТИМИЗИРОВАННЫЙ CART-ANIMATIONS.CSS - МОБИЛЬНЫЕ АНИМАЦИИ === */
 
 /* === Мобильные стили === */
 @media (max-width: 768px) {
-    /* Принудительный фон для мобильных с оптимизацией - точно как в main */
+    /* Принудительный фон для мобильных с оптимизацией */
     html, body {
-        background: linear-gradient(135deg, #001a3a 0%, #003875 30%, #0057c2 70%, #1ca6f8 100%) !important;
+        background: linear-gradient(135deg, #002a5c 0%, #003d7a 50%, #0057c2 100%) !important;
         background-attachment: fixed !important;
         background-repeat: no-repeat !important;
         background-size: cover !important;
@@ -18,23 +17,23 @@
         content: '';
         position: fixed;
         inset: 0;
-        background: linear-gradient(135deg, #001a3a 0%, #003875 30%, #0057c2 70%, #1ca6f8 100%);
+        background: linear-gradient(135deg, #002a5c 0%, #003d7a 50%, #0057c2 100%);
         z-index: -5;
         pointer-events: none;
     }
 
-    /* === Touch эффекты в стиле профиля === */
+    /* === Touch эффекты с оптимизацией производительности === */
     .premium-btn:active,
     .quantity-btn:active,
     .remove-btn:active {
         transform: scale(0.97) translateY(1px) !important;
-        transition: transform 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
     .cart-item:active {
         transform: scale(0.98) translateY(-2px) !important;
-        transition: transform 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2) !important;
     }
 
     .delivery-option:active,
@@ -43,12 +42,12 @@
     .recipient-card:active,
     .summary-card:active {
         transform: scale(0.995) translateY(-1px) !important;
-        transition: transform 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
     .touchable:active {
         transform: scale(0.99) translateY(-1px) !important;
-        transition: transform 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
     .quantity-control:active {
@@ -58,7 +57,7 @@
 
     .checkout-btn:active {
         transform: scale(0.98) translateY(1px) !important;
-        transition: transform 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+        transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
     /* === Убираем hover эффекты на мобильных === */
@@ -143,7 +142,7 @@
         height: 100px;
     }
 
-    /* Специальные ripple для разных элементов - обновленные под новую палитру */
+    /* Специальные ripple для разных элементов */
     .cart-item.touchable::before {
         background: radial-gradient(circle, rgba(28, 166, 248, 0.15) 0%, rgba(0, 87, 194, 0.05) 50%, transparent 70%);
     }
@@ -207,13 +206,13 @@
         -webkit-backdrop-filter: blur(15px);
     }
 
-    /* === Премиальные тени для мобильных в стиле профиля === */
+    /* === Премиальные тени для мобильных === */
     .cart-item,
     .promo-card,
     .delivery-card,
     .recipient-card,
     .summary-card {
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
     }
 
     .cart-item:active,
@@ -221,7 +220,7 @@
     .delivery-card:active,
     .recipient-card:active,
     .summary-card:active {
-        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
     }
 
     .delivery-option:active {
@@ -445,7 +444,6 @@
         height: 100vh;
         height: -webkit-fill-available;
         z-index: -6;
-        background: linear-gradient(135deg, #001a3a 0%, #003875 30%, #0057c2 70%, #1ca6f8 100%);
     }
 }
 

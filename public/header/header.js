@@ -470,6 +470,7 @@ setTimeout(waitForCartManager, 200);
 
 // === ГЛОБАЛЬНЫЕ ФУНКЦИИ ===
 
+window.HeaderManager = HeaderManager;
 window.initHeader = initHeader;
 
 window.updateHeaderBadges = function() {
