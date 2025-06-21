@@ -1,7 +1,7 @@
 /* === PREMIUM CART.JS - ОБНОВЛЕННАЯ ВЕРСИЯ С ЗАКАЗАМИ === */
 
 /* === Цены и параметры === */
-const prices = { camera: 8900, memory: 500 };
+const prices = { camera: 8900, memory8gb: 0, memory64gb: 500 };
 const CAMERA_WEIGHT_KG = 0.327;
 const MEMORY_WEIGHT_KG = 0.008;
 const CAMERA_DIMENSIONS = { length: 20, width: 12, height: 6 };
@@ -9,7 +9,7 @@ const MEMORY_DIMENSIONS = { length: 13, width: 8, height: 1 };
 const FROM_LOCATION = 44; // код Москвы в CDEK
 
 /* === Состояние === */
-let counts = { camera: 0, memory: 0 };
+let counts = { camera: 0, memory8gb: 0, memory64gb: 0 }; // 8GB добавляется автоматически с камерой
 let discount = 0;
 let shipping = 0;
 
@@ -45,24 +45,28 @@ let yandexMapsLoaded = false;
 document.addEventListener('DOMContentLoaded', () => {
   console.log('🚀 Премиальная корзина загружается...');
 
-  addTouchableClasses();
-  loadCart();
-  updateUI();
-  initCartControls();
-  initCitySuggest();
-  initDeliveryToggle();
-  initStreetInput();
-  initBackButton();
-  hideTariffs();
-  cachedPreviews = {};
+  try {
+    addTouchableClasses();
+    loadCart();
+    updateUI();
+    initCartControls();
+    initCitySuggest();
+    initDeliveryToggle();
+    initStreetInput();
+    initBackButton();
+    hideTariffs();
+    cachedPreviews = {};
 
-  checkYandexMapsStatus();
+    checkYandexMapsStatus();
 
-  setTimeout(() => {
-    initPremiumAnimations();
-  }, 500);
+    setTimeout(() => {
+      initPremiumAnimations();
+    }, 500);
 
-  console.log('✅ Премиальная корзина инициализирована');
+    console.log('✅ Премиальная корзина инициализирована');
+  } catch (error) {
+    console.error('❌ Ошибка инициализации корзины:', error);
+  }
 });
 
 /* === Инициализация кнопки возврата === */
@@ -186,7 +190,7 @@ function animateCartItemsCounter() {
   const counter = cartItemsCount();
   if (!counter) return;
 
-  const targetCount = counts.camera + counts.memory;
+  const targetCount = counts.camera + counts.memory8gb + counts.memory64gb;
   animateCounterPremium(counter, targetCount);
 }
 
@@ -294,7 +298,12 @@ function loadCart() {
   if (window.CartManager) {
     const data = window.CartManager.getCartData();
     counts.camera = data.cameraCount || 0;
-    counts.memory = data.memoryCount || 0;
+    counts.memory8gb = counts.camera; // 8GB карт столько же, сколько камер
+    counts.memory64gb = data.memory64gbCount || 0;
+    // Поддержка старого формата
+    if (data.memoryCount && data.memoryCount > 0 && counts.camera > 0) {
+      counts.memory8gb = counts.camera;
+    }
 
     const cameraColor = data.cartColor || 'Чёрный';
     const colorEl = document.getElementById('cameraColor');
@@ -305,7 +314,15 @@ function loadCart() {
 function saveCart() {
   if (window.CartManager) {
     const currentData = window.CartManager.getCartData();
-    window.CartManager.saveCartData(counts.camera, counts.memory, currentData.cartColor);
+    // Сохраняем оба типа карт памяти
+    const extendedData = {
+      ...currentData,
+      cameraCount: counts.camera,
+      memory8gbCount: counts.memory8gb,
+      memory64gbCount: counts.memory64gb,
+      memoryCount: counts.memory8gb // Обратная совместимость
+    };
+    localStorage.setItem('cartData', JSON.stringify(extendedData));
   }
 }
 
@@ -335,33 +352,47 @@ function updateDeliveryTip(deliveryType) {
 
 /* === Обновление UI === */
 function updateUI() {
-  shipEl().textContent = shipping.toLocaleString('ru-RU');
+  try {
+    shipEl().textContent = shipping.toLocaleString('ru-RU');
 
-  document.querySelectorAll('.quantity-value').forEach(el => {
-    const id = el.dataset.id;
-    if (id && counts[id] !== undefined) {
-      el.textContent = counts[id];
+    document.querySelectorAll('.quantity-value').forEach(el => {
+      const id = el.dataset.id;
+      if (id && counts[id] !== undefined) {
+        el.textContent = counts[id];
 
-      el.style.animation = 'premiumHaptic 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-      setTimeout(() => {
-        el.style.animation = '';
-      }, 150);
-    }
-  });
-
-  document.querySelectorAll('.cart-item').forEach(item => {
-    const id = item.dataset.id;
-    if (id && counts[id] !== undefined) {
-      if (counts[id] > 0) {
-        item.style.display = 'grid';
-        item.classList.add('premium-slide-up');
-      } else {
-        item.style.display = 'none';
+        el.style.animation = 'premiumHaptic 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        setTimeout(() => {
+          el.style.animation = '';
+        }, 150);
       }
-    }
-  });
+    });
 
-  let sum = counts.camera * prices.camera + counts.memory * prices.memory;
+    // Показываем секцию товаров если есть видимые товары
+    const container = document.getElementById('cartItemsContainer');
+    const cartSection = container?.closest('.cart-section');
+    
+    if (counts.camera > 0 || counts.memory64gb > 0) {
+      cartSection?.classList.add('premium-slide-up');
+    }
+    
+    document.querySelectorAll('.cart-item').forEach(item => {
+      const id = item.dataset.id;
+      if (id && counts[id] !== undefined) {
+        // 8GB карта видна только если есть камеры (идет в комплекте), остальные только если количество > 0
+        const shouldShow = (id === 'memory8gb' && counts.camera > 0) || (id !== 'memory8gb' && counts[id] > 0);
+        
+        if (shouldShow) {
+          item.style.display = 'grid';
+          item.style.opacity = '1';
+          item.style.transform = 'translateY(0)';
+          item.classList.add('premium-slide-up');
+        } else {
+          item.style.display = 'none';
+        }
+      }
+    });
+
+  let sum = counts.camera * prices.camera + counts.memory8gb * prices.memory8gb + counts.memory64gb * prices.memory64gb;
 
   document.getElementById('itemsSubtotal').textContent = sum.toLocaleString('ru-RU');
 
@@ -410,7 +441,7 @@ function updateUI() {
 
   // Обновляем счетчик товаров с анимацией
   if (cartItemsCount()) {
-    const newCount = counts.camera + counts.memory;
+    const newCount = counts.camera + counts.memory8gb + counts.memory64gb;
     animateCounterChange(cartItemsCount(), newCount);
   }
 
@@ -449,6 +480,10 @@ function updateUI() {
   if (totalElement) {
     animateCounterChange(totalElement, sum, true);
   }
+  
+  } catch (error) {
+    console.error('❌ Ошибка в updateUI:', error);
+  }
 }
 
 /* === Сообщение о пустой корзине === */
@@ -475,8 +510,20 @@ function initCartControls() {
   // Кнопки изменения количества
   document.querySelectorAll('.plus-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      // Блокируем изменение 8GB карты (идёт в комплекте)
+      if (btn.dataset.id === 'memory8gb') {
+        showNotification('Карта 8ГБ уже входит в комплект', 'info');
+        return;
+      }
+      
       addPremiumButtonAnimation(btn);
       counts[btn.dataset.id]++;
+      
+      // При добавлении камеры автоматически добавляем 8GB карту
+      if (btn.dataset.id === 'camera') {
+        counts.memory8gb = counts.camera; // 8GB карт столько же, сколько камер
+      }
+      
       saveCart();
       updateUI();
       showNotification('Товар добавлен!', 'success');
@@ -485,9 +532,21 @@ function initCartControls() {
 
   document.querySelectorAll('.minus-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      // Блокируем изменение 8GB карты (идёт в комплекте)
+      if (btn.dataset.id === 'memory8gb') {
+        showNotification('Карта 8ГБ уже входит в комплект', 'info');
+        return;
+      }
+      
       addPremiumButtonAnimation(btn);
       if (counts[btn.dataset.id] > 0) {
         counts[btn.dataset.id]--;
+        
+        // При уменьшении камер автоматически уменьшаем 8GB карты
+        if (btn.dataset.id === 'camera') {
+          counts.memory8gb = Math.max(0, counts.camera); // 8GB карт столько же, сколько камер, но не меньше 0
+        }
+        
         saveCart();
         updateUI();
         showNotification('Количество уменьшено', 'info');
@@ -497,13 +556,32 @@ function initCartControls() {
 
   document.querySelectorAll('.remove-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+      // Блокируем удаление 8GB карты (идёт в комплекте)
+      if (btn.dataset.id === 'memory8gb') {
+        showNotification('Карта 8ГБ идёт в комплекте и не может быть удалена', 'info');
+        return;
+      }
+      
       addPremiumButtonAnimation(btn);
-      const itemName = btn.dataset.id === 'camera' ? 'камера' : 'карта памяти';
+      let itemName = 'товар';
+      if (btn.dataset.id === 'camera') {
+        itemName = 'камера';
+      } else if (btn.dataset.id === 'memory8gb') {
+        itemName = 'карта памяти 8ГБ';
+      } else if (btn.dataset.id === 'memory64gb') {
+        itemName = 'карта памяти 64ГБ';
+      }
       showConfirm(
           'Удалить товар?',
           `Вы действительно хотите удалить ${itemName} из корзины?`,
           () => {
             counts[btn.dataset.id] = 0;
+            
+            // При удалении камер автоматически обнуляем 8GB карты
+            if (btn.dataset.id === 'camera') {
+              counts.memory8gb = 0;
+            }
+            
             saveCart();
             updateUI();
             showNotification('Товар удален из корзины', 'info');
@@ -552,7 +630,7 @@ function initCartControls() {
     addPremiumButtonAnimation(btn);
 
     // Проверяем наличие товаров
-    const itemsSum = counts.camera * prices.camera + counts.memory * prices.memory;
+    const itemsSum = counts.camera * prices.camera + counts.memory8gb * prices.memory8gb + counts.memory64gb * prices.memory64gb;
     if (itemsSum <= 0) {
       showNotification('Добавьте товары в корзину', 'error');
       return;
@@ -608,11 +686,19 @@ function initCartControls() {
         quantity: counts.camera
       });
     }
-    if (counts.memory > 0) {
+    if (counts.memory8gb > 0) {
       items.push({
-        name: `Карта памяти 8 ГБ (${counts.memory} шт.)`,
-        cost: counts.memory * prices.memory,
-        quantity: counts.memory
+        name: `Карта памяти 8 ГБ (${counts.memory8gb} шт.)`,
+        cost: counts.memory8gb * prices.memory8gb,
+        quantity: counts.memory8gb
+      });
+    }
+    
+    if (counts.memory64gb > 0) {
+      items.push({
+        name: `Карта памяти 64 ГБ (${counts.memory64gb} шт.)`,
+        cost: counts.memory64gb * prices.memory64gb,
+        quantity: counts.memory64gb
       });
     }
 
@@ -753,14 +839,14 @@ function scrollToElement(element) {
 
 /* === Сбор тела запроса для CDEK === */
 function buildCdekOrderRequest(amount) {
-  const totalWeight = counts.camera * CAMERA_WEIGHT_KG + counts.memory * MEMORY_WEIGHT_KG;
+  const totalWeight = counts.camera * CAMERA_WEIGHT_KG + counts.memory8gb * MEMORY_WEIGHT_KG + counts.memory64gb * MEMORY_WEIGHT_KG;
 
   let packageDimensions;
-  if (counts.camera > 0 && counts.memory > 0) {
+  if (counts.camera > 0 && (counts.memory8gb > 0 || counts.memory64gb > 0)) {
     packageDimensions = CAMERA_DIMENSIONS;
   } else if (counts.camera > 0) {
     packageDimensions = CAMERA_DIMENSIONS;
-  } else if (counts.memory > 0) {
+  } else if (counts.memory8gb > 0 || counts.memory64gb > 0) {
     packageDimensions = MEMORY_DIMENSIONS;
   } else {
     packageDimensions = { length: 10, width: 10, height: 10 };
@@ -777,14 +863,25 @@ function buildCdekOrderRequest(amount) {
       amount: counts.camera
     });
   }
-  if (counts.memory > 0) {
+  if (counts.memory8gb > 0) {
     items.push({
-      name: `Карта памяти 8GB (${counts.memory} шт.)`,
+      name: `Карта памяти 8GB (${counts.memory8gb} шт.)`,
       ware_key: 'CLIPGO-MEM8',
-      payment: { value: counts.memory * prices.memory },
-      cost: counts.memory * prices.memory,
-      weight: counts.memory * MEMORY_WEIGHT_KG * 1000,
-      amount: counts.memory
+      payment: { value: counts.memory8gb * prices.memory8gb },
+      cost: counts.memory8gb * prices.memory8gb,
+      weight: counts.memory8gb * MEMORY_WEIGHT_KG * 1000,
+      amount: counts.memory8gb
+    });
+  }
+  
+  if (counts.memory64gb > 0) {
+    items.push({
+      name: `Карта памяти 64GB (${counts.memory64gb} шт.)`,
+      ware_key: 'CLIPGO-MEM64',
+      payment: { value: counts.memory64gb * prices.memory64gb },
+      cost: counts.memory64gb * prices.memory64gb,
+      weight: counts.memory64gb * MEMORY_WEIGHT_KG * 1000,
+      amount: counts.memory64gb
     });
   }
 
@@ -1230,8 +1327,8 @@ async function preloadTariffPreviews(codes) {
       return;
     }
 
-    const totalWeight = counts.camera * CAMERA_WEIGHT_KG + counts.memory * MEMORY_WEIGHT_KG;
-    const dims = counts.camera > 0 ? CAMERA_DIMENSIONS : counts.memory > 0 ? MEMORY_DIMENSIONS : { length: 10, width: 10, height: 10 };
+    const totalWeight = counts.camera * CAMERA_WEIGHT_KG + counts.memory8gb * MEMORY_WEIGHT_KG + counts.memory64gb * MEMORY_WEIGHT_KG;
+    const dims = counts.camera > 0 ? CAMERA_DIMENSIONS : (counts.memory8gb > 0 || counts.memory64gb > 0) ? MEMORY_DIMENSIONS : { length: 10, width: 10, height: 10 };
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -1298,8 +1395,8 @@ function renderTariffButtons(markerType, address, pvzCode) {
 
   let html = '<h3 style="margin-bottom:24px;font-size:1.4em;color:#1ca6f8;font-weight:800;">⚡ Выберите тариф доставки</h3>';
 
-  html += '<div style="margin-bottom:24px;padding:16px;background:rgba(28, 166, 248, 0.1);border-radius:12px;font-size:0.9em;color:#0057c2;border:1px solid rgba(28, 166, 248, 0.2);">';
-  html += '💡 <strong>Стандарт</strong> — экономичная доставка | <strong>Экспресс</strong> — быстрая доставка';
+  html += '<div style="margin-bottom:24px;padding:16px;background:linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(28, 166, 248, 0.1) 100%);border:2px solid rgba(251, 191, 36, 0.4);border-left:6px solid #fbbf24;border-radius:12px;font-size:0.95em;color:#0057c2;font-weight:600;box-shadow:0 8px 24px rgba(251, 191, 36, 0.2);animation:prominence 2s ease-in-out infinite;">';
+  html += '💡 <strong>Рекомендация по доставке:</strong> Экспресс доставка имеет приоритет при отправке, но стоит дороже обычной';
   html += '</div>';
 
   arr.forEach((t, index) => {
@@ -1821,6 +1918,7 @@ function escapeHtml(text) {
 /* === Глобальные функции для доступа из HTML === */
 window.retryMapLoad = retryMapLoad;
 window.updateUI = updateUI;
+
 window.showNotification = showNotification;
 
 console.log('🎉 Премиальная корзина готова к использованию!');

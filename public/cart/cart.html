@@ -14,6 +14,28 @@
   <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/cart/cart.css" />
   <link rel="stylesheet" href="/cart/cart-animations.css" media="(max-width:768px)" />
+  
+  <!-- Preload SD card images only if needed -->
+  <script>
+    // Preload SD card images только если в корзине есть товары
+    if (window.CartManager) {
+      const data = window.CartManager.getCartData();
+      if (data.cameraCount > 0) {
+        const link8gb = document.createElement('link');
+        link8gb.rel = 'preload';
+        link8gb.href = '/assets/images/8gb.svg';
+        link8gb.as = 'image';
+        document.head.appendChild(link8gb);
+      }
+      if (data.memory64gbCount > 0) {
+        const link64gb = document.createElement('link');
+        link64gb.rel = 'preload';
+        link64gb.href = '/assets/images/64gb.svg';
+        link64gb.as = 'image';
+        document.head.appendChild(link64gb);
+      }
+    }
+  </script>
 
   <!-- Meta -->
   <meta name="theme-color" content="#1ca6f8">
@@ -101,7 +123,7 @@
           </div>
         </div>
         <div class="item-controls">
-          <div class="quantity-control glass">
+          <div class="quantity-control">
             <button class="quantity-btn minus-btn" data-id="camera">−</button>
             <span class="quantity-value" data-id="camera">0</span>
             <button class="quantity-btn plus-btn" data-id="camera">+</button>
@@ -113,17 +135,17 @@
         </div>
       </div>
 
-      <!-- Memory Item -->
-      <div class="cart-item glass touchable" data-id="memory">
+      <!-- Memory Item 8GB -->
+      <div class="cart-item glass touchable" data-id="memory8gb" style="display: none;">
         <div class="item-image">
-          <img src="/assets/images/CardPhoto.png" alt="Карта памяти 8 ГБ" />
+          <img src="/assets/images/8gb.svg" alt="Карта памяти 8 ГБ" />
         </div>
         <div class="item-info">
           <h3>Карта памяти 8 ГБ</h3>
           <div class="item-details">
             <div class="item-detail">
-              <span class="detail-icon">💰</span>
-              <span>Цена: <span id="memoryUnitPrice">500</span> ₽</span>
+              <span class="detail-icon">🎁</span>
+              <span>Идет в комплекте</span>
             </div>
             <div class="item-detail">
               <span class="detail-icon">⚡</span>
@@ -132,12 +154,41 @@
           </div>
         </div>
         <div class="item-controls">
-          <div class="quantity-control glass">
-            <button class="quantity-btn minus-btn" data-id="memory">−</button>
-            <span class="quantity-value" data-id="memory">0</span>
-            <button class="quantity-btn plus-btn" data-id="memory">+</button>
+          <div class="quantity-control">
+            <span class="quantity-value" data-id="memory8gb">1</span>
           </div>
-          <button class="remove-btn" data-id="memory">
+          <div class="bundle-note">
+            <span class="bundle-icon">🎁</span>
+            <span>Идет в комплекте</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Memory Item 64GB -->
+      <div class="cart-item glass touchable" data-id="memory64gb" style="display: none;">
+        <div class="item-image">
+          <img src="/assets/images/64gb.svg" alt="Карта памяти 64 ГБ" />
+        </div>
+        <div class="item-info">
+          <h3>Карта памяти 64 ГБ</h3>
+          <div class="item-details">
+            <div class="item-detail">
+              <span class="detail-icon">💰</span>
+              <span>Цена: +500 ₽</span>
+            </div>
+            <div class="item-detail">
+              <span class="detail-icon">⚡</span>
+              <span>Максимальная скорость</span>
+            </div>
+          </div>
+        </div>
+        <div class="item-controls">
+          <div class="quantity-control">
+            <button class="quantity-btn minus-btn" data-id="memory64gb">−</button>
+            <span class="quantity-value" data-id="memory64gb">0</span>
+            <button class="quantity-btn plus-btn" data-id="memory64gb">+</button>
+          </div>
+          <button class="remove-btn" data-id="memory64gb">
             <span>🗑️</span>
             <span>Удалить</span>
           </button>
@@ -150,7 +201,7 @@
       <div class="empty-icon">🛒</div>
       <h3>Ваша корзина пуста</h3>
       <p>Добавьте товары, чтобы оформить заказ</p>
-      <a href="/index.html" class="premium-btn primary">
+      <a href="/main/index.html" class="premium-btn primary">
         <span>🏪</span>
         <span>Перейти к покупкам</span>
       </a>
@@ -189,7 +240,7 @@
           <div class="delivery-option glass touchable">
             <input type="radio" id="deliveryCourier" name="deliveryMethod" value="courier" />
             <label for="deliveryCourier">
-              <img src="/assets/icons/cdek-truck.png" class="delivery-icon" alt="Курьер СДЭК" />
+              <img src="/assets/icons/cdek-truck.png" class="delivery-icon large" alt="Курьер СДЭК" />
               <div class="option-info">
                 <div class="option-title">Курьер СДЭК</div>
                 <div class="option-desc">Доставка до двери</div>
@@ -199,7 +250,7 @@
           <div class="delivery-option glass touchable">
             <input type="radio" id="deliveryPvz" name="deliveryMethod" value="pvz" />
             <label for="deliveryPvz">
-              <img src="/assets/icons/cdek-pvz.png" class="delivery-icon" alt="ПВЗ СДЭК" />
+              <img src="/assets/icons/cdek-pvz.png" class="delivery-icon large" alt="ПВЗ СДЭК" />
               <div class="option-info">
                 <div class="option-title">ПВЗ СДЭК</div>
                 <div class="option-desc">Самовывоз из пункта</div>
@@ -248,28 +299,32 @@
       </div>
 
       <div class="recipient-form">
-        <div class="form-group full-width">
-          <label for="recipientName">
-            <span class="label-icon">🏷️</span>
-            <span>ФИО получателя *</span>
-          </label>
-          <input type="text" id="recipientName" placeholder="Иванов Иван Иванович" required />
+        <div class="form-row full-width">
+          <div class="form-group">
+            <label for="recipientName">
+              <span class="label-icon">🏷️</span>
+              <span>ФИО получателя *</span>
+            </label>
+            <input type="text" id="recipientName" placeholder="Иванов Иван Иванович" required />
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="recipientPhone">
-            <span class="label-icon">📱</span>
-            <span>Телефон *</span>
-          </label>
-          <input type="tel" id="recipientPhone" placeholder="+7 999 000 11 22" required />
-        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="recipientPhone">
+              <span class="label-icon">📱</span>
+              <span>Телефон *</span>
+            </label>
+            <input type="tel" id="recipientPhone" placeholder="+7 999 000 11 22" required />
+          </div>
 
-        <div class="form-group">
-          <label for="recipientEmail">
-            <span class="label-icon">📧</span>
-            <span>Email (необязательно)</span>
-          </label>
-          <input type="email" id="recipientEmail" placeholder="user@example.com" />
+          <div class="form-group">
+            <label for="recipientEmail">
+              <span class="label-icon">📧</span>
+              <span>Email (необязательно)</span>
+            </label>
+            <input type="email" id="recipientEmail" placeholder="user@example.com" />
+          </div>
         </div>
       </div>
 
@@ -385,23 +440,19 @@
 </main>
 
 <!-- Footer -->
-<footer class="premium-footer">
+<footer class="premium-footer premium-slide-up">
   <div class="footer-content">
-    <div class="footer-brand">
-      <strong>clip & go</strong>
-    </div>
-    <div class="footer-links">
-      <a href="/Policy/privacy-cookie-policy.html">Политика конфиденциальности</a>
-    </div>
-    <div class="footer-year">
-      © 2025 • Безопасная оплата
-    </div>
+    <p>&copy; 2025 clip & go. Все права защищены.</p>
+    <p>
+      <a href="/Policy/privacy-cookie-policy.html" class="footer-link">
+        Политика cookies и конфиденциальности
+      </a>
+    </p>
   </div>
 </footer>
 
 <!-- Scripts -->
 <script src="/js/cart-manager.js"></script>
-<script src="/js/script.js"></script>
 <script src="/cart/cart.js"></script>
 </body>
 </html>
