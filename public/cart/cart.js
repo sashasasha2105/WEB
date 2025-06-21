@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCitySuggest();
   initDeliveryToggle();
   initStreetInput();
+  initBackButton();
   hideTariffs();
   cachedPreviews = {};
 
@@ -63,6 +64,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
   console.log('✅ Премиальная корзина инициализирована');
 });
+
+/* === Инициализация кнопки возврата === */
+function initBackButton() {
+  const backButton = document.getElementById('backButton');
+  if (!backButton) return;
+
+  backButton.addEventListener('click', () => {
+    addPremiumButtonAnimation(backButton);
+    
+    // Определяем, откуда пришел пользователь
+    const referrer = document.referrer;
+    let redirectUrl = '/index.html'; // дефолтная страница
+    
+    if (referrer) {
+      try {
+        const referrerUrl = new URL(referrer);
+        const currentUrl = new URL(window.location.href);
+        
+        // Если пришел с того же сайта
+        if (referrerUrl.origin === currentUrl.origin) {
+          // Проверяем, не с корзины ли пришел (избегаем зацикливания)
+          if (!referrerUrl.pathname.includes('/cart/')) {
+            redirectUrl = referrerUrl.pathname + referrerUrl.search;
+          }
+        }
+      } catch (e) {
+        console.log('Ошибка парсинга referrer, используем главную страницу');
+      }
+    }
+    
+    // Показываем уведомление с премиальной анимацией
+    showNotification('🔄 Возвращаемся на сайт...', 'info', 2000);
+    
+    // Небольшая задержка для анимации
+    setTimeout(() => {
+      window.location.href = redirectUrl;
+    }, 300);
+  });
+  
+  console.log('✅ Кнопка возврата инициализирована');
+}
 
 /* === Добавление touchable классов === */
 function addTouchableClasses() {
@@ -91,27 +133,53 @@ function addTouchableClasses() {
 
 /* === Премиальные анимации === */
 function initPremiumAnimations() {
+  console.log('🎨 Инициализация премиальных анимаций...');
+
   const animatedElements = [
-    { selector: '.cart-hero', delay: 0 },
-    { selector: '.cart-item', delay: 100 },
-    { selector: '.promo-card', delay: 200 },
-    { selector: '.delivery-card', delay: 300 },
-    { selector: '.recipient-card', delay: 400 },
-    { selector: '.summary-card', delay: 500 }
+    { selector: '.cart-hero', delay: 100 },
+    { selector: '.cart-section', delay: 200, stagger: 100 }
   ];
 
-  animatedElements.forEach(({ selector, delay }) => {
+  animatedElements.forEach(({ selector, delay, stagger = 0 }) => {
     const elements = document.querySelectorAll(selector);
     elements.forEach((el, index) => {
       setTimeout(() => {
-        el.style.animation = 'premiumSlideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both';
-      }, delay + (index * 50));
+        el.classList.add('premium-slide-up');
+        
+        // Дополнительные эффекты для hero
+        if (el.classList.contains('cart-hero')) {
+          el.style.transform = 'translateY(0)';
+          el.style.opacity = '1';
+        }
+      }, delay + (index * stagger));
     });
   });
 
+  // Анимация счетчика с задержкой
   setTimeout(() => {
     animateCartItemsCounter();
-  }, 1000);
+    initHeroEffects();
+  }, 800);
+}
+
+/* === Эффекты для Hero секции === */
+function initHeroEffects() {
+  const heroIcon = document.querySelector('.cart-icon-container');
+  if (heroIcon) {
+    // Добавляем класс анимации пульсации
+    heroIcon.style.animation = 'cartIconPulse 3s ease-in-out infinite';
+  }
+
+  // Эффект shimmer для hero карточки
+  const hero = document.querySelector('.cart-hero');
+  if (hero) {
+    hero.addEventListener('mouseenter', () => {
+      hero.style.animation = 'none';
+      setTimeout(() => {
+        hero.style.animation = '';
+      }, 50);
+    });
+  }
 }
 
 function animateCartItemsCounter() {
@@ -126,7 +194,7 @@ function animateCounterPremium(element, target) {
   if (!element) return;
 
   const start = parseInt(element.textContent) || 0;
-  const duration = 1000;
+  const duration = 800;
   const startTime = performance.now();
 
   function update(currentTime) {
@@ -137,13 +205,52 @@ function animateCounterPremium(element, target) {
     element.textContent = current;
 
     if (progress < 1) {
-      const scale = 1 + Math.sin(progress * Math.PI) * 0.1;
+      const scale = 1 + Math.sin(progress * Math.PI) * 0.08;
       element.style.transform = `scale(${scale})`;
-      element.style.filter = `brightness(${1 + Math.sin(progress * Math.PI) * 0.2})`;
+      element.style.filter = `brightness(${1 + Math.sin(progress * Math.PI) * 0.15})`;
       requestAnimationFrame(update);
     } else {
       element.style.transform = '';
       element.style.filter = '';
+    }
+  }
+
+  requestAnimationFrame(update);
+}
+
+/* === Новая функция анимации счетчиков === */
+function animateCounterChange(element, newValue, isPrice = false) {
+  if (!element) return;
+
+  const currentValue = isPrice ? 
+    parseFloat(element.textContent.replace(/[^\d]/g, '')) || 0 :
+    parseInt(element.textContent) || 0;
+
+  if (currentValue === newValue) return;
+
+  const duration = 600;
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+
+    const current = Math.floor(currentValue + (newValue - currentValue) * easeOutCubic(progress));
+    
+    if (isPrice) {
+      element.textContent = current.toLocaleString('ru-RU');
+    } else {
+      element.textContent = current;
+    }
+
+    if (progress < 1) {
+      const pulse = 1 + Math.sin(progress * Math.PI * 2) * 0.05;
+      element.style.transform = `scale(${pulse})`;
+      element.style.textShadow = `0 0 ${10 * Math.sin(progress * Math.PI)}px rgba(28, 166, 248, 0.5)`;
+      requestAnimationFrame(update);
+    } else {
+      element.style.transform = '';
+      element.style.textShadow = '';
     }
   }
 
@@ -235,10 +342,10 @@ function updateUI() {
     if (id && counts[id] !== undefined) {
       el.textContent = counts[id];
 
-      el.style.animation = 'premiumPopIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+      el.style.animation = 'premiumHaptic 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
       setTimeout(() => {
         el.style.animation = '';
-      }, 400);
+      }, 150);
     }
   });
 
@@ -247,7 +354,7 @@ function updateUI() {
     if (id && counts[id] !== undefined) {
       if (counts[id] > 0) {
         item.style.display = 'grid';
-        item.style.animation = 'premiumSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        item.classList.add('premium-slide-up');
       } else {
         item.style.display = 'none';
       }
@@ -264,13 +371,58 @@ function updateUI() {
   const summaryContainer = document.getElementById('orderSummaryContainer');
   const promoContainer = document.getElementById('promoSectionContainer');
 
-  if (deliveryContainer) deliveryContainer.style.display = hasItems ? 'block' : 'none';
-  if (recipientContainer) recipientContainer.style.display = hasItems ? 'block' : 'none';
-  if (summaryContainer) summaryContainer.style.display = hasItems ? 'block' : 'none';
-  if (promoContainer) promoContainer.style.display = hasItems ? 'block' : 'none';
+  // Премиальные анимации появления секций
+  if (deliveryContainer) {
+    if (hasItems) {
+      deliveryContainer.style.display = 'block';
+      deliveryContainer.classList.add('premium-slide-up');
+    } else {
+      deliveryContainer.style.display = 'none';
+    }
+  }
+  
+  if (recipientContainer) {
+    if (hasItems) {
+      recipientContainer.style.display = 'block';
+      recipientContainer.classList.add('premium-slide-up');
+    } else {
+      recipientContainer.style.display = 'none';
+    }
+  }
+  
+  if (summaryContainer) {
+    if (hasItems) {
+      summaryContainer.style.display = 'block';
+      summaryContainer.classList.add('premium-slide-up');
+    } else {
+      summaryContainer.style.display = 'none';
+    }
+  }
+  
+  if (promoContainer) {
+    if (hasItems) {
+      promoContainer.style.display = 'block';
+      promoContainer.classList.add('premium-slide-up');
+    } else {
+      promoContainer.style.display = 'none';
+    }
+  }
 
+  // Обновляем счетчик товаров с анимацией
   if (cartItemsCount()) {
-    cartItemsCount().textContent = counts.camera + counts.memory;
+    const newCount = counts.camera + counts.memory;
+    animateCounterChange(cartItemsCount(), newCount);
+  }
+
+  // Обновляем сумму в hero
+  const cartTotalDisplay = document.getElementById('cartTotalDisplay');
+  if (cartTotalDisplay) {
+    const finalSum = sum - Math.round(sum * discount / 100) + shipping;
+    cartTotalDisplay.textContent = finalSum.toLocaleString('ru-RU') + ' ₽';
+    cartTotalDisplay.style.animation = 'premiumHaptic 0.15s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+    setTimeout(() => {
+      cartTotalDisplay.style.animation = '';
+    }, 150);
   }
 
   if (!hasItems) {
@@ -285,7 +437,7 @@ function updateUI() {
     const discountAmount = Math.round(sum * discount / 100);
     document.getElementById('discountAmount').textContent = discountAmount.toLocaleString('ru-RU');
     discountRow.style.display = 'flex';
-    discountRow.style.animation = 'premiumSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    discountRow.classList.add('premium-slide-up');
   } else {
     discountRow.style.display = 'none';
   }
@@ -295,11 +447,7 @@ function updateUI() {
 
   const totalElement = totalEl();
   if (totalElement) {
-    totalElement.style.animation = 'premiumPopIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-    setTimeout(() => {
-      totalElement.style.animation = '';
-    }, 400);
-    totalElement.textContent = sum.toLocaleString('ru-RU');
+    animateCounterChange(totalElement, sum, true);
   }
 }
 

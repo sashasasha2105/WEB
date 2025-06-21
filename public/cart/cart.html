@@ -12,7 +12,6 @@
 
   <!-- Styles -->
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/css/header.css" />
   <link rel="stylesheet" href="/cart/cart.css" />
   <link rel="stylesheet" href="/cart/cart-animations.css" media="(max-width:768px)" />
 
@@ -40,56 +39,35 @@
 </head>
 
 <body>
-<!-- Header -->
-<div id="header-container"></div>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    fetch('/header.html')
-            .then(r => r.text())
-            .then(html => {
-              document.getElementById('header-container').innerHTML = html;
-
-              const hdr = document.getElementById('site-header');
-              if (hdr) {
-                hdr.classList.remove('scrolled');
-                const TH = 50;
-                const onScroll = () =>
-                        window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
-                onScroll();
-                window.addEventListener('scroll', onScroll);
-              }
-
-              // Обновляем счетчик корзины
-              const waitForCartManager = () => {
-                if (window.CartManager) {
-                  console.log('[Header] CartManager найден, обновляем счетчик корзины');
-                  window.CartManager.updateCartCounter();
-                } else {
-                  console.log('[Header] Ожидание CartManager...');
-                  setTimeout(waitForCartManager, 50);
-                }
-              };
-              setTimeout(waitForCartManager, 100);
-            })
-            .catch(console.error);
-  });
-</script>
+<!-- Кнопка возврата -->
+<div class="back-button-container">
+  <button id="backButton" class="back-button glass">
+    <span class="back-icon">←</span>
+    <span class="back-text">Вернуться на сайт</span>
+  </button>
+</div>
 
 <!-- Main Content -->
 <main class="cart-container">
   <!-- Hero Section -->
-  <div class="cart-hero glass touchable">
-    <div class="hero-content">
-      <div class="hero-icon">🛒</div>
-      <div class="hero-info">
-        <h1>Ваша корзина</h1>
-        <p>Проверьте товары и оформите заказ</p>
+  <div class="cart-hero touchable">
+    <div class="hero-icon">
+      <div class="cart-icon-container">
+        <div class="cart-emoji">🛒</div>
       </div>
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <div class="stat-number" id="cartItemsCount">0</div>
-          <div class="stat-label">товаров</div>
-        </div>
+    </div>
+    <div class="hero-info">
+      <h1>Ваша корзина</h1>
+      <p>Проверьте товары и оформите заказ</p>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="stat-number" id="cartItemsCount">0</div>
+        <div class="stat-label">товаров</div>
+      </div>
+      <div class="hero-stat">
+        <div class="stat-number" id="cartTotalDisplay">0 ₽</div>
+        <div class="stat-label">сумма</div>
       </div>
     </div>
   </div>
@@ -424,7 +402,6 @@
 <!-- Scripts -->
 <script src="/js/cart-manager.js"></script>
 <script src="/js/script.js"></script>
-<script src="/js/simple-header.js"></script>
 <script src="/cart/cart.js"></script>
 </body>
 </html>
