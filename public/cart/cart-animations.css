@@ -551,10 +551,9 @@
     /* Safe Area поддержка для новых iPhone */
     @media (max-width: 480px) {
         .cart-container {
-            padding-top: calc(var(--header-height) + 24px + env(safe-area-inset-top));
-            padding-bottom: calc(50px + env(safe-area-inset-bottom));
-            padding-left: calc(16px + env(safe-area-inset-left));
-            padding-right: calc(16px + env(safe-area-inset-right));
+            /* TODO: Define --header-height variable in :root */
+            /* padding-top: calc(var(--header-height) + 24px + env(safe-area-inset-top)); */
+            padding: calc(24px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) calc(50px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
         }
 
         .premium-footer {

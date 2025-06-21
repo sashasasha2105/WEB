@@ -72,9 +72,7 @@ html, body {
 }
 
 body {
-  background: var(--primary-bg);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
+  background: var(--primary-bg) fixed no-repeat;
   background-size: cover;
   color: var(--text-light);
   line-height: 1.6;
@@ -101,10 +99,7 @@ html::before {
 body::before {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background:
     radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
     radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
@@ -121,7 +116,7 @@ body::before {
 
 /* Скрытие скроллбара */
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 0;
   background: transparent;
 }
 
@@ -133,6 +128,59 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ========================= УТИЛИТАРНЫЕ КЛАССЫ ========================= */
+/* Базовый glassmorphism класс для устранения дублирования */
+.glass-card {
+  background: var(--glass-bg-light);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius-section);
+  padding: var(--spacing-xl);
+  box-shadow: var(--glass-shadow);
+  transition: all 0.4s var(--premium-easing);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow-strong);
+}
+
+/* Базовый класс для кнопок */
+.base-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  border: none;
+  border-radius: var(--border-radius-button);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s var(--premium-easing);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+  font-family: inherit;
+}
+
+/* Базовые стили текста */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+/* Веса шрифтов */
+.fw-300 { font-weight: 300; }
+.fw-400 { font-weight: 400; }
+.fw-500 { font-weight: 500; }
+.fw-600 { font-weight: 600; }
+.fw-700 { font-weight: 700; }
+.fw-800 { font-weight: 800; }
+.fw-900 { font-weight: 900; }
 
 /* ========================= КНОПКА ВОЗВРАТА ========================= */
 .back-button-container {
@@ -195,9 +243,7 @@ body {
   width: 100%;
   min-height: 100vh;
   min-height: -webkit-fill-available;
-  padding: 0 20px;
-  padding-top: 100px; /* Место под кнопку возврата */
-  padding-bottom: 40px;
+  padding: 100px 20px 40px; /* Место под кнопку возврата */
   max-width: 1200px;
   margin: 0 auto;
   z-index: 0;
@@ -434,9 +480,6 @@ body {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-
-
-
 /* === УБИРАЕМ ТЕНИ С SD КАРТ (МАКСИМАЛЬНО ГАРАНТИРОВАННО) === */
 /* Основные правила с максимальной специфичностью */
 html body main.cart-container div.cart-item[data-id="memory8gb"],
@@ -448,7 +491,6 @@ div.cart-item[data-id="memory64gb"] {
   -moz-box-shadow: none !important;
   transform: none !important;
   filter: none !important;
-  background-filter: none !important;
   backdrop-filter: none !important;
 }
 
@@ -470,7 +512,6 @@ div.cart-item[data-id="memory64gb"]:focus {
   -moz-box-shadow: none !important;
   transform: none !important;
   filter: none !important;
-  background-filter: none !important;
   backdrop-filter: none !important;
 }
 
@@ -733,13 +774,6 @@ div.cart-item[data-id="memory64gb"] * {
   overflow: hidden;
 }
 
-.delivery-card:hover,
-.recipient-card:hover,
-.promo-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--glass-shadow-strong);
-}
-
 /* ========================= ФОРМЫ ========================= */
 .form-group {
   position: relative;
@@ -801,8 +835,7 @@ div.cart-item[data-id="memory64gb"] * {
   max-height: 0;
   opacity: 0;
   overflow: hidden;
-  transition: max-height 0.4s var(--premium-easing),
-              opacity 0.4s var(--premium-easing);
+  transition: max-height 0.4s var(--premium-easing), opacity 0.4s var(--premium-easing);
   margin-top: var(--spacing-lg);
 }
 
@@ -1043,9 +1076,7 @@ div.cart-item[data-id="memory64gb"] * {
 .summary-card::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  inset: 0 0 auto 0;
   height: 4px;
   background: linear-gradient(90deg, var(--dark-blue) 0%, var(--primary-blue) 50%, var(--accent-green) 100%);
   animation: gradientShift 3s ease-in-out infinite;
@@ -1172,19 +1203,6 @@ div.cart-item[data-id="memory64gb"] * {
 }
 
 /* ========================= ПРОМОКОД ========================= */
-.promo-card {
-  background: var(--glass-bg-light);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--border-radius-section);
-  padding: var(--spacing-xl);
-  box-shadow: var(--glass-shadow);
-  transition: all 0.4s var(--premium-easing);
-  position: relative;
-  overflow: hidden;
-}
-
 .promo-header {
   display: flex;
   align-items: center;
@@ -1382,24 +1400,10 @@ div.cart-item[data-id="memory64gb"] * {
 
 /* ========================= ПРЕМИАЛЬНЫЕ КНОПКИ ========================= */
 .premium-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm);
+  @extend .base-btn;
   padding: var(--spacing-md) var(--spacing-lg);
-  border: none;
-  border-radius: var(--border-radius-button);
   font-size: 0.95rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s var(--premium-easing);
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  position: relative;
-  overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  font-family: inherit;
 }
 
 .premium-btn.primary {
@@ -1808,16 +1812,3 @@ div.cart-item[data-id="memory64gb"] * {
   opacity: 1 !important;
   transform: translateY(0) !important;
 }
-
-/* Утилитарные классы */
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
-.fw-300 { font-weight: 300; }
-.fw-400 { font-weight: 400; }
-.fw-500 { font-weight: 500; }
-.fw-600 { font-weight: 600; }
-.fw-700 { font-weight: 700; }
-.fw-800 { font-weight: 800; }
-.fw-900 { font-weight: 900; }
