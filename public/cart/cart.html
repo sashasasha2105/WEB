@@ -11,8 +11,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="/main/style.css" />
-  <link rel="stylesheet" href="/header/header.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/header.css" />
   <link rel="stylesheet" href="/cart/cart.css" />
   <link rel="stylesheet" href="/cart/cart-animations.css" media="(max-width:768px)" />
 
@@ -44,49 +44,20 @@
 <div id="header-container"></div>
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    fetch('/header-fragment.html')
+    fetch('/header.html')
             .then(r => r.text())
             .then(html => {
               document.getElementById('header-container').innerHTML = html;
 
-              // Инициализируем HeaderManager с небольшой задержкой для загрузки скриптов
-              setTimeout(() => {
-                if (window.HeaderManager) {
-                  console.log('[Header] Инициализируем HeaderManager...');
-                  new window.HeaderManager();
-                } else {
-                  console.log('[Header] HeaderManager не найден, используем базовую функциональность');
-                  // Базовая функциональность скролла
-                  const hdr = document.getElementById('siteHeader');
-                  if (hdr) {
-                    hdr.classList.remove('scrolled');
-                    const TH = 50;
-                    const onScroll = () =>
-                            window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
-                    onScroll();
-                    window.addEventListener('scroll', onScroll);
-                  }
-
-                  // Базовая инициализация мобильного меню
-                  const mobileToggle = document.querySelector('.mobile-menu-toggle');
-                  const mobileMenu = document.getElementById('mobileMenu');
-                  if (mobileToggle && mobileMenu) {
-                    mobileToggle.addEventListener('click', () => {
-                      mobileMenu.classList.toggle('active');
-                      document.body.classList.toggle('mobile-menu-open');
-                    });
-
-                    // Закрытие по клику на backdrop
-                    const backdrop = document.querySelector('.mobile-menu-backdrop');
-                    if (backdrop) {
-                      backdrop.addEventListener('click', () => {
-                        mobileMenu.classList.remove('active');
-                        document.body.classList.remove('mobile-menu-open');
-                      });
-                    }
-                  }
-                }
-              }, 100);
+              const hdr = document.getElementById('site-header');
+              if (hdr) {
+                hdr.classList.remove('scrolled');
+                const TH = 50;
+                const onScroll = () =>
+                        window.scrollY > TH ? hdr.classList.add('scrolled') : hdr.classList.remove('scrolled');
+                onScroll();
+                window.addEventListener('scroll', onScroll);
+              }
 
               // Обновляем счетчик корзины
               const waitForCartManager = () => {
@@ -210,7 +181,7 @@
 
   <!-- Delivery Section -->
   <div class="cart-section" id="deliverySectionContainer">
-    <div class="delivery-card">
+    <div class="delivery-card glass">
       <div class="section-header">
         <h2>
           <span class="section-icon">🚚</span>
@@ -452,8 +423,8 @@
 
 <!-- Scripts -->
 <script src="/js/cart-manager.js"></script>
-<script src="/main/script.js"></script>
-<script src="/header/header.js"></script>
+<script src="/js/script.js"></script>
+<script src="/js/mobile-header.js"></script>
 <script src="/cart/cart.js"></script>
 </body>
 </html>

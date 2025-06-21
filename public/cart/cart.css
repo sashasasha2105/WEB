@@ -1315,16 +1315,8 @@ body::before {
 }
 
 /* === Touchable класс === */
-/* 
-   КРИТИЧЕСКИ ВАЖНО: Применяем overflow: hidden только к элементам, которые НЕ содержат карту.
-   Это предотвращает обрезание интерактивных слоев и всплывающих окон Яндекс.Карт.
-*/
 .touchable {
   position: relative;
-}
-
-/* Применяем overflow: hidden ко всем touchable-элементам, КРОМЕ карточки с доставкой */
-.touchable:not(.delivery-card) {
   overflow: hidden;
 }
 
@@ -1495,109 +1487,6 @@ legend {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-/* === Премиальные анимации === */
-@keyframes premiumSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-    filter: blur(2px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}
-
-@keyframes premiumPopIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-    filter: blur(1px);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-    filter: blur(0);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-    filter: blur(0);
-  }
-}
-
-@keyframes premiumFloat {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes premiumEmptyStateSlide {
-  from {
-    opacity: 0;
-    transform: translateY(50px) scale(0.95);
-    filter: blur(3px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
-}
-
-@keyframes premiumPanelSlide {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-    filter: blur(2px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-    filter: blur(0);
-  }
-}
-
-@keyframes premiumSectionReveal {
-  from {
-    opacity: 0;
-    max-height: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    max-height: 1000px;
-    transform: translateY(0);
-  }
-}
-
-@keyframes premiumNotificationSlide {
-  from {
-    opacity: 0;
-    transform: translateX(100%) scale(0.95);
-    filter: blur(1px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-    filter: blur(0);
-  }
-}
-
-/* === Премиальные hover эффекты для touchable-элементов === */
-.touchable:hover {
-  transition: var(--transition-smooth);
-}
-
-.touchable:not(.delivery-card):hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-large);
 }
 
 /* === Print стили === */
