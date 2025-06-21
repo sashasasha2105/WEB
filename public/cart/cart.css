@@ -67,6 +67,8 @@ html, body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 body {
@@ -391,10 +393,13 @@ body {
   transition: all 0.4s var(--premium-easing);
   position: relative;
   overflow: hidden;
+}
+
+.cart-item:not([data-id="memory8gb"]):not([data-id="memory64gb"]) {
   box-shadow: var(--glass-shadow);
 }
 
-.cart-item::before {
+.cart-item:not([data-id="memory8gb"]):not([data-id="memory64gb"])::before {
   content: '';
   position: absolute;
   top: 0;
@@ -402,14 +407,16 @@ body {
   width: 100%;
   height: 100%;
   background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
-  transition: left 0.6s ease;
+  transition: left 0.6s ease, opacity 0.3s ease;
+  opacity: 0;
 }
 
-.cart-item:hover::before {
+.cart-item:not([data-id="memory8gb"]):not([data-id="memory64gb"]):hover::before {
   left: 100%;
+  opacity: 1;
 }
 
-.cart-item:hover {
+.cart-item:not([data-id="memory8gb"]):not([data-id="memory64gb"]):hover {
   transform: translateY(-4px);
   box-shadow: var(--glass-shadow-strong);
   border-color: rgba(28, 166, 248, 0.3);
@@ -421,7 +428,97 @@ body {
   height: 120px;
   border-radius: var(--border-radius-section);
   overflow: hidden;
+}
+
+.cart-item:not([data-id="memory8gb"]):not([data-id="memory64gb"]) .item-image {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+/* === УБИРАЕМ ТЕНИ С SD КАРТ (МАКСИМАЛЬНО ГАРАНТИРОВАННО) === */
+/* Основные правила с максимальной специфичностью */
+html body main.cart-container div.cart-item[data-id="memory8gb"],
+html body main.cart-container div.cart-item[data-id="memory64gb"],
+div.cart-item[data-id="memory8gb"],
+div.cart-item[data-id="memory64gb"] {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  background-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Все псевдоклассы и состояния */
+html body main.cart-container div.cart-item[data-id="memory8gb"]:hover,
+html body main.cart-container div.cart-item[data-id="memory64gb"]:hover,
+html body main.cart-container div.cart-item[data-id="memory8gb"]:active,
+html body main.cart-container div.cart-item[data-id="memory64gb"]:active,
+html body main.cart-container div.cart-item[data-id="memory8gb"]:focus,
+html body main.cart-container div.cart-item[data-id="memory64gb"]:focus,
+div.cart-item[data-id="memory8gb"]:hover,
+div.cart-item[data-id="memory64gb"]:hover,
+div.cart-item[data-id="memory8gb"]:active,
+div.cart-item[data-id="memory64gb"]:active,
+div.cart-item[data-id="memory8gb"]:focus,
+div.cart-item[data-id="memory64gb"]:focus {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+  transform: none !important;
+  filter: none !important;
+  background-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Убираем тени со всех дочерних элементов SD карт */
+div.cart-item[data-id="memory8gb"] *,
+div.cart-item[data-id="memory64gb"] * {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    filter: none !important;
+    transform: none !important;
+}
+
+/* Специальные стили для 8GB карты (в комплекте) */
+[data-id="memory8gb"] .quantity-control {
+  justify-content: center;
+  padding: 12px 20px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+[data-id="memory8gb"] .quantity-value {
+  color: var(--accent-green);
+  font-weight: 800;
+  font-size: 1.3rem;
+}
+
+[data-id="memory8gb"] .quantity-btn {
+  display: none;
+}
+
+.bundle-note {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 8px 12px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: var(--border-radius-button);
+  color: var(--accent-green);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bundle-icon {
+  font-size: 1.1em;
 }
 
 .item-image img {
@@ -431,7 +528,7 @@ body {
   transition: transform 0.3s ease;
 }
 
-.cart-item:hover .item-image img {
+.cart-item:not([data-id="memory8gb"]):not([data-id="memory64gb"]):hover .item-image img {
   transform: scale(1.05);
 }
 
@@ -447,6 +544,9 @@ body {
   margin: 0 0 var(--spacing-sm) 0;
   letter-spacing: -0.01em;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
 
 .item-details {
@@ -463,6 +563,15 @@ body {
   font-size: 0.95rem;
   color: var(--text-light);
   font-weight: 500;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.item-detail span:last-child {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  flex: 1;
+  min-width: 0;
 }
 
 .detail-icon {
@@ -482,9 +591,7 @@ body {
   display: flex;
   align-items: center;
   padding: 8px;
-  background: var(--glass-bg-light);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  background: transparent;
   border: 1px solid var(--glass-border);
   border-radius: var(--border-radius-section);
   gap: var(--spacing-md);
@@ -518,6 +625,22 @@ body {
 
 .quantity-btn:active {
   transform: scale(0.95);
+}
+
+.quantity-btn.disabled,
+.quantity-btn:disabled {
+  background: rgba(255, 255, 255, 0.3) !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.quantity-btn.disabled:hover,
+.quantity-btn:disabled:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .quantity-value {
@@ -698,6 +821,13 @@ body {
 .delivery-option {
   position: relative;
   transition: all 0.3s var(--premium-easing);
+  overflow: visible;
+  z-index: 1;
+}
+
+.delivery-option:hover {
+  z-index: 10;
+  overflow: visible;
 }
 
 .delivery-option input[type="radio"] {
@@ -728,6 +858,11 @@ body {
   transition: all 0.3s var(--premium-easing);
 }
 
+.delivery-icon.large {
+  width: 64px;
+  height: 64px;
+}
+
 .option-info {
   flex: 1;
 }
@@ -738,18 +873,24 @@ body {
   color: var(--text-white);
   margin-bottom: 4px;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .option-desc {
   font-size: 0.9rem;
   color: var(--text-light);
   font-weight: 500;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .delivery-option label:hover {
   border-color: var(--primary-blue);
   box-shadow: 0 4px 12px rgba(28, 166, 248, 0.2);
   transform: translateY(-2px);
+  overflow: visible;
+  z-index: 10;
 }
 
 .delivery-option input[type="radio"]:checked + label {
@@ -798,10 +939,24 @@ body {
 
 /* ========================= ПОЛУЧАТЕЛЬ ========================= */
 .recipient-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
+}
+
+.form-row.full-width {
+  grid-template-columns: 1fr;
+}
+
+.form-row.full-width .form-group {
+  max-width: 100%;
 }
 
 .info-tip {
@@ -816,6 +971,56 @@ body {
   color: var(--text-white);
   font-size: 0.9rem;
   line-height: 1.6;
+}
+
+.info-tip.prominent {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(28, 166, 248, 0.1) 100%);
+  border: 2px solid rgba(251, 191, 36, 0.4);
+  border-left: 6px solid #fbbf24;
+  box-shadow: 0 8px 24px rgba(251, 191, 36, 0.2);
+  font-weight: 600;
+  transform: scale(1.02);
+  animation: prominence 2s ease-in-out infinite;
+}
+
+@keyframes prominence {
+  0%, 100% { box-shadow: 0 8px 24px rgba(251, 191, 36, 0.2); }
+  50% { box-shadow: 0 12px 32px rgba(251, 191, 36, 0.3); }
+}
+
+/* ========================= PREMIUM FOOTER ========================= */
+.premium-footer {
+  margin-top: 80px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 1px solid var(--glass-border);
+  padding: 40px 20px;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footer-content p {
+  color: var(--text-light);
+  margin-bottom: 10px;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.footer-link {
+  color: var(--primary-blue);
+  text-decoration: none;
+  transition: all 0.3s var(--premium-easing);
+  font-weight: 600;
+}
+
+.footer-link:hover {
+  color: var(--text-white);
+  text-decoration: underline;
 }
 
 .tip-icon {
@@ -1600,8 +1805,8 @@ body {
 }
 
 .cart-section.premium-slide-up {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 1 !important;
+  transform: translateY(0) !important;
 }
 
 /* Утилитарные классы */

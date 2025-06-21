@@ -30,10 +30,17 @@
         transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
-    .cart-item:active {
+    .cart-item[data-id="camera"]:active {
         transform: scale(0.98) translateY(-2px) !important;
         transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    /* SD-карты остаются без touch эффектов */
+    div.cart-item[data-id="memory8gb"]:active,
+    div.cart-item[data-id="memory64gb"]:active {
+        transform: none !important;
+        box-shadow: none !important;
     }
 
     .delivery-option:active,
@@ -207,15 +214,53 @@
     }
 
     /* === Премиальные тени для мобильных === */
-    .cart-item,
-    .promo-card,
-    .delivery-card,
-    .recipient-card,
+    /* Разделяем селекторы чтобы избежать конфликта с SD-картами */
+    .promo-card {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    }
+    
+    .delivery-card {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    }
+    
+    .recipient-card {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    }
+    
     .summary-card {
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
     }
+    
+    /* Тени для cart-item исключая SD-карты - максимальная специфичность */
+    .cart-item[data-id="camera"] {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+    }
 
-    .cart-item:active,
+    /* КРИТИЧЕСКИ ВАЖНО: убираем тени с SD карт на мобильных - максимальная специфичность */
+    div.cart-item[data-id="memory8gb"],
+    div.cart-item[data-id="memory64gb"] {
+        box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        -moz-box-shadow: none !important;
+    }
+    
+    /* Убираем тени во всех состояниях */
+    div.cart-item[data-id="memory8gb"]:hover,
+    div.cart-item[data-id="memory8gb"]:active,
+    div.cart-item[data-id="memory8gb"]:focus,
+    div.cart-item[data-id="memory64gb"]:hover,
+    div.cart-item[data-id="memory64gb"]:active,
+    div.cart-item[data-id="memory64gb"]:focus {
+        box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        -moz-box-shadow: none !important;
+    }
+
+    /* Активные тени для карточек кроме SD-карт */
+    .cart-item[data-id="camera"]:active {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+    }
+    
     .promo-card:active,
     .delivery-card:active,
     .recipient-card:active,
