@@ -162,32 +162,16 @@ function savePremiumCartState() {
     const memoryDesc = memoryCard === '8gb' ? '8 ГБ (встроенная)' : '64 ГБ microSD';
     const productDescription = `clip & go 1st edition (${cartColorRus}, ${memoryDesc})`;
     
-    if (window.CartManager && typeof window.CartManager.addItem === 'function') {
-      // Используем правильный метод CartManager
-      console.log('[PremiumMain] 📦 Добавляем товар через CartManager.addItem');
+    if (window.CartManager && typeof window.CartManager.addCameraToCart === 'function') {
+      // Используем новый метод CartManager.addCameraToCart
+      console.log('[PremiumMain] 📦 Добавляем камеру через CartManager.addCameraToCart');
       
-      // Добавляем камеру
-      const cameraSuccess = window.CartManager.addItem('camera', 1);
+      // Добавляем камеру с выбранной конфигурацией памяти
+      window.CartManager.addCameraToCart(memoryCard);
       
-      // Добавляем карту памяти если выбрана 64ГБ
-      let memorySuccess = true;
-      if (memoryCard === '64gb') {
-        memorySuccess = window.CartManager.addItem('memory', 1);
-      }
-      
-      // Устанавливаем цвет
-      if (window.CartManager.setColor) {
-        window.CartManager.setColor(cartColorRus);
-      }
-      
-      if (cameraSuccess && memorySuccess) {
-        console.log('[PremiumMain] ✅ Товар успешно добавлен через CartManager');
-        console.log('[PremiumMain] 📦 Добавлено: камера =', cameraSuccess, ', память =', memoryCard === '64gb' ? memorySuccess : 'не нужна');
-        return true;
-      } else {
-        console.warn('[PremiumMain] ⚠️ CartManager.addItem вернул false, используем fallback');
-        throw new Error('CartManager.addItem failed');
-      }
+      console.log('[PremiumMain] ✅ Камера успешно запланирована для добавления в корзину');
+      console.log('[PremiumMain] 📦 Конфигурация:', memoryCard, '- будет добавлена при переходе в корзину');
+      return true;
     } else {
       console.log('[PremiumMain] 📦 CartManager недоступен, используем localStorage fallback');
       throw new Error('CartManager not available');
@@ -196,46 +180,18 @@ function savePremiumCartState() {
     console.warn('[PremiumMain] ⚠️ Ошибка с CartManager, используем localStorage fallback:', error);
     
     try {
-      // localStorage fallback используя формат CartManager
-      const cartColor = premiumState.selectedColor;
+      // localStorage fallback - новая архитектура
       const memoryCard = premiumState.selectedMemory;
-      const cartColorRus = cartColor === 'black' ? 'чёрный' : 'белый';
       
-      // Получаем текущие данные корзины
-      const currentData = JSON.parse(localStorage.getItem('cartData') || '{}');
-      const currentCameraCount = currentData.cameraCount || 0;
-      const currentMemoryCount = currentData.memoryCount || 0;
+      // Используем тот же метод что и CartManager.addCameraToCart
+      const itemToAdd = { memory: memoryCard, timestamp: Date.now() };
+      localStorage.setItem('itemToAdd', JSON.stringify(itemToAdd));
       
-      // Добавляем 1 камеру
-      const newCameraCount = currentCameraCount + 1;
-      
-      // Добавляем карту памяти если выбрана 64ГБ
-      const newMemoryCount = memoryCard === '64gb' ? currentMemoryCount + 1 : currentMemoryCount;
-      
-      // Сохраняем в формате CartManager
-      const newCartData = {
-        cameraCount: newCameraCount,
-        memoryCount: newMemoryCount,
-        cartColor: cartColorRus
-      };
-      
-      localStorage.setItem('cartData', JSON.stringify(newCartData));
-      
-      // Обновляем счетчик в интерфейсе
-      const totalItems = newCameraCount + newMemoryCount;
-      const cartCounters = document.querySelectorAll('.cart-counter, .cart-badge');
-      cartCounters.forEach(counter => {
-        if (counter) {
-          counter.textContent = totalItems;
-          counter.style.display = totalItems > 0 ? 'flex' : 'none';
-        }
-      });
-      
-      console.log('[PremiumMain] ✅ Товар успешно добавлен через localStorage fallback');
-      console.log('[PremiumMain] 📦 Новые данные корзины:', newCartData);
+      console.log('[PremiumMain] ✅ Товар успешно запланирован через localStorage fallback');
+      console.log('[PremiumMain] 📦 Конфигурация:', memoryCard, '- будет добавлена при переходе в корзину');
       
       // Отправляем событие обновления корзины
-      window.dispatchEvent(new CustomEvent('cartUpdated', { detail: newCartData }));
+      window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { itemToAdd } }));
       
       return true;
     } catch (fallbackError) {

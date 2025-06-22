@@ -7,33 +7,23 @@
 
     // Синглтон для управления корзиной
     const CartManager = {
-        // Получить данные корзины
+        // Получить данные корзины (новая архитектура)
         getCartData: function() {
             try {
                 const data = localStorage.getItem('cartData');
                 const parsed = data ? JSON.parse(data) : {};
-
-                const result = {
-                    cameraCount: parsed.cameraCount || 0,
-                    memoryCount: parsed.memoryCount || 0,
-                    cartColor: parsed.cartColor || 'Чёрный'
-                };
-
-                console.log('[CartManager] getCartData:', { raw: data, parsed, result });
-                return result;
+                return parsed.cartItems || []; // Возвращаем массив товаров
             } catch (error) {
                 console.error('[CartManager] Ошибка чтения данных:', error);
-                return { cameraCount: 0, memoryCount: 0, cartColor: 'Чёрный' };
+                return [];
             }
         },
 
-        // Сохранить данные корзины
-        saveCartData: function(cameraCount, memoryCount, cartColor) {
+        // Сохранить данные корзины (новая архитектура)
+        saveCartData: function(cartItems) {
             try {
                 const data = {
-                    cameraCount: Math.max(0, parseInt(cameraCount) || 0),
-                    memoryCount: Math.max(0, parseInt(memoryCount) || 0),
-                    cartColor: cartColor || 'Чёрный'
+                    cartItems: cartItems || []
                 };
 
                 localStorage.setItem('cartData', JSON.stringify(data));
@@ -52,55 +42,30 @@
             }
         },
 
-        // Получить общее количество товаров
+        // Получить общее количество товаров (новая архитектура)
         getTotalCount: function() {
-            const data = this.getCartData();
-            const total = data.cameraCount + data.memoryCount;
-            console.log('[CartManager] getTotalCount:', { cameraCount: data.cameraCount, memoryCount: data.memoryCount, total });
-            return total;
+            const items = this.getCartData();
+            return items.length; // Считаем только камеры
         },
 
-        // Добавить товар
-        addItem: function(type, quantity = 1) {
-            const data = this.getCartData();
-
-            if (type === 'camera') {
-                data.cameraCount += quantity;
-            } else if (type === 'memory') {
-                data.memoryCount += quantity;
-            }
-
-            return this.saveCartData(data.cameraCount, data.memoryCount, data.cartColor);
+        // Добавить камеру в корзину (новый метод для главной страницы)
+        addCameraToCart: function(memoryOption = '8gb') {
+            const itemToAdd = { memory: memoryOption, timestamp: Date.now() };
+            localStorage.setItem('itemToAdd', JSON.stringify(itemToAdd));
+            console.log('[CartManager] Запланировано добавление камеры с картой:', memoryOption);
         },
 
-        // Удалить товар
-        removeItem: function(type, quantity = 1) {
-            const data = this.getCartData();
 
-            if (type === 'camera') {
-                data.cameraCount = Math.max(0, data.cameraCount - quantity);
-            } else if (type === 'memory') {
-                data.memoryCount = Math.max(0, data.memoryCount - quantity);
-            }
-
-            return this.saveCartData(data.cameraCount, data.memoryCount, data.cartColor);
-        },
-
-        // Установить цвет камеры
-        setColor: function(color) {
-            const data = this.getCartData();
-            data.cartColor = color;
-            return this.saveCartData(data.cameraCount, data.memoryCount, data.cartColor);
-        },
 
         // Очистить корзину
         clearCart: function() {
             try {
                 localStorage.removeItem('cartData');
+                localStorage.removeItem('itemToAdd');
                 this.updateCartCounter();
 
                 window.dispatchEvent(new CustomEvent('cartUpdated', {
-                    detail: { cameraCount: 0, memoryCount: 0, cartColor: 'Чёрный' }
+                    detail: { cartItems: [] }
                 }));
 
                 console.log('[CartManager] Корзина очищена');
@@ -184,7 +149,7 @@
 
     window.testAddToCart = function() {
         console.log('=== TEST ADD TO CART ===');
-        CartManager.addItem('camera', 1);
+        CartManager.addCameraToCart('64gb');
         console.log('Added camera, new count:', CartManager.getTotalCount());
     };
 

@@ -6,12 +6,11 @@
   <title>clip & go • Корзина</title>
 
   <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Styles -->
-  <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/cart/cart.css" />
   <link rel="stylesheet" href="/cart/cart-animations.css" media="(max-width:768px)" />
   
@@ -23,14 +22,14 @@
       if (data.cameraCount > 0) {
         const link8gb = document.createElement('link');
         link8gb.rel = 'preload';
-        link8gb.href = '/assets/images/8gb.svg';
+        link8gb.href = '../assets/images/8gb.svg';
         link8gb.as = 'image';
         document.head.appendChild(link8gb);
       }
       if (data.memory64gbCount > 0) {
         const link64gb = document.createElement('link');
         link64gb.rel = 'preload';
-        link64gb.href = '/assets/images/64gb.svg';
+        link64gb.href = '../assets/images/64gb.svg';
         link64gb.as = 'image';
         document.head.appendChild(link64gb);
       }
@@ -44,7 +43,7 @@
   <meta name="description" content="Оформление заказа clip & go - безопасная оплата и быстрая доставка">
 
   <!-- Maps Config -->
-  <script src="/config.js"></script>
+  <script src="../config.js"></script>
   <script>
     (function () {
       if (window.__ENV && window.__ENV.YANDEX_JSAPI_KEY) {
@@ -101,10 +100,6 @@
         <span class="section-icon">📦</span>
         <span>Товары в корзине</span>
       </h2>
-      <button id="addCameraBtn" class="add-camera-btn premium-btn secondary">
-        <span class="btn-icon">➕</span>
-        <span>Добавить камеру</span>
-      </button>
     </div>
 
     <!-- Контейнер для динамически генерируемых карточек товаров -->
@@ -117,7 +112,7 @@
       <div class="empty-icon">🛒</div>
       <h3>Ваша корзина пуста</h3>
       <p>Добавьте товары, чтобы оформить заказ</p>
-      <a href="/main/index.html" class="premium-btn primary">
+      <a href="../main/index.html" class="premium-btn primary">
         <span>🏪</span>
         <span>Перейти к покупкам</span>
       </a>
@@ -155,7 +150,7 @@
           <div class="delivery-option glass touchable">
             <input type="radio" id="deliveryCourier" name="deliveryMethod" value="courier" />
             <label for="deliveryCourier">
-              <img src="/assets/icons/cdek-truck.png" class="delivery-icon large" alt="Курьер СДЭК" />
+              <img src="../assets/icons/cdek-truck.png" class="delivery-icon large" alt="Курьер СДЭК" />
               <div class="option-info">
                 <div class="option-title">Курьер СДЭК</div>
                 <div class="option-desc">Доставка до двери</div>
@@ -165,7 +160,7 @@
           <div class="delivery-option glass touchable">
             <input type="radio" id="deliveryPvz" name="deliveryMethod" value="pvz" />
             <label for="deliveryPvz">
-              <img src="/assets/icons/cdek-pvz.png" class="delivery-icon large" alt="ПВЗ СДЭК" />
+              <img src="../assets/icons/cdek-pvz.png" class="delivery-icon large" alt="ПВЗ СДЭК" />
               <div class="option-info">
                 <div class="option-title">ПВЗ СДЭК</div>
                 <div class="option-desc">Самовывоз из пункта</div>
@@ -333,10 +328,10 @@
       <div class="payment-methods">
         <div class="payment-label">Принимаем к оплате:</div>
         <div class="payment-icons">
-          <img src="/assets/icons/payments/visa.png" alt="Visa" />
-          <img src="/assets/icons/payments/mastercard.png" alt="Mastercard" />
-          <img src="/assets/icons/payments/mir.png" alt="МИР" />
-          <img src="/assets/icons/payments/sbp.png" alt="СБП" />
+          <img src="../assets/icons/payments/visa.png" alt="Visa" />
+          <img src="../assets/icons/payments/mastercard.png" alt="Mastercard" />
+          <img src="../assets/icons/payments/mir.png" alt="МИР" />
+          <img src="../assets/icons/payments/sbp.png" alt="СБП" />
         </div>
       </div>
 
@@ -347,7 +342,7 @@
 
       <div class="legal-notice">
         Нажимая кнопку, вы соглашаетесь с
-        <a href="/Policy/privacy-cookie-policy.html">политикой конфиденциальности</a>
+        <a href="../Policy/privacy-cookie-policy.html">политикой конфиденциальности</a>
         и условиями обработки персональных данных
       </div>
     </div>
@@ -359,7 +354,7 @@
   <div class="footer-content">
     <p>&copy; 2025 clip & go. Все права защищены.</p>
     <p>
-      <a href="/Policy/privacy-cookie-policy.html" class="footer-link">
+      <a href="../Policy/privacy-cookie-policy.html" class="footer-link">
         Политика cookies и конфиденциальности
       </a>
     </p>
@@ -370,7 +365,7 @@
 <ul id="citySuggestions"></ul>
 
 <!-- Scripts -->
-<script src="/js/cart-manager.js"></script>
-<script src="/cart/cart.js"></script>
+<script src="../js/cart-manager.js"></script>
+<script src="cart.js"></script>
 </body>
 </html>

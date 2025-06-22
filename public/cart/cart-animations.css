@@ -30,18 +30,12 @@
         transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
 
-    .cart-item[data-id="camera"]:active {
+    .cart-item:active {
         transform: scale(0.98) translateY(-2px) !important;
         transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1) !important;
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2) !important;
     }
     
-    /* SD-карты остаются без touch эффектов */
-    div.cart-item[data-id="memory8gb"]:active,
-    div.cart-item[data-id="memory64gb"]:active {
-        transform: none !important;
-        box-shadow: none !important;
-    }
 
     .delivery-option:active,
     .promo-card:active,
@@ -128,39 +122,6 @@
     .tariff-btn:nth-child(1) { animation-delay: 0.05s; }
     .tariff-btn:nth-child(2) { animation-delay: 0.1s; }
 
-    /* === Премиальные ripple эффекты === */
-    .touchable::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        background: radial-gradient(circle, rgba(28, 166, 248, 0.2) 0%, rgba(0, 87, 194, 0.08) 40%, transparent 70%);
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    .touchable:active::before {
-        width: 100px;
-        height: 100px;
-    }
-
-    /* Специальные ripple для разных элементов */
-    .cart-item.touchable::before {
-        background: radial-gradient(circle, rgba(28, 166, 248, 0.15) 0%, rgba(0, 87, 194, 0.05) 50%, transparent 70%);
-    }
-
-    .delivery-option.touchable::before {
-        background: radial-gradient(circle, rgba(28, 166, 248, 0.12) 0%, rgba(0, 87, 194, 0.04) 50%, transparent 70%);
-    }
-
-    .premium-btn.touchable::before {
-        background: radial-gradient(circle, rgba(255, 255, 255, 0.25) 0%, rgba(28, 166, 248, 0.08) 40%, transparent 70%);
-    }
 
     /* === Плавные переходы секций === */
     .section-block {
@@ -231,33 +192,14 @@
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
     }
     
-    /* Тени для cart-item исключая SD-карты - максимальная специфичность */
-    .cart-item[data-id="camera"] {
+    /* Тени для cart-item */
+    .cart-item {
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
     }
 
-    /* КРИТИЧЕСКИ ВАЖНО: убираем тени с SD карт на мобильных - максимальная специфичность */
-    div.cart-item[data-id="memory8gb"],
-    div.cart-item[data-id="memory64gb"] {
-        box-shadow: none !important;
-        -webkit-box-shadow: none !important;
-        -moz-box-shadow: none !important;
-    }
-    
-    /* Убираем тени во всех состояниях */
-    div.cart-item[data-id="memory8gb"]:hover,
-    div.cart-item[data-id="memory8gb"]:active,
-    div.cart-item[data-id="memory8gb"]:focus,
-    div.cart-item[data-id="memory64gb"]:hover,
-    div.cart-item[data-id="memory64gb"]:active,
-    div.cart-item[data-id="memory64gb"]:focus {
-        box-shadow: none !important;
-        -webkit-box-shadow: none !important;
-        -moz-box-shadow: none !important;
-    }
 
-    /* Активные тени для карточек кроме SD-карт */
-    .cart-item[data-id="camera"]:active {
+    /* Активные тени для карточек */
+    .cart-item:active {
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
     }
     
@@ -479,10 +421,6 @@
         transition-duration: 0.15s;
     }
 
-    .touchable:active::before {
-        width: 80px;
-        height: 80px;
-    }
 
     /* Тройной фон-слой для максимальной совместимости */
     body::after {
@@ -564,9 +502,7 @@
 
 /* === Темная тема поддержка === */
 @media (prefers-color-scheme: dark) {
-    .touchable::before {
-        background: radial-gradient(circle, rgba(28, 166, 248, 0.3) 0%, rgba(0, 87, 194, 0.1) 40%, transparent 70%);
-    }
+    /* Убрали .touchable::before для устранения блика */
 }
 
 /* === Уменьшенная анимация для accessibility === */

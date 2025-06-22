@@ -95,6 +95,10 @@ function createCartItemHTML(item) {
                 </div>
 
                 <div class="item-configurator">
+                    <div class="config-header">
+                        <span class="config-icon">💾</span>
+                        <span>Комплектация</span>
+                    </div>
                     <div class="config-choices">
                         <button class="memory-option ${is8gbActive ? 'active' : ''}" data-memory="8gb" data-item-id="${item.uniqueId}">
                             <img src="/assets/images/8gb.svg" alt="8 ГБ" class="memory-image">
@@ -117,7 +121,7 @@ function createCartItemHTML(item) {
             </div>
 
             <div class="item-controls">
-                <button class="remove-item-btn" data-item-id="${item.uniqueId}">
+                <button class="remove-item-btn premium-btn secondary" data-item-id="${item.uniqueId}">
                     Удалить
                 </button>
             </div>
@@ -187,12 +191,20 @@ function handleItemRemove(itemId) {
   );
 }
 
-/* === ДОБАВЛЕНИЕ НОВОЙ КАМЕРЫ В КОРЗИНУ === */
-function addCameraToCart() {
+
+/* === РАСЧЕТ ЦЕНЫ ПОЗИЦИИ === */
+function calculateItemPrice(memoryOption) {
+  const basePrice = prices.camera;
+  const memoryUpgrade = memoryOption === '64gb' ? prices.memory_upgrade_64gb : 0;
+  return basePrice + memoryUpgrade;
+}
+
+/* === ДОБАВЛЕНИЕ КАМЕРЫ В КОРЗИНУ === */
+function addCameraToCart(memoryOption = '8gb') {
   const newItem = {
     uniqueId: Date.now() + Math.random(), // Уникальный ID
-    memory: '8gb',                        // Опция по умолчанию
-    price: calculateItemPrice('8gb')      // Рассчитанная цена
+    memory: memoryOption,                  // Комплектация памяти
+    price: calculateItemPrice(memoryOption) // Рассчитанная цена с учетом комплектации
   };
 
   cartItems.push(newItem);
@@ -201,14 +213,22 @@ function addCameraToCart() {
   saveCart();
   renderCart();
   
-  showNotification('Камера добавлена в корзину!', 'success');
+  showNotification(`Камера с ${memoryOption === '64gb' ? '64 ГБ' : '8 ГБ'} добавлена в корзину!`, 'success');
 }
 
-/* === РАСЧЕТ ЦЕНЫ ПОЗИЦИИ === */
-function calculateItemPrice(memoryOption) {
-  const basePrice = prices.camera;
-  const memoryUpgrade = memoryOption === '64gb' ? prices.memory_upgrade_64gb : 0;
-  return basePrice + memoryUpgrade;
+// Делаем функцию глобальной для доступа из главного меню
+window.addCameraToCart = addCameraToCart;
+
+/* === ВЫБОР КОМПЛЕКТАЦИИ И ДОБАВЛЕНИЕ КАМЕРЫ === */
+function showAddCameraDialog() {
+  showConfirm(
+    'Выберите комплектацию',
+    'Какую камеру вы хотите добавить в корзину?',
+    () => addCameraToCart('8gb'), // При подтверждении добавляем 8GB версию
+    () => addCameraToCart('64gb'), // При отмене добавляем 64GB версию
+    '8 ГБ (7 499 ₽)',
+    '64 ГБ (7 999 ₽)'
+  );
 }
 
 /* === РАСЧЕТ ОБЩЕЙ СУММЫ КОРЗИНЫ === */
@@ -218,13 +238,14 @@ function calculateCartTotal() {
 
 /* === ОБНОВЛЕНИЕ СЧЕТЧИКОВ И СТАТИСТИКИ === */
 function updateCartCounters() {
-  const itemCount = cartItems.length;
+  // Считаем только камеры (не SD-карты)
+  const cameraCount = cartItems.length;
   const totalSum = calculateCartTotal();
 
   // Обновляем счетчик товаров в hero
   const itemCountEl = cartItemsCount();
   if (itemCountEl) {
-    animateCounterChange(itemCountEl, itemCount);
+    animateCounterChange(itemCountEl, cameraCount);
   }
 
   // Обновляем сумму в hero
@@ -330,24 +351,40 @@ function loadCart() {
     const data = window.CartManager.getCartData();
     
     // Загружаем новую структуру данных
-    if (data.cartItems && Array.isArray(data.cartItems)) {
-      cartItems = data.cartItems;
+    if (data && Array.isArray(data)) {
+      cartItems = data;
     } else {
-      // Миграция со старой структуры
       cartItems = [];
-      if (data.cameraCount > 0) {
-        for (let i = 0; i < data.cameraCount; i++) {
-          cartItems.push({
-            uniqueId: Date.now() + i,
-            memory: data.selectedMemoryOption || '8gb',
-            price: calculateItemPrice(data.selectedMemoryOption || '8gb')
-          });
-        }
-      }
     }
 
-    const cameraColor = data.cartColor || 'Чёрный';
-    // Цвет камеры будет установлен при рендере
+    // ПРОВЕРЯЕМ ДОБАВЛЕНИЕ ТОВАРА ИЗ ГЛАВНОЙ СТРАНИЦЫ
+    const itemToAddData = localStorage.getItem('itemToAdd');
+    if (itemToAddData) {
+      try {
+        const itemToAdd = JSON.parse(itemToAddData);
+        console.log('[Cart] Найден товар для добавления:', itemToAdd);
+        
+        // Добавляем камеру с выбранной конфигурацией
+        const newItem = {
+          uniqueId: Date.now() + Math.random(),
+          memory: itemToAdd.memory || '8gb',
+          price: calculateItemPrice(itemToAdd.memory || '8gb')
+        };
+        
+        cartItems.push(newItem);
+        
+        // Сохраняем обновленную корзину
+        saveCart();
+        
+        // Удаляем itemToAdd из localStorage
+        localStorage.removeItem('itemToAdd');
+        
+        console.log('[Cart] Камера добавлена в корзину:', newItem);
+      } catch (error) {
+        console.error('[Cart] Ошибка добавления товара:', error);
+        localStorage.removeItem('itemToAdd');
+      }
+    }
   }
 }
 
@@ -380,15 +417,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* === ИНИЦИАЛИЗАЦИЯ ОСНОВНЫХ КОНТРОЛОВ === */
 function initMainControls() {
-  // Кнопка "Добавить камеру"
-  const addCameraBtn = document.getElementById('addCameraBtn');
-  if (addCameraBtn) {
-    addCameraBtn.addEventListener('click', () => {
-      addPremiumButtonAnimation(addCameraBtn);
-      addCameraToCart();
-    });
-  }
-
   // Промокоды
   const applyPromoBtn = document.getElementById('applyPromoBtn');
   if (applyPromoBtn) {
@@ -1113,103 +1141,60 @@ function getNotificationContainer() {
 }
 
 // Диалог подтверждения
-function showConfirm(title, message, onConfirm, onCancel = null) {
+function showConfirm(title, message, onConfirm, onCancel = null, confirmText = 'Да, удалить', cancelText = 'Отмена') {
+  // Создаем фон и само модальное окно
+  const backdrop = document.createElement('div');
+  backdrop.className = 'premium-confirm-backdrop';
+
   const modal = document.createElement('div');
   modal.className = 'premium-confirm-modal';
   modal.innerHTML = `
-    <div class="premium-confirm-backdrop">
-      <div class="premium-confirm-content">
-        <div class="premium-confirm-header">
-          <h3>${title}</h3>
-        </div>
-        <div class="premium-confirm-body">
-          <p>${message}</p>
-        </div>
-        <div class="premium-confirm-actions">
-          <button class="premium-btn secondary" id="confirmCancel">Отмена</button>
-          <button class="premium-btn primary" id="confirmOk">Да</button>
-        </div>
+    <div class="premium-confirm-content">
+      <div class="premium-confirm-header"><h3>${title}</h3></div>
+      <div class="premium-confirm-body"><p>${message}</p></div>
+      <div class="premium-confirm-actions">
+        <button class="premium-btn secondary" id="confirmCancel">${cancelText}</button>
+        <button class="premium-btn primary" id="confirmOk">${confirmText}</button>
       </div>
     </div>
   `;
 
-  // Стили модального окна
-  modal.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10002;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  `;
-
-  const content = modal.querySelector('.premium-confirm-content');
-  content.style.cssText = `
-    background: white;
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 400px;
-    width: 90%;
-    transform: scale(0.9);
-    transition: transform 0.3s ease;
-  `;
-
-  const actions = modal.querySelector('.premium-confirm-actions');
-  actions.style.cssText = `
-    display: flex;
-    gap: 12px;
-    margin-top: 24px;
-    justify-content: flex-end;
-  `;
-
+  document.body.appendChild(backdrop);
   document.body.appendChild(modal);
   document.body.style.overflow = 'hidden';
 
   // Анимация появления
   setTimeout(() => {
-    modal.style.opacity = '1';
-    content.style.transform = 'scale(1)';
+    backdrop.classList.add('visible');
+    modal.classList.add('visible');
   }, 10);
 
-  // Обработчики
   const okBtn = modal.querySelector('#confirmOk');
   const cancelBtn = modal.querySelector('#confirmCancel');
 
   const closeModal = () => {
-    modal.style.opacity = '0';
-    content.style.transform = 'scale(0.9)';
+    backdrop.classList.remove('visible');
+    modal.classList.remove('visible');
     document.body.style.overflow = '';
     setTimeout(() => {
-      if (modal.parentNode) {
-        modal.parentNode.removeChild(modal);
-      }
-    }, 300);
+      if (backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+      if (modal.parentNode) modal.parentNode.removeChild(modal);
+    }, 300); // Время на анимацию исчезновения
   };
 
   okBtn.addEventListener('click', () => {
-    closeModal();
     if (onConfirm) onConfirm();
+    closeModal();
   });
 
   cancelBtn.addEventListener('click', () => {
-    closeModal();
     if (onCancel) onCancel();
+    closeModal();
   });
 
-  // Закрытие по клику на фон
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      closeModal();
-      if (onCancel) onCancel();
-    }
+  backdrop.addEventListener('click', () => {
+    if (onCancel) onCancel();
+    closeModal();
   });
 }
 
