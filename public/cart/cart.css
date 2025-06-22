@@ -57,6 +57,527 @@
   --form-focus-border: var(--primary-blue);
 }
 
+/* ========================= НОВАЯ АРХИТЕКТУРА КОРЗИНЫ ========================= */
+
+/* Кнопка добавления камеры */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+
+/* Сетка карточек товаров */
+.cart-items-grid {
+  display: grid;
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-2xl);
+}
+
+/* === НОВЫЙ ДИЗАЙН КАРТОЧКИ ТОВАРА === */
+
+.cart-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto; /* Изображение | Контент | Кнопка удаления */
+  gap: var(--spacing-lg);
+  align-items: flex-start;
+  padding: var(--spacing-xl);
+  background: var(--glass-bg-medium);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--border-radius-card);
+  box-shadow: var(--glass-shadow);
+  transition: all 0.3s var(--premium-easing);
+  position: relative;
+}
+
+.cart-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow-strong);
+  border-color: var(--glass-border-strong);
+}
+
+.item-image {
+  width: 100px;
+  height: 100px;
+  border-radius: var(--border-radius-section);
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.item-image img {
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover;
+  transition: transform 0.3s var(--premium-easing);
+}
+
+.cart-item:hover .item-image img {
+  transform: scale(1.05);
+}
+
+.item-main-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  min-width: 0;
+}
+
+.item-info h3 {
+  margin: 0 0 var(--spacing-sm) 0;
+  color: var(--text-white);
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.item-details {
+  display: flex; 
+  flex-direction: column; 
+  gap: var(--spacing-xs);
+  color: var(--text-light); 
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.item-detail {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+/* === ФИНАЛЬНЫЙ ДИЗАЙН КОНФИГУРАТОРА ТОВАРА v3 === */
+.item-configurator {
+    margin-top: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--glass-border);
+}
+
+.config-header {
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.config-choices {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    margin-left: -10px; /* Визуальная компенсация */
+}
+
+/* Сами кнопки-опции теперь невидимые */
+.memory-option {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 10px;
+    border-radius: var(--border-radius-button);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    position: relative;
+    transition: transform 0.2s ease-in-out;
+}
+
+.memory-option:hover {
+   transform: scale(1.05);
+}
+
+/* Изображения карт - теперь главные */
+.memory-image {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    transition: all 0.3s var(--premium-easing);
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+/* Текст под картами (всегда читаемый) */
+.memory-details {
+    text-align: center;
+}
+.memory-size, .memory-price {
+    color: var(--text-light);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+.memory-size { font-weight: 600; font-size: 0.9rem; }
+.memory-price { font-size: 0.8rem; }
+
+/* Стиль НЕ активной опции */
+.memory-option:not(.active) .memory-image {
+    opacity: 0.5;
+    filter: grayscale(80%) drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+.memory-option:not(.active):hover .memory-image {
+    opacity: 0.9;
+    filter: grayscale(0%) drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+}
+
+/* Стиль АКТИВНОЙ опции */
+.memory-option.active .memory-image {
+    opacity: 1;
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 12px var(--accent-green));
+}
+
+/* Галочка, которая видна только на активном элементе */
+.checkmark-icon {
+    display: none; /* Скрыта по умолчанию */
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    background: var(--accent-green);
+    color: var(--text-white);
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    border: 2px solid var(--dark-blue);
+}
+
+.memory-option.active .checkmark-icon {
+    display: flex; /* Видна только у активной */
+}
+
+.item-controls {
+  align-self: center; /* Центрирует кнопку "Удалить" по вертикали */
+}
+
+.remove-item-btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--border-radius-button);
+  transition: all 0.3s var(--premium-easing);
+}
+
+.remove-item-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+/* ========================= АДАПТИВНОСТЬ ========================= */
+
+@media (max-width: 768px) {
+  .cart-item {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    text-align: center;
+  }
+  
+  .item-image {
+    justify-self: center;
+    width: 80px;
+    height: 80px;
+  }
+  
+  .item-main-content {
+    gap: var(--spacing-md);
+  }
+  
+  .item-info h3 {
+    text-align: center;
+  }
+  
+  .item-details {
+    align-items: center;
+  }
+  
+  .config-choices {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .item-controls {
+    justify-self: center;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+  
+  .add-camera-btn {
+    order: -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .cart-item {
+    padding: var(--spacing-md);
+  }
+  
+  .memory-option {
+    padding: var(--spacing-xs);
+    gap: var(--spacing-sm);
+  }
+  
+  .memory-image {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .memory-size {
+    font-size: 0.85rem;
+  }
+  
+  .memory-price {
+    font-size: 0.75rem;
+  }
+  
+  .checkmark-icon {
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    top: 4px;
+    right: 4px;
+  }
+}
+
+/* ========================= ПРЕМИАЛЬНЫЕ ПОДСКАЗКИ ГОРОДОВ ========================= */
+
+/* Контейнер для выпадающего списка подсказок - теперь в body */
+#citySuggestions {
+  /* Позиционирование устанавливается в JS */
+  background: rgba(0, 42, 92, 0.95);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(28, 166, 248, 0.4);
+  border-radius: var(--border-radius-section);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), 
+              0 0 40px rgba(28, 166, 248, 0.2);
+  max-height: 320px;
+  overflow-y: auto;
+  opacity: 0;
+  transform: translateY(-12px) scale(0.96);
+  visibility: hidden;
+  transition: all 0.4s var(--premium-easing);
+  padding: var(--spacing-sm);
+  list-style: none;
+  margin: 0;
+}
+
+/* Анимация появления списка */
+#citySuggestions.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+  animation: citySuggestionsSlideIn 0.5s var(--premium-easing);
+}
+
+/* Элементы списка городов */
+#citySuggestions li {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--border-radius-button);
+  margin-bottom: var(--spacing-xs);
+  padding: var(--spacing-md) var(--spacing-lg);
+  cursor: pointer;
+  transition: all 0.3s var(--premium-easing);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-height: 54px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Последний элемент без отступа снизу */
+#citySuggestions li:last-child {
+  margin-bottom: 0;
+}
+
+/* Иконка геолокации */
+#citySuggestions li .city-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(28, 166, 248, 0.3);
+  animation: cityIconPulse 2s ease-in-out infinite;
+}
+
+/* Текстовое содержимое */
+#citySuggestions li .city-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Основное название города */
+#citySuggestions li .city-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-white);
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Дополнительное описание (регион) */
+#citySuggestions li .city-region {
+  font-weight: 400;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.3;
+}
+
+/* Эффект при наведении */
+#citySuggestions li:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px) scale(1.01);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 
+              0 0 20px rgba(28, 166, 248, 0.2);
+}
+
+/* Подсветка иконки при наведении */
+#citySuggestions li:hover .city-icon {
+  background: linear-gradient(135deg, var(--accent-green) 0%, #059669 100%);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+  transform: scale(1.05);
+}
+
+/* Активное состояние при клике */
+#citySuggestions li:active {
+  transform: translateY(0) scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* Ripple эффект при клике */
+#citySuggestions li::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(28, 166, 248, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+#citySuggestions li:active::before {
+  width: 200px;
+  height: 200px;
+}
+
+/* Скроллбар для списка */
+#citySuggestions::-webkit-scrollbar {
+  width: 6px;
+}
+
+#citySuggestions::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+#citySuggestions::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+  border-radius: 3px;
+}
+
+#citySuggestions::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--accent-green) 0%, #059669 100%);
+}
+
+/* Анимация появления */
+@keyframes citySuggestionsSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+    filter: blur(3px);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translateY(2px) scale(1.01);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Анимация пульсации иконки */
+@keyframes cityIconPulse {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(28, 166, 248, 0.3);
+  }
+  50% {
+    box-shadow: 0 6px 16px rgba(28, 166, 248, 0.5);
+  }
+}
+
+/* Премиальная анимация при наведении */
+@keyframes premiumHover {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: translateY(-1px);
+  }
+}
+
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+  #citySuggestions {
+    max-height: 280px;
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-button);
+  }
+  
+  #citySuggestions li {
+    padding: var(--spacing-sm) var(--spacing-md);
+    min-height: 48px;
+  }
+  
+  #citySuggestions li .city-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  #citySuggestions li .city-name {
+    font-size: 14px;
+  }
+  
+  #citySuggestions li .city-region {
+    font-size: 12px;
+  }
+}
+
 /* ========================= БАЗОВЫЕ СТИЛИ ========================= */
 html, body {
   margin: 0;
@@ -416,6 +937,154 @@ body {
 .section-icon {
   font-size: 1.5rem;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* ========================= КОНФИГУРАТОР ОПЦИЙ ТОВАРА ========================= */
+
+/* Контейнер опций */
+.item-options {
+  margin: var(--spacing-lg) 0;
+  padding: var(--spacing-lg);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--border-radius-section);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Заголовок секции опций */
+.option-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+  font-weight: 600;
+  font-size: 1.1em;
+  color: var(--text-white);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.option-icon {
+  font-size: 1.2em;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+/* Контейнер для выбора опций */
+.option-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+/* Кнопки выбора памяти */
+.memory-option {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--border-radius-button);
+  padding: var(--spacing-md) var(--spacing-lg);
+  cursor: pointer;
+  transition: all 0.3s var(--premium-easing);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Размер памяти */
+.memory-size {
+  font-size: 1.1em;
+  font-weight: 700;
+  color: var(--text-white);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Цена памяти */
+.memory-price {
+  font-size: 0.9em;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+/* Активная опция */
+.memory-option.active {
+  background: linear-gradient(135deg, var(--accent-green) 0%, #059669 100%);
+  border-color: var(--accent-green);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+  transform: translateY(-2px);
+}
+
+.memory-option.active .memory-size,
+.memory-option.active .memory-price {
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Иконка галочки для активной опции */
+.memory-option.active::after {
+  content: '✓';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 0.9em;
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Эффект при наведении */
+.memory-option:not(.active):hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(28, 166, 248, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(28, 166, 248, 0.2);
+}
+
+/* Ripple эффект при клике */
+.memory-option::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(28, 166, 248, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.memory-option:active::before {
+  width: 120px;
+  height: 120px;
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 768px) {
+  .option-choices {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .memory-option {
+    padding: var(--spacing-sm) var(--spacing-md);
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .memory-size {
+    font-size: 1em;
+  }
+  
+  .memory-price {
+    font-size: 0.85em;
+  }
 }
 
 /* ========================= КАРТОЧКИ ТОВАРОВ ========================= */
