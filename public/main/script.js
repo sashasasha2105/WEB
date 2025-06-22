@@ -162,6 +162,10 @@ function savePremiumCartState() {
     const memoryDesc = memoryCard === '8gb' ? '8 ГБ (встроенная)' : '64 ГБ microSD';
     const productDescription = `clip & go 1st edition (${cartColorRus}, ${memoryDesc})`;
     
+    // НОВАЯ ЛОГИКА: Сохраняем выбранную комплектацию для передачи в корзину
+    localStorage.setItem('pendingMemoryOption', memoryCard);
+    console.log('[PremiumMain] 📦 Сохранена комплектация для корзины:', memoryCard);
+    
     if (window.CartManager && typeof window.CartManager.addCameraToCart === 'function') {
       // Используем новый метод CartManager.addCameraToCart
       console.log('[PremiumMain] 📦 Добавляем камеру через CartManager.addCameraToCart');

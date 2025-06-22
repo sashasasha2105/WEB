@@ -347,6 +347,15 @@ function saveCart() {
 }
 
 function loadCart() {
+  // ПРОВЕРЯЕМ КОМПЛЕКТАЦИЮ ИЗ ГЛАВНОЙ СТРАНИЦЫ (НОВАЯ ИНТЕГРАЦИЯ)
+  const pendingOption = localStorage.getItem('pendingMemoryOption');
+  if (pendingOption) {
+    console.log('[Cart] Найдена комплектация из главной страницы:', pendingOption);
+    addCameraToCart(pendingOption);
+    localStorage.removeItem('pendingMemoryOption');
+    console.log('[Cart] Комплектация применена и удалена из localStorage');
+  }
+
   if (window.CartManager) {
     const data = window.CartManager.getCartData();
     
@@ -357,7 +366,7 @@ function loadCart() {
       cartItems = [];
     }
 
-    // ПРОВЕРЯЕМ ДОБАВЛЕНИЕ ТОВАРА ИЗ ГЛАВНОЙ СТРАНИЦЫ
+    // ПРОВЕРЯЕМ ДОБАВЛЕНИЕ ТОВАРА ИЗ ГЛАВНОЙ СТРАНИЦЫ (СТАРЫЙ МЕТОД)
     const itemToAddData = localStorage.getItem('itemToAdd');
     if (itemToAddData) {
       try {
@@ -723,6 +732,44 @@ function initCitySuggest() {
       showNotification('Ошибка поиска городов', 'error');
     }
   }, 300));
+
+  // Скрываем подсказки при потере фокуса
+  cityInput.addEventListener('blur', () => {
+    // Небольшая задержка, чтобы успел сработать клик по подсказке
+    setTimeout(() => {
+      const ul = citySug();
+      if (ul) {
+        ul.classList.remove('visible');
+      }
+    }, 150);
+  });
+
+  // Скрываем подсказки при клике вне поля и списка
+  document.addEventListener('click', (e) => {
+    const ul = citySug();
+    if (!ul) return;
+    
+    const isClickOnInput = cityInput.contains(e.target);
+    const isClickOnSuggestions = ul.contains(e.target);
+    
+    if (!isClickOnInput && !isClickOnSuggestions) {
+      ul.classList.remove('visible');
+    }
+  });
+
+  // При фокусе показываем подсказки, если есть текст
+  cityInput.addEventListener('focus', async () => {
+    const q = cityInput.value.trim();
+    if (q.length >= 2) {
+      try {
+        const resp = await fetch(`/api/yandex/suggest?text=${encodeURIComponent(q)}`);
+        const j = await resp.json();
+        renderCitySuggestions(j.results || []);
+      } catch (e) {
+        console.error('Ошибка получения подсказок городов:', e);
+      }
+    }
+  });
 }
 
 function renderCitySuggestions(items) {
@@ -739,8 +786,8 @@ function renderCitySuggestions(items) {
   const cityInput = cityIn();
   if (cityInput) {
     const rect = cityInput.getBoundingClientRect();
-    ul.style.position = 'fixed';
-    ul.style.top = `${rect.bottom + 8}px`;
+    ul.style.position = 'absolute';
+    ul.style.top = `${rect.bottom + window.scrollY + 8}px`;
     ul.style.left = `${rect.left}px`;
     ul.style.width = `${rect.width}px`;
     ul.style.zIndex = '9999';
